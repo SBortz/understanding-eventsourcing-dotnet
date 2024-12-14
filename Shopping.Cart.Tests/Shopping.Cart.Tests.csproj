@@ -20,4 +20,8 @@
         <Using Include="NUnit.Framework"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\Shopping.Cart\Shopping.Cart.csproj" />
+    </ItemGroup>
+
 </Project>

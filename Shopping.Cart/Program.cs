@@ -55,14 +55,12 @@ public class AddItemCommandHandler(IEventStore eventStore)
 
 public class CartAggregate
 {
-    private IList<object>? uncommittedEvents = null;
-    
     private Guid? aggregateId;
     private readonly IList<Guid> cartItems = new List<Guid>();
 
     public Guid? AggregateId => aggregateId;
-    public IList<object> UncommittedEvents => uncommittedEvents;
-    
+    public IList<object>? UncommittedEvents { get; private set; }
+
     public CartAggregate(object[] stream)
     {
         Hydrate(stream);
@@ -83,7 +81,7 @@ public class CartAggregate
             }
         }
 
-        this.uncommittedEvents = new List<object>();
+        this.UncommittedEvents = new List<object>();
     }
 
     public void AddItem(AddItem command)
@@ -111,14 +109,14 @@ public class CartAggregate
     {
         this.aggregateId = cartCreated.AggregateId;
 
-        this.uncommittedEvents?.Add(cartCreated);
+        this.UncommittedEvents?.Add(cartCreated);
     }
     
     private void ApplyEvent(ItemAdded itemAdded)
     {
         this.cartItems.Add(itemAdded.ItemId);
 
-        this.uncommittedEvents?.Add(itemAdded);
+        this.UncommittedEvents?.Add(itemAdded);
     }
 }
 
