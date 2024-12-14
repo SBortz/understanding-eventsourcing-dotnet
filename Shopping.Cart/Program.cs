@@ -59,7 +59,7 @@ public class CartAggregate
     private readonly IList<Guid> cartItems = new List<Guid>();
 
     public Guid? AggregateId => aggregateId;
-    public IList<object>? UncommittedEvents { get; private set; }
+    public IList<object>? UncommittedEvents { get; private set; } = new List<object>();
 
     public CartAggregate(object[] stream)
     {
