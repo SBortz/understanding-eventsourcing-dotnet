@@ -1,6 +1,6 @@
 ﻿namespace Shopping.Cart.Tests;
 
-public class Tests
+public class AddItemTests
 {
     [Test]
     public void CartSessionCreatedAutomatically()
