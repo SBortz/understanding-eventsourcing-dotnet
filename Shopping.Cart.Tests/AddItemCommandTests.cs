@@ -1,6 +1,6 @@
 ﻿namespace Shopping.Cart.Tests;
 
-public class AddItemTests
+public class AddItemCommandTests
 {
     [Test]
     public void CartSessionCreatedAutomatically()
@@ -11,7 +11,7 @@ public class AddItemTests
         
         CartAggregate cartAggregate = new CartAggregate(given);
         cartAggregate.AddItem(
-            new AddItem(
+            new AddItemCommand(
                 cartId,
                 "Description",
                 "Image",
@@ -39,7 +39,7 @@ public class AddItemTests
         Assert.Throws<TooManyItemsInCartException>(() =>
         {
             cartAggregate.AddItem(
-                new AddItem(
+                new AddItemCommand(
                     cartId,
                     "Description",
                     "Image",
