@@ -1,4 +1,3 @@
-using Shopping.Cart.Aggregate;
 using Shopping.Cart.EventStore;
 using Shopping.Cart.Slices;
 

@@ -1,4 +1,4 @@
-using Shopping.Cart.Aggregate;
+using Shopping.Cart.Domain;
 using Shopping.Cart.EventStore;
 using Shopping.Cart.Infrastructure;
 

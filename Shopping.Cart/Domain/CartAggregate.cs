@@ -1,7 +1,6 @@
-using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Shopping.Cart.Slices;
 
-namespace Shopping.Cart.Aggregate;
+namespace Shopping.Cart.Domain;
 
 public class CartAggregate
 {
