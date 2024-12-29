@@ -4,15 +4,13 @@ public interface IEventStore
 {
     ValueTask AppendToStream(
         string streamId,
-        IEnumerable<object> newEvents,
-        CancellationToken ct = default
+        IEnumerable<object> newEvents
     );
 
-    ValueTask<object[]> ReadAll(CancellationToken ct = default);
+    ValueTask<object[]> ReadAll();
 
     ValueTask<object[]> ReadStream(
-        string streamId,
-        CancellationToken ct = default
+        string streamId
     );
 }
 

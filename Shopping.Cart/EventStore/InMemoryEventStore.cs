@@ -8,8 +8,7 @@ public class InMemoryEventStore(EventSerializer eventSerializer) : IEventStore
 
     public ValueTask AppendToStream(
         string streamId,
-        IEnumerable<object> newEvents,
-        CancellationToken ct = default
+        IEnumerable<object> newEvents
     )
     {
         if (!events.ContainsKey(streamId))
@@ -32,7 +31,7 @@ public class InMemoryEventStore(EventSerializer eventSerializer) : IEventStore
         return ValueTask.CompletedTask;
     }
 
-    public ValueTask<object[]> ReadAll(CancellationToken ct = default)
+    public ValueTask<object[]> ReadAll()
     {
         var allEvents = events.Values
             .SelectMany(stream => stream)
@@ -47,10 +46,7 @@ public class InMemoryEventStore(EventSerializer eventSerializer) : IEventStore
         return ValueTask.FromResult(deserialized);
     }
 
-    public ValueTask<object[]> ReadStream(
-        string streamId,
-        CancellationToken ct = default
-    )
+    public ValueTask<object[]> ReadStream(string streamId)
     {
         if (!events.TryGetValue(streamId, out var stream))
             return ValueTask.FromResult(Array.Empty<object>());
