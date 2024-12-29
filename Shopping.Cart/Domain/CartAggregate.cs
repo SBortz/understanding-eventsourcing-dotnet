@@ -40,8 +40,7 @@ public class CartAggregate
             Image: command.Image,
             Price: command.Price,
             ItemId: command.ItemId,
-            ProductId: command.ProductId,
-            "not yet implemented"));
+            ProductId: command.ProductId));
     }
 
     private void ApplyEvent(CartCreated cartCreated)

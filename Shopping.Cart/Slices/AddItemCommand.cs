@@ -40,5 +40,4 @@ public record ItemAdded(
     string? Image,
     double Price,
     Guid ItemId,
-    Guid ProductId,
-    string DeviceFingerPrint);
+    Guid ProductId);
