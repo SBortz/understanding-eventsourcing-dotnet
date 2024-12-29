@@ -54,7 +54,7 @@ public class CartAggregate
         this.productPrice[itemAdded.ProductId] = itemAdded.Price;
     }
 
-    public void RemoveItem(RemoveItemCommandAggregate removeItem)
+    public void RemoveItem(RemoveItemCommand removeItem)
     {
         if (!this.cartItems.ContainsKey(removeItem.ItemId))
         {

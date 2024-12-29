@@ -3,17 +3,17 @@ using Shopping.Cart.EventStore;
 
 namespace Shopping.Cart.Slices;
 
-public record RemoveItemCommandAggregate(Guid ItemId, Guid CartId);
+public record RemoveItemCommand(Guid ItemId, Guid CartId);
 
 public class RemoveItemCommandHandler(IEventStore eventStore)
 {
-    public async Task Handle(RemoveItemCommandAggregate commandAggregate)
+    public async Task Handle(RemoveItemCommand command)
     {
-        object[] stream = await eventStore.ReadStream(commandAggregate.CartId.ToString());
+        object[] stream = await eventStore.ReadStream(command.CartId.ToString());
 
         CartAggregate cartAggregate = new CartAggregate(stream);
 
-        cartAggregate.RemoveItem(commandAggregate);
+        cartAggregate.RemoveItem(command);
 
         await eventStore.AppendToStream(cartAggregate.CartId!.Value.ToString(), cartAggregate.UncommittedEvents);
     }

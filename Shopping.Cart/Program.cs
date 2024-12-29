@@ -49,7 +49,7 @@ app.MapGet("/{cartId}/cartitems",
     async (string cartId, [FromServices] CartItemsProjector cartItemsStateViewHandler) => await cartItemsStateViewHandler.Projects(cartId)
     );
 app.MapPost("/removeitem",
-    async ([FromBody] RemoveItemCommandAggregate request, [FromServices] RemoveItemCommandHandler removeItemCommandHandler) =>
+    async ([FromBody] RemoveItemCommand request, [FromServices] RemoveItemCommandHandler removeItemCommandHandler) =>
     {
         await removeItemCommandHandler.Handle(request);
     });

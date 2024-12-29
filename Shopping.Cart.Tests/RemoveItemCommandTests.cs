@@ -3,7 +3,7 @@ using Shopping.Cart.Slices;
 
 namespace Shopping.Cart.Tests;
 
-public class RemoveItemCommandAggregateTests
+public class RemoveItemCommandTests
 {
     private InMemoryEventStore inMemoryEventStore;
 
@@ -25,7 +25,7 @@ public class RemoveItemCommandAggregateTests
         ];
         await this.inMemoryEventStore.AppendToStream(cartId.ToString(), given);
         RemoveItemCommandHandler removeItemCommandHandler = new RemoveItemCommandHandler(inMemoryEventStore);
-        await removeItemCommandHandler.Handle(new RemoveItemCommandAggregate(itemId, cartId));
+        await removeItemCommandHandler.Handle(new RemoveItemCommand(itemId, cartId));
         
         object[] stream = await this.inMemoryEventStore.ReadStream(cartId.ToString());
         Assert.That(stream[2], Is.TypeOf<ItemRemoved>());
@@ -47,7 +47,7 @@ public class RemoveItemCommandAggregateTests
         
         Assert.ThrowsAsync<ItemCanNotBeRemovedException>(async () =>
         {
-            await removeItemCommandHandler.Handle(new RemoveItemCommandAggregate(
+            await removeItemCommandHandler.Handle(new RemoveItemCommand(
                 ItemId: itemId,
                 CartId: cartId
             ));
