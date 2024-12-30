@@ -13,15 +13,17 @@ public record AddItemCommand(
     Guid ProductId
 );
 
-public class AddItemCommandHandler
+public class AddItemCommandHandler(IEventStore eventStore)
 {
-    public async Task<IEnumerable<object>> HandleAsync(object[] stream, AddItemCommand command)
+    public async Task Handle(AddItemCommand command)
     {
+        object[] stream = await eventStore.ReadStream(command.CartId.ToString());
+        
         CartAggregate cartAggregate = new CartAggregate(stream);
 
         cartAggregate.AddItem(command);
         
-        return cartAggregate.UncommittedEvents;
+        await eventStore.AppendToStream(cartAggregate.CartId!.Value.ToString(), cartAggregate.UncommittedEvents);
     }
 }
 

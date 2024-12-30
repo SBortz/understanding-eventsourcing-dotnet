@@ -41,13 +41,9 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapPost("/additem",
-    async ([FromBody] AddItemCommand command, [FromServices] IEventStore eventStore, [FromServices] AddItemCommandHandler addItemCommandHandler) =>
+    async ([FromBody] AddItemCommand request, [FromServices] AddItemCommandHandler addItemCommandHandler) =>
     {
-        var stream = await eventStore.ReadStream(command.CartId.ToString());
-        
-        var uncommittedEvents = await addItemCommandHandler.HandleAsync(stream, command);
-        
-        await eventStore.AppendToStream(command.CartId.ToString(), uncommittedEvents);
+        await addItemCommandHandler.Handle(request);
     });
 app.MapGet("/{cartId}/cartitems", 
     async (string cartId, [FromServices] CartItemsProjector cartItemsStateViewHandler) => await cartItemsStateViewHandler.Projects(cartId)

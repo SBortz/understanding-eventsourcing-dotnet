@@ -5,15 +5,21 @@ namespace Shopping.Cart.Tests;
 
 public class AddItemCommandHandlerTests
 {
+    private InMemoryEventStore inMemoryEventStore;
+
+    [SetUp]
+    public void Setup()
+    {
+        inMemoryEventStore = new InMemoryEventStore(new EventSerializer(new EventTypeMapping()));
+    }
+    
     [Test]
     public async Task CartSessionCreatedAutomatically()
     {
-        AddItemCommandHandler commandHandler = new AddItemCommandHandler();
+        AddItemCommandHandler commandHandler = new AddItemCommandHandler(inMemoryEventStore);
         
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
-
-        object[] stream = [];
-        var uncommittedEvents = await commandHandler.HandleAsync(stream, new AddItemCommand(
+        await commandHandler.Handle(new AddItemCommand(
             cartId,
             "Description",
             "Image",
@@ -22,28 +28,30 @@ public class AddItemCommandHandlerTests
             Guid.NewGuid(),
             Guid.NewGuid()));
 
-        Assert.That(uncommittedEvents.ElementAt(0), Is.TypeOf<CartCreated>());
-        Assert.That(uncommittedEvents.ElementAt(1), Is.TypeOf<ItemAdded>());
+        object[] stream = await this.inMemoryEventStore.ReadStream(cartId.ToString());
+        Assert.That(stream[0], Is.TypeOf<CartCreated>());
+        Assert.That(stream[1], Is.TypeOf<ItemAdded>());
     }
     
     [Test]
     public async Task AddsMaximum3Items()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
-
-        object[] stream = new object[]
-        {
-            new CartCreated(CartId: cartId),
-            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), Guid.NewGuid()),
-            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), Guid.NewGuid()),
-            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), Guid.NewGuid()),
-        };
         
-        AddItemCommandHandler commandHandler = new AddItemCommandHandler();
-
+        object[] given = [
+            new CartCreated( CartId: cartId),
+            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), Guid.NewGuid()),
+            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), Guid.NewGuid()),
+            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), Guid.NewGuid()),
+        ];
+        
+        await this.inMemoryEventStore.AppendToStream(cartId.ToString(), given);
+        
+        AddItemCommandHandler commandHandler = new AddItemCommandHandler(inMemoryEventStore);
+        
         Assert.ThrowsAsync<TooManyItemsInCartException>(async () =>
         {
-            await commandHandler.HandleAsync(stream, new AddItemCommand(
+            await commandHandler.Handle(new AddItemCommand(
                 cartId,
                 "Description",
                 "Image",
