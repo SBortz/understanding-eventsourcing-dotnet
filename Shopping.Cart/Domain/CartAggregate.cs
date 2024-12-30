@@ -15,7 +15,7 @@ public class CartAggregate
     public Guid? CartId => cartId;
 
     public IDictionary<Guid, Guid> CartItemsProductIds => cartItems.AsReadOnly();
-    public List<object>? UncommittedEvents { get; private set; } = [];
+    public List<object> UncommittedEvents { get; private set; } = [];
 
     public CartAggregate(object[] stream)
     {
