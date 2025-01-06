@@ -10,11 +10,10 @@ public record SubmitCartCommand(Guid CartId, IList<SubmitCartCommand.OrderedProd
 
 public class SubmitCartCommandHandler(InventoriesProjector inventoriesProjector)
 {
-    public IList<object> Handle(object[] stream, object[] inventoriesStream, SubmitCartCommand submitCart)
+    public IList<object> Handle(object[] stream, IDictionary<Guid, int> inventoriesSV, SubmitCartCommand submitCart)
     {
         CartAggregate cartAggregate = new CartAggregate(stream);
-
-        IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(inventoriesStream);
+       
         CheckInventory(cartAggregate, inventoriesSV);
         
         cartAggregate.SubmitCart(submitCart);

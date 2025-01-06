@@ -76,11 +76,13 @@ app.MapGet("/inventories", async ([FromServices] IEventStore eventStore, [FromSe
     return inventoriesSVHandler.Project(stream);
 });
 app.MapPost("/submit-cart",
-    async ([FromBody] SubmitCartCommand request, [FromServices] IEventStore eventStore, [FromServices] SubmitCartCommandHandler submitCartCommandHandler, [FromServices] CartPublisherProcessor cartPublisher) =>
+    async ([FromBody] SubmitCartCommand request, [FromServices] IEventStore eventStore, [FromServices] SubmitCartCommandHandler submitCartCommandHandler, [FromServices] CartPublisherProcessor cartPublisher, [FromServices] InventoriesProjector inventoriesProjector) =>
     {
         object[] cartStream = await eventStore.ReadStream(request.CartId.ToString());
         object[] inventoriesStream = await eventStore.ReadStream("inventories");
-        var uncommittedEvents = submitCartCommandHandler.Handle(cartStream, inventoriesStream, request);
+        
+        IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(inventoriesStream);
+        var uncommittedEvents = submitCartCommandHandler.Handle(cartStream, inventoriesSV, request);
         await eventStore.AppendToStream(request.CartId.ToString(), uncommittedEvents);
         await cartPublisher.RunAsync();
     });

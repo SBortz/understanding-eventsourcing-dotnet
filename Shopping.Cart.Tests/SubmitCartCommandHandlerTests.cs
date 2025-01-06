@@ -19,12 +19,14 @@ public class SubmitCartCommandHandlerTests
             new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId2),
         ];
         object[] givenInventoriesStream = [];
+        var inventoriesProjector = new InventoriesProjector();
+        IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(givenInventoriesStream);
         
         SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(new InventoriesProjector());
         Assert.Throws<NotEnoughInStockException>(() =>
         {
             submitCartCommandHandler.Handle(given,
-                givenInventoriesStream,
+                inventoriesSV,
                 new SubmitCartCommand(cartId,
                     [
                         new SubmitCartCommand.OrderedProduct(productId1, 10),
@@ -52,10 +54,13 @@ public class SubmitCartCommandHandlerTests
             new InventoryChanged(0, productId2),
         ];
         
+        var inventoriesProjector = new InventoriesProjector();
+        IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(givenInventoriesStream);
+        
         SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(new InventoriesProjector());
         Assert.Throws<NotEnoughInStockException>(() =>
         {
-            submitCartCommandHandler.Handle(given, givenInventoriesStream,
+            submitCartCommandHandler.Handle(given, inventoriesSV,
                 new SubmitCartCommand(cartId,
                     [
                         new SubmitCartCommand.OrderedProduct(productId1, 10),
@@ -87,10 +92,13 @@ public class SubmitCartCommandHandlerTests
             new InventoryChanged(1, productId2),
         ];
         
+        var inventoriesProjector = new InventoriesProjector();
+        IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(givenInventoriesStream);
+        
         SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(new InventoriesProjector());
         Assert.Throws<CartCannotBeSubmittedTwiceException>(() =>
         {
-            submitCartCommandHandler.Handle(given, givenInventoriesStream,
+            submitCartCommandHandler.Handle(given, inventoriesSV,
                 new SubmitCartCommand(cartId,
                     [
                         new SubmitCartCommand.OrderedProduct(productId1, 10),
@@ -114,15 +122,17 @@ public class SubmitCartCommandHandlerTests
             new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId2),
         ];
 
-        object[] givenInventorysStream =
+        object[] givenInventoriesStream =
         [
             new InventoryChanged(1, productId1),
             new InventoryChanged(2, productId2),
         ];
+        var inventoriesProjector = new InventoriesProjector();
+        IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(givenInventoriesStream);
         
         SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(new InventoriesProjector());
         var uncommittedEvents = submitCartCommandHandler.Handle(
-            given, givenInventorysStream,
+            given, inventoriesSV,
             new SubmitCartCommand(cartId,
                 [
                     new SubmitCartCommand.OrderedProduct(productId1, 10),
@@ -151,11 +161,13 @@ public class SubmitCartCommandHandlerTests
             new InventoryChanged(1, productId1),
             new InventoryChanged(2, productId2),
         ];
+        var inventoriesProjector = new InventoriesProjector();
+        IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(givenInventoriesStream);
         
         SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(new InventoriesProjector());
         Assert.Throws<CannotSubmitEmptyCartException>(() =>
         {
-            submitCartCommandHandler.Handle(given, givenInventoriesStream,
+            submitCartCommandHandler.Handle(given, inventoriesSV,
                 new SubmitCartCommand(cartId,
                     []
                 ));
