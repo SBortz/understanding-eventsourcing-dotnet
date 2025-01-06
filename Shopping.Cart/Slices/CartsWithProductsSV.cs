@@ -4,14 +4,13 @@ namespace Shopping.Cart.Slices;
 
 public record ProductInCart(Guid CartId, Guid ProductId);
 
-public class CartsWithProductsProjector(IEventStore eventStore)
+public class CartsWithProductsProjector
 {
-    public async Task<IList<ProductInCart>> ProjectAsync()
+    public IList<ProductInCart> Project(object[] stream)
     {
-        object[] events = await eventStore.ReadAll();
         IDictionary<Guid, Guid> itemIdToProductIdMap = new Dictionary<Guid, Guid>();
         
-        var result = events.Aggregate(new List<ProductInCart>(), (sv, @event) =>
+        List<ProductInCart> result = stream.Aggregate(new List<ProductInCart>(), (sv, @event) =>
         {
             switch (@event)
             {

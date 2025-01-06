@@ -1,6 +1,9 @@
+using Shopping.Cart.EventStore;
+
 namespace Shopping.Cart.Slices;
 
-public class ArchiveItemSchedulerProcessor(ChangedPricesProjector changedPricesProjector, 
+public class ArchiveItemSchedulerProcessor(IEventStore eventStore, 
+    ChangedPricesProjector changedPricesProjector, 
     ArchiveItemCommandHandler archiveItemCommandHandler,
     CartsWithProductsProjector cartsWithProductsProjector,
     ILogger<ArchiveItemSchedulerProcessor> logger)
@@ -13,8 +16,10 @@ public class ArchiveItemSchedulerProcessor(ChangedPricesProjector changedPricesP
         {
             await semaphore.WaitAsync();
             
-            IDictionary<Guid, ChangedPrice> productsToArchive = await changedPricesProjector.ProjectAsync();
-            IList<ProductInCart> productsInCarts = await cartsWithProductsProjector.ProjectAsync();
+            object[] pricingStream = await eventStore.ReadStream("pricing");
+            IDictionary<Guid, ChangedPrice> productsToArchive = changedPricesProjector.Project(pricingStream);
+            object[] all = await eventStore.ReadAll();
+            IList<ProductInCart> productsInCarts = cartsWithProductsProjector.Project(all);
             
             LogItemsToArchive(productsToArchive);
             LogProductsInCart(productsInCarts);
@@ -29,7 +34,11 @@ public class ArchiveItemSchedulerProcessor(ChangedPricesProjector changedPricesP
 
                     foreach (ProductInCart productInCartToArchive in productsInCartToArchive)
                     {
-                        await archiveItemCommandHandler.HandleAsync(new ArchiveItemCommand(CartId: productInCartToArchive.CartId, ProductId: changedPrice.Key));                    
+                        object[] stream = await eventStore.ReadStream(productInCartToArchive.CartId.ToString());
+                        
+                        var uncommittedEvents = archiveItemCommandHandler.Handle(stream, new ArchiveItemCommand(CartId: productInCartToArchive.CartId, ProductId: changedPrice.Key));
+                        
+                        await eventStore.AppendToStream(productInCartToArchive.CartId.ToString(), uncommittedEvents);
                     }
                 } 
             }

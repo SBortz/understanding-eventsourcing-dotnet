@@ -1,35 +1,43 @@
+using Shopping.Cart.EventStore;
+
 namespace Shopping.Cart.Slices;
 
 public class CartPublisherProcessor(
+    IEventStore eventStore,
     SubmittedCartDataProjector submittedCartDataProjector, 
     PublishCartCommandHandler publishCartCommandHandler,
     ILogger<CartPublisherProcessor> logger)
 {
-    private readonly SemaphoreSlim _semaphore = new(1, 1);
+    private readonly SemaphoreSlim semaphore = new(1, 1);
     public async Task RunAsync()
     {
         try
         {
-            await this._semaphore.WaitAsync();
+            await semaphore.WaitAsync();
 
-            IList<SubmittedCartDataSV> cartsToBePublished = await submittedCartDataProjector.ProjectAsync();
+            object[] stream = await eventStore.ReadAll();
+            IList<SubmittedCartDataSV> cartsToBePublished = submittedCartDataProjector.Project(stream);
 
             LogTodoList(cartsToBePublished);
 
             foreach (SubmittedCartDataSV cartToBePublished in cartsToBePublished)
             {
-                await publishCartCommandHandler.HandleAsync(new PublishCartCommand(cartToBePublished.CartId, 
+                object[] cartStream = await eventStore.ReadStream(cartToBePublished.CartId.ToString());
+                
+                IEnumerable<object> uncommittedEvents = await publishCartCommandHandler.HandleAsync(cartStream, new PublishCartCommand(cartToBePublished.CartId, 
                     cartToBePublished
                         .OrderedProducts
                         .Select(x => new PublishCartCommand.OrderedProduct(x.ProductId, x.Price)),
                     cartToBePublished.TotalPrice));
+                
+                await eventStore.AppendToStream(cartToBePublished.CartId.ToString(), uncommittedEvents);
             }
             
             logger.LogInformation("ArchiveItemSchedulerProcessor executed");
         }
         finally
         {
-            this._semaphore.Release();
+            semaphore.Release();
         }
     }
 

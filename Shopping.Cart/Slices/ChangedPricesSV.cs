@@ -1,13 +1,10 @@
-using Shopping.Cart.EventStore;
-
 namespace Shopping.Cart.Slices;
 
-public class ChangedPricesProjector(IEventStore eventStore)
+public class ChangedPricesProjector
 {
-    public async Task<IDictionary<Guid, ChangedPrice>> ProjectAsync()
+    public IDictionary<Guid, ChangedPrice> Project(object[] stream)
     {
-        object[] events = await eventStore.ReadStream("pricing");
-        return events.Aggregate(new Dictionary<Guid, ChangedPrice>(), (sv, @event) =>
+        return stream.Aggregate(new Dictionary<Guid, ChangedPrice>(), (sv, @event) =>
         {
             switch (@event)
             {

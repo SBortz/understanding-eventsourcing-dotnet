@@ -1,3 +1,4 @@
+using Shopping.Cart.Common;
 using Shopping.Cart.Domain;
 using Shopping.Cart.EventStore;
 using Shopping.Cart.Infrastructure;
@@ -9,12 +10,10 @@ public record PublishCartCommand(Guid CartId, IEnumerable<PublishCartCommand.Ord
     public record OrderedProduct(Guid ProductId, double Price);
 };
 
-public class PublishCartCommandHandler(IEventStore eventStore, IKafkaPublisher kafkaPublisher)
+public class PublishCartCommandHandler(IKafkaPublisher kafkaPublisher) : IAsyncCommandHandler<PublishCartCommand>
 {
-    public async Task HandleAsync(PublishCartCommand command)
+    public async Task<IList<object>> HandleAsync(object[] stream, PublishCartCommand command)
     {
-        object[] stream = await eventStore.ReadStream(command.CartId.ToString());
-        
         CartAggregate cartAggregate = new CartAggregate(stream);
 
         try
@@ -31,8 +30,8 @@ public class PublishCartCommandHandler(IEventStore eventStore, IKafkaPublisher k
         {
             cartAggregate.PublishFailed(command);
         }
-        
-        await eventStore.AppendToStream(cartAggregate.CartId!.Value.ToString(), cartAggregate.UncommittedEvents);
+
+        return cartAggregate.UncommittedEvents;
     }
 }
 

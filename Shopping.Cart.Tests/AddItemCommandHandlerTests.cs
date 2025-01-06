@@ -6,14 +6,14 @@ namespace Shopping.Cart.Tests;
 public class AddItemCommandHandlerTests
 {
     [Test]
-    public async Task CartSessionCreatedAutomatically()
+    public void CartSessionCreatedAutomatically()
     {
         AddItemCommandHandler commandHandler = new AddItemCommandHandler();
         
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
 
         object[] stream = [];
-        var uncommittedEvents = await commandHandler.HandleAsync(stream, new AddItemCommand(
+        var uncommittedEvents = commandHandler.Handle(stream, new AddItemCommand(
             cartId,
             "Description",
             "Image",
@@ -27,7 +27,7 @@ public class AddItemCommandHandlerTests
     }
     
     [Test]
-    public async Task AddsMaximum3Items()
+    public void AddsMaximum3Items()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
 
@@ -41,9 +41,9 @@ public class AddItemCommandHandlerTests
         
         AddItemCommandHandler commandHandler = new AddItemCommandHandler();
 
-        Assert.ThrowsAsync<TooManyItemsInCartException>(async () =>
+        Assert.Throws<TooManyItemsInCartException>(() =>
         {
-            await commandHandler.HandleAsync(stream, new AddItemCommand(
+            commandHandler.Handle(stream, new AddItemCommand(
                 cartId,
                 "Description",
                 "Image",

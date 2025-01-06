@@ -4,15 +4,15 @@ namespace Shopping.Cart.Slices;
 
 public record PriceChangedExternal(Guid ProductId, double OldPrice, double NewPrice);
 
-public class ChangePriceCommandHandler(IEventStore eventStore)
+public class ChangePriceCommandHandler
 {
-    public async Task HandleAsync(PriceChangedExternal priceChangedExternal)
+    public IList<object> Handle(PriceChangedExternal priceChangedExternal)
     {
         PriceChanged translatedEvent = new PriceChanged(ProductId: priceChangedExternal.ProductId,
             OldPrice: priceChangedExternal.OldPrice,
             NewPrice: priceChangedExternal.NewPrice);
 
-        await eventStore.AppendToStream("pricing", [translatedEvent]);
+        return [translatedEvent];
     }
 }
 

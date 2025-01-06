@@ -20,12 +20,11 @@ public class CartItem
     public Guid ProductId { get; set; }
 }
 
-public class CartItemsProjector(IEventStore eventStore)
+public class CartItemsProjector
 {
-    public async Task<CartItemsStateView> Projects(string cartId)
+    public CartItemsStateView Projects(object[] stream)
     {
-        object[] events = await eventStore.ReadStream(cartId);
-        return events.Aggregate(new CartItemsStateView(), (sv, @event) =>
+        return stream.Aggregate(new CartItemsStateView(), (sv, @event) =>
         {
             switch (@event)
             {

@@ -1,3 +1,4 @@
+using Shopping.Cart.Common;
 using Shopping.Cart.Domain;
 using Shopping.Cart.EventStore;
 
@@ -5,17 +6,15 @@ namespace Shopping.Cart.Slices;
 
 public record RemoveItemCommand(Guid ItemId, Guid CartId);
 
-public class RemoveItemCommandHandler(IEventStore eventStore)
+public class RemoveItemCommandHandler : ICommandHandler<RemoveItemCommand>
 {
-    public async Task Handle(RemoveItemCommand command)
+    public IList<object> Handle(object[] stream, RemoveItemCommand command)
     {
-        object[] stream = await eventStore.ReadStream(command.CartId.ToString());
-
         CartAggregate cartAggregate = new CartAggregate(stream);
 
         cartAggregate.RemoveItem(command);
 
-        await eventStore.AppendToStream(cartAggregate.CartId!.Value.ToString(), cartAggregate.UncommittedEvents);
+        return cartAggregate.UncommittedEvents;
     }
 }
 

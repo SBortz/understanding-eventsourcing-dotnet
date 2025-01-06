@@ -5,14 +5,6 @@ namespace Shopping.Cart.Tests;
 
 public class CartClearedTests
 {
-    private InMemoryEventStore inMemoryEventStore;
-
-    [SetUp]
-    public void Setup()
-    {
-        inMemoryEventStore = new InMemoryEventStore(new EventSerializer(new EventTypeMapping()));
-    }
-    
     [Test]
     public async Task ClearCartTest()
     {
@@ -23,14 +15,11 @@ public class CartClearedTests
             new CartCreated( CartId: cartId),
             new ItemAdded( cartId, "Description", "Image", 10,  itemId, Guid.NewGuid()),
         ];
-        await this.inMemoryEventStore.AppendToStream(cartId.ToString(), given);
-        
-        ClearCartCommandHandler clearCartCommandHandler = new ClearCartCommandHandler(inMemoryEventStore);
-        await clearCartCommandHandler.Handle(new CartCleared(
+        ClearCartCommandHandler clearCartCommandHandler = new ClearCartCommandHandler();
+        IList<object> uncommittedEvents = clearCartCommandHandler.Handle(given, new CartCleared(
             cartId
         ));        
         
-        object[] stream = await this.inMemoryEventStore.ReadStream(cartId.ToString());
-        Assert.That(stream[2], Is.TypeOf<CartClearedCommand>());
+        Assert.That(uncommittedEvents[2], Is.TypeOf<CartClearedCommand>());
     }
 }

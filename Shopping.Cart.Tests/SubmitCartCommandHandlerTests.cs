@@ -5,14 +5,6 @@ namespace Shopping.Cart.Tests;
 
 public class SubmitCartCommandHandlerTests
 {
-    private InMemoryEventStore inMemoryEventStore;
-
-    [SetUp]
-    public void Setup()
-    {
-        inMemoryEventStore = new InMemoryEventStore(new EventSerializer(new EventTypeMapping()));
-    }
-
     [Test]
     public async Task CantSubmitNoProductsInStock()
     {
@@ -20,15 +12,19 @@ public class SubmitCartCommandHandlerTests
         Guid productId1 = new Guid("00000000-0000-0000-0000-000000000002");
         Guid productId2 = new Guid("00000000-0000-0000-0000-000000000003");
 
-        await this.inMemoryEventStore.AppendToStream(cartId.ToString(), [
-            new CartCreated( CartId: cartId),
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId1), 
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId2), 
-        ]);        
-        SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(inMemoryEventStore, new InventoriesProjector(inMemoryEventStore));
-        Assert.ThrowsAsync<NotEnoughInStockException>(async () =>
+        object[] given =
+        [
+            new CartCreated(CartId: cartId),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId1),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId2),
+        ];
+        object[] givenInventoriesStream = [];
+        
+        SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(new InventoriesProjector());
+        Assert.Throws<NotEnoughInStockException>(() =>
         {
-            await submitCartCommandHandler.Handle(
+            submitCartCommandHandler.Handle(given,
+                givenInventoriesStream,
                 new SubmitCartCommand(cartId,
                     [
                         new SubmitCartCommand.OrderedProduct(productId1, 10),
@@ -39,26 +35,27 @@ public class SubmitCartCommandHandlerTests
     }
     
     [Test]
-    public async Task CantSubmitNoQuantity()
+    public void CantSubmitNoQuantity()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
         Guid productId1 = new Guid("00000000-0000-0000-0000-000000000002");
         Guid productId2 = new Guid("00000000-0000-0000-0000-000000000003");
 
-        await this.inMemoryEventStore.AppendToStream(cartId.ToString(), [
-            new CartCreated( CartId: cartId),
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId1), 
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId2), 
-        ]);
-        await this.inMemoryEventStore.AppendToStream("inventories", [
+        object[] given =
+        [
+            new CartCreated(CartId: cartId),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId1),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId2),
+        ];
+        object[] givenInventoriesStream = [
             new InventoryChanged(0, productId1),
             new InventoryChanged(0, productId2),
-        ]);
+        ];
         
-        SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(inMemoryEventStore, new InventoriesProjector(inMemoryEventStore));
-        Assert.ThrowsAsync<NotEnoughInStockException>(async () =>
+        SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(new InventoriesProjector());
+        Assert.Throws<NotEnoughInStockException>(() =>
         {
-            await submitCartCommandHandler.Handle(
+            submitCartCommandHandler.Handle(given, givenInventoriesStream,
                 new SubmitCartCommand(cartId,
                     [
                         new SubmitCartCommand.OrderedProduct(productId1, 10),
@@ -69,27 +66,31 @@ public class SubmitCartCommandHandlerTests
     }
     
     [Test]
-    public async Task CantSubmitCartTwice()
+    public void CantSubmitCartTwice()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
         Guid productId1 = new Guid("00000000-0000-0000-0000-000000000002");
         Guid productId2 = new Guid("00000000-0000-0000-0000-000000000003");
 
-        await this.inMemoryEventStore.AppendToStream(cartId.ToString(), [
-            new CartCreated( CartId: cartId),
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId1), 
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId2), 
-            new CartSubmitted( cartId, [new CartSubmitted.OrderedProduct(productId1, 10), new CartSubmitted.OrderedProduct(productId2, 10)], 20), 
-        ]);
-        await this.inMemoryEventStore.AppendToStream("inventories", [
+        object[] given =
+        [
+            new CartCreated(CartId: cartId),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId1),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId2),
+            new CartSubmitted(cartId,
+                [new CartSubmitted.OrderedProduct(productId1, 10), new CartSubmitted.OrderedProduct(productId2, 10)],
+                20),
+        ];
+        object[] givenInventoriesStream =
+        [
             new InventoryChanged(1, productId1),
             new InventoryChanged(1, productId2),
-        ]);
+        ];
         
-        SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(inMemoryEventStore, new InventoriesProjector(inMemoryEventStore));
-        Assert.ThrowsAsync<CartCannotBeSubmittedTwiceException>(async () =>
+        SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(new InventoriesProjector());
+        Assert.Throws<CartCannotBeSubmittedTwiceException>(() =>
         {
-            await submitCartCommandHandler.Handle(
+            submitCartCommandHandler.Handle(given, givenInventoriesStream,
                 new SubmitCartCommand(cartId,
                     [
                         new SubmitCartCommand.OrderedProduct(productId1, 10),
@@ -106,18 +107,22 @@ public class SubmitCartCommandHandlerTests
         Guid productId1 = new Guid("00000000-0000-0000-0000-000000000002");
         Guid productId2 = new Guid("00000000-0000-0000-0000-000000000003");
 
-        await this.inMemoryEventStore.AppendToStream(cartId.ToString(), [
-            new CartCreated( CartId: cartId),
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId1), 
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId2), 
-        ]);
-        await this.inMemoryEventStore.AppendToStream("inventories", [
+        object[] given =
+        [
+            new CartCreated(CartId: cartId),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId1),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId2),
+        ];
+
+        object[] givenInventorysStream =
+        [
             new InventoryChanged(1, productId1),
             new InventoryChanged(2, productId2),
-        ]);
+        ];
         
-        SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(inMemoryEventStore, new InventoriesProjector(inMemoryEventStore));
-        await submitCartCommandHandler.Handle(
+        SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(new InventoriesProjector());
+        var uncommittedEvents = submitCartCommandHandler.Handle(
+            given, givenInventorysStream,
             new SubmitCartCommand(cartId,
                 [
                     new SubmitCartCommand.OrderedProduct(productId1, 10),
@@ -125,8 +130,7 @@ public class SubmitCartCommandHandlerTests
                 ]
             ));
 
-        var stream = await this.inMemoryEventStore.ReadStream(cartId.ToString());
-        Assert.That(stream.Last(), Is.TypeOf<CartSubmitted>());
+        Assert.That(uncommittedEvents.Last(), Is.TypeOf<CartSubmitted>());
     }
     
     [Test]
@@ -136,21 +140,22 @@ public class SubmitCartCommandHandlerTests
         Guid productId1 = new Guid("00000000-0000-0000-0000-000000000002");
         Guid productId2 = new Guid("00000000-0000-0000-0000-000000000003");
 
-        await this.inMemoryEventStore.AppendToStream(cartId.ToString(), [
-            new CartCreated( CartId: cartId),
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId1), 
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId2),
+        object[] given = [
+            new CartCreated(CartId: cartId),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId1),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId2),
             new CartCleared(cartId)
-        ]);
-        await this.inMemoryEventStore.AppendToStream("inventories", [
+        ];
+        object[] givenInventoriesStream =
+        [
             new InventoryChanged(1, productId1),
             new InventoryChanged(2, productId2),
-        ]);
+        ];
         
-        SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(inMemoryEventStore, new InventoriesProjector(inMemoryEventStore));
-        Assert.ThrowsAsync<CannotSubmitEmptyCartException>(async () =>
+        SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler(new InventoriesProjector());
+        Assert.Throws<CannotSubmitEmptyCartException>(() =>
         {
-            await submitCartCommandHandler.Handle(
+            submitCartCommandHandler.Handle(given, givenInventoriesStream,
                 new SubmitCartCommand(cartId,
                     []
                 ));

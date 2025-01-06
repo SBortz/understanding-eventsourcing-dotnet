@@ -1,3 +1,4 @@
+using Shopping.Cart.Common;
 using Shopping.Cart.Domain;
 using Shopping.Cart.EventStore;
 
@@ -13,9 +14,9 @@ public record AddItemCommand(
     Guid ProductId
 );
 
-public class AddItemCommandHandler
+public class AddItemCommandHandler : ICommandHandler<AddItemCommand>
 {
-    public async Task<IEnumerable<object>> HandleAsync(object[] stream, AddItemCommand command)
+    public IList<object> Handle(object[] stream, AddItemCommand command)
     {
         CartAggregate cartAggregate = new CartAggregate(stream);
 

@@ -6,15 +6,6 @@ namespace Shopping.Cart.Tests;
 
 public class PublishCartTests
 {
-    private InMemoryEventStore inMemoryEventStore;
-
-
-    [SetUp]
-    public void Setup()
-    {
-        inMemoryEventStore = new InMemoryEventStore(new EventSerializer(new EventTypeMapping()));
-    }
-
     [Test]
     public async Task PublishesCart()
     {
@@ -22,21 +13,23 @@ public class PublishCartTests
         Guid productId1 = new Guid("00000000-0000-0000-0000-000000000002");
         Guid productId2 = new Guid("00000000-0000-0000-0000-000000000003");
 
-        await this.inMemoryEventStore.AppendToStream(cartId.ToString(), [
-            new CartCreated( CartId: cartId),
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId1), 
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId2), 
-            new CartSubmitted( cartId, [new CartSubmitted.OrderedProduct(productId1, 10), new CartSubmitted.OrderedProduct(productId2, 10)], 20), 
-        ]);
+        object[] given =
+        [
+            new CartCreated(CartId: cartId),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId1),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId2),
+            new CartSubmitted(cartId,
+                [new CartSubmitted.OrderedProduct(productId1, 10), new CartSubmitted.OrderedProduct(productId2, 10)],
+                20),
+        ];
         
-        PublishCartCommandHandler publishCartCommandHandler = new PublishCartCommandHandler(this.inMemoryEventStore, new FakeKafkaPublisher(FakeKafkaPublisher.FakeType.AlwaysSucceed));
-        await publishCartCommandHandler.HandleAsync(new PublishCartCommand(cartId, [
+        PublishCartCommandHandler publishCartCommandHandler = new PublishCartCommandHandler(new FakeKafkaPublisher(FakeKafkaPublisher.FakeType.AlwaysSucceed));
+        IEnumerable<object> uncommittedEvents = await publishCartCommandHandler.HandleAsync(given, new PublishCartCommand(cartId, [
             new PublishCartCommand.OrderedProduct(productId1, 10),
             new PublishCartCommand.OrderedProduct(productId2, 5),
         ], 15));
 
-        var stream = await this.inMemoryEventStore.ReadStream(cartId.ToString());
-        Assert.That(stream.Last(), Is.TypeOf<CartPublished>());
+        Assert.That(uncommittedEvents.Last(), Is.TypeOf<CartPublished>());
     }
     
     [Test]
@@ -46,22 +39,23 @@ public class PublishCartTests
         Guid productId1 = new Guid("00000000-0000-0000-0000-000000000002");
         Guid productId2 = new Guid("00000000-0000-0000-0000-000000000003");
 
-        await this.inMemoryEventStore.AppendToStream(cartId.ToString(), [
-            new CartCreated( CartId: cartId),
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId1), 
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId2), 
-            new CartSubmitted( cartId, [new CartSubmitted.OrderedProduct(productId1, 10), new CartSubmitted.OrderedProduct(productId2, 10)], 20), 
-        ]);
+        object[] given =
+        [
+            new CartCreated(CartId: cartId),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId1),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId2),
+            new CartSubmitted(cartId,
+                [new CartSubmitted.OrderedProduct(productId1, 10), new CartSubmitted.OrderedProduct(productId2, 10)],
+                20),
+        ];
         
-        PublishCartCommandHandler publishCartCommandHandler = new PublishCartCommandHandler(this.inMemoryEventStore, 
-            new FakeKafkaPublisher(FakeKafkaPublisher.FakeType.AlwaysFail));
-        await publishCartCommandHandler.HandleAsync(new PublishCartCommand(cartId, [
+        PublishCartCommandHandler publishCartCommandHandler = new PublishCartCommandHandler(new FakeKafkaPublisher(FakeKafkaPublisher.FakeType.AlwaysFail));
+        var uncommittedEvents = await publishCartCommandHandler.HandleAsync(given, new PublishCartCommand(cartId, [
             new PublishCartCommand.OrderedProduct(productId1, 10),
             new PublishCartCommand.OrderedProduct(productId2, 5),
         ], 15));
 
-        var stream = await this.inMemoryEventStore.ReadStream(cartId.ToString());
-        Assert.That(stream.Last(), Is.TypeOf<CartPublicationFailed>());
+        Assert.That(uncommittedEvents.Last(), Is.TypeOf<CartPublicationFailed>());
     }
     
     [Test]
@@ -71,22 +65,23 @@ public class PublishCartTests
         Guid productId1 = new Guid("00000000-0000-0000-0000-000000000002");
         Guid productId2 = new Guid("00000000-0000-0000-0000-000000000003");
 
-        await this.inMemoryEventStore.AppendToStream(cartId.ToString(), [
-            new CartCreated( CartId: cartId),
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId1), 
-            new ItemAdded( cartId, "Description", "Image", 10, Guid.NewGuid(), productId2), 
-            new CartSubmitted( cartId, [new CartSubmitted.OrderedProduct(productId1, 10), new CartSubmitted.OrderedProduct(productId2, 10)], 20), 
-            new CartPublished( cartId) 
-        ]);
+        object[] given =
+        [
+            new CartCreated(CartId: cartId),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId1),
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId2),
+            new CartSubmitted(cartId,
+                [new CartSubmitted.OrderedProduct(productId1, 10), new CartSubmitted.OrderedProduct(productId2, 10)],
+                20),
+            new CartPublished(cartId)
+        ];
         
-        PublishCartCommandHandler publishCartCommandHandler = new PublishCartCommandHandler(this.inMemoryEventStore, 
-            new FakeKafkaPublisher(FakeKafkaPublisher.FakeType.AlwaysSucceed));
-        await publishCartCommandHandler.HandleAsync(new PublishCartCommand(cartId, [
+        PublishCartCommandHandler publishCartCommandHandler = new PublishCartCommandHandler(new FakeKafkaPublisher(FakeKafkaPublisher.FakeType.AlwaysSucceed));
+        var uncommittedEvents = await publishCartCommandHandler.HandleAsync(given, new PublishCartCommand(cartId, [
             new PublishCartCommand.OrderedProduct(productId1, 10),
             new PublishCartCommand.OrderedProduct(productId2, 5),
         ], 15));
         
-        var stream = await this.inMemoryEventStore.ReadStream(cartId.ToString());
-        Assert.That(stream.Last(), Is.TypeOf<CartPublicationFailed>());
+        Assert.That(uncommittedEvents.Last(), Is.TypeOf<CartPublicationFailed>());
     }
 }

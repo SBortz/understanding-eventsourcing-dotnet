@@ -5,14 +5,6 @@ namespace Shopping.Cart.Tests;
 
 public class RemoveItemCommandTests
 {
-    private InMemoryEventStore inMemoryEventStore;
-
-    [SetUp]
-    public void Setup()
-    {
-        inMemoryEventStore = new InMemoryEventStore(new EventSerializer(new EventTypeMapping()));
-    }
-    
     [Test]
     public async Task RemoveItemTest()
     {
@@ -23,12 +15,10 @@ public class RemoveItemCommandTests
             new CartCreated( CartId: cartId),
             new ItemAdded( cartId, "Description", "Image",  10, itemId, Guid.NewGuid()),
         ];
-        await this.inMemoryEventStore.AppendToStream(cartId.ToString(), given);
-        RemoveItemCommandHandler removeItemCommandHandler = new RemoveItemCommandHandler(inMemoryEventStore);
-        await removeItemCommandHandler.Handle(new RemoveItemCommand(itemId, cartId));
+        RemoveItemCommandHandler removeItemCommandHandler = new RemoveItemCommandHandler();
+        var uncommittedEvents = removeItemCommandHandler.Handle(given, new RemoveItemCommand(itemId, cartId));
         
-        object[] stream = await this.inMemoryEventStore.ReadStream(cartId.ToString());
-        Assert.That(stream[2], Is.TypeOf<ItemRemoved>());
+        Assert.That(uncommittedEvents[0], Is.TypeOf<ItemRemoved>());
     }
     
     [Test]
@@ -42,12 +32,11 @@ public class RemoveItemCommandTests
             new ItemAdded(CartId: cartId, Description: "Description", Image: "Image", Price: 10, ItemId: itemId, ProductId: Guid.NewGuid()),
             new ItemRemoved(itemId, cartId),
         ];
-        await this.inMemoryEventStore.AppendToStream(cartId.ToString(), given);
-        RemoveItemCommandHandler removeItemCommandHandler = new RemoveItemCommandHandler(inMemoryEventStore);
+        RemoveItemCommandHandler removeItemCommandHandler = new RemoveItemCommandHandler();
         
-        Assert.ThrowsAsync<ItemCanNotBeRemovedException>(async () =>
+        Assert.Throws<ItemCanNotBeRemovedException>(() =>
         {
-            await removeItemCommandHandler.Handle(new RemoveItemCommand(
+            removeItemCommandHandler.Handle(given, new RemoveItemCommand(
                 ItemId: itemId,
                 CartId: cartId
             ));

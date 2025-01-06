@@ -1,3 +1,4 @@
+using Shopping.Cart.Common;
 using Shopping.Cart.Domain;
 using Shopping.Cart.EventStore;
 
@@ -5,17 +6,15 @@ namespace Shopping.Cart.Slices;
 
 public record ArchiveItemCommand(Guid CartId, Guid ProductId);
 
-public class ArchiveItemCommandHandler(IEventStore eventStore)
+public class ArchiveItemCommandHandler : ICommandHandler<ArchiveItemCommand>
 {
-    public async Task HandleAsync(ArchiveItemCommand archiveItemCommand)
+    public IList<object> Handle(object[] stream, ArchiveItemCommand archiveItemCommand)
     {
-        object[] stream = await eventStore.ReadStream(archiveItemCommand.CartId.ToString());
-        
         CartAggregate cartAggregate = new CartAggregate(stream);
 
         cartAggregate.ArchiveItem(archiveItemCommand);
         
-        await eventStore.AppendToStream(cartAggregate.CartId!.Value.ToString(), cartAggregate.UncommittedEvents);
+        return cartAggregate.UncommittedEvents;
     }
 }
 

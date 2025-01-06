@@ -7,12 +7,11 @@ public record SubmittedCartDataSV(Guid CartId, IEnumerable<SubmittedCartDataSV.O
     public record OrderedProduct(Guid ProductId, double Price);
 }
 
-public class SubmittedCartDataProjector(IEventStore eventStore)
+public class SubmittedCartDataProjector
 {
-    public async Task<IList<SubmittedCartDataSV>> ProjectAsync()
+    public IList<SubmittedCartDataSV> Project(object[] stream)
     {
-        object[] events = await eventStore.ReadAll();
-        var result = events.Aggregate(new List<SubmittedCartDataSV>(), (sv, @event) =>
+        List<SubmittedCartDataSV> result = stream.Aggregate(new List<SubmittedCartDataSV>(), (sv, @event) =>
         {
             switch (@event)
             {

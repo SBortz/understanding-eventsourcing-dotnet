@@ -2,12 +2,11 @@ using Shopping.Cart.EventStore;
 
 namespace Shopping.Cart.Slices;
 
-public class InventoriesProjector(IEventStore eventStore)
+public class InventoriesProjector
 {
-    public async Task<IDictionary<Guid, int>> ProjectAsync()
+    public IDictionary<Guid, int> Project(object[] stream)
     {
-        object[] events = await eventStore.ReadStream("inventories");
-        return events.Aggregate(new Dictionary<Guid, int>(), (sv, @event) =>
+        return stream.Aggregate(new Dictionary<Guid, int>(), (sv, @event) =>
         {
             switch (@event)
             {

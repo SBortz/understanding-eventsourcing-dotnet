@@ -1,3 +1,4 @@
+using Shopping.Cart.Common;
 using Shopping.Cart.Domain;
 using Shopping.Cart.EventStore;
 
@@ -7,20 +8,18 @@ public record SubmitCartCommand(Guid CartId, IList<SubmitCartCommand.OrderedProd
     public record OrderedProduct(Guid ProductId, double TotalPrice);
 }
 
-public class SubmitCartCommandHandler(IEventStore eventStore, InventoriesProjector inventoriesProjector)
+public class SubmitCartCommandHandler(InventoriesProjector inventoriesProjector)
 {
-    public async Task Handle(SubmitCartCommand submitCart)
+    public IList<object> Handle(object[] stream, object[] inventoriesStream, SubmitCartCommand submitCart)
     {
-        object[] stream = await eventStore.ReadStream(submitCart.CartId.ToString());
-        
         CartAggregate cartAggregate = new CartAggregate(stream);
 
-        IDictionary<Guid, int> inventoriesSV = await inventoriesProjector.ProjectAsync();
+        IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(inventoriesStream);
         CheckInventory(cartAggregate, inventoriesSV);
         
         cartAggregate.SubmitCart(submitCart);
-        
-        await eventStore.AppendToStream(cartAggregate.CartId!.Value.ToString(), cartAggregate.UncommittedEvents);
+
+        return cartAggregate.UncommittedEvents;
     }
 
     private static void CheckInventory(CartAggregate cartAggregate, IDictionary<Guid, int> inventoriesSV)

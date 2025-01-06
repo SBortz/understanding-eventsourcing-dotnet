@@ -44,47 +44,66 @@ app.MapPost("/additem",
     async ([FromBody] AddItemCommand command, [FromServices] IEventStore eventStore, [FromServices] AddItemCommandHandler addItemCommandHandler) =>
     {
         var stream = await eventStore.ReadStream(command.CartId.ToString());
-        
-        var uncommittedEvents = await addItemCommandHandler.HandleAsync(stream, command);
-        
+        var uncommittedEvents = addItemCommandHandler.Handle(stream, command);
         await eventStore.AppendToStream(command.CartId.ToString(), uncommittedEvents);
     });
 app.MapGet("/{cartId}/cartitems", 
-    async (string cartId, [FromServices] CartItemsProjector cartItemsStateViewHandler) => await cartItemsStateViewHandler.Projects(cartId)
-    );
-app.MapPost("/removeitem",
-    async ([FromBody] RemoveItemCommand request, [FromServices] RemoveItemCommandHandler removeItemCommandHandler) =>
+    async (string cartId, [FromServices] IEventStore eventStore, [FromServices] CartItemsProjector cartItemsStateViewHandler) =>
     {
-        await removeItemCommandHandler.Handle(request);
+        object[] stream = await eventStore.ReadStream(cartId);
+        return cartItemsStateViewHandler.Projects(stream);
+    });
+app.MapPost("/removeitem",
+    async ([FromBody] RemoveItemCommand request, [FromServices] IEventStore eventStore, [FromServices] RemoveItemCommandHandler removeItemCommandHandler) =>
+    {
+        object[] stream = await eventStore.ReadStream(request.CartId.ToString());
+        var uncommittedEvents = removeItemCommandHandler.Handle(stream, request);
+        await eventStore.AppendToStream(request.CartId.ToString(), uncommittedEvents);
+
     });
 app.MapPost("/clearcart",
-    async ([FromBody] CartCleared request, [FromServices] ClearCartCommandHandler clearCartCommandHandler) =>
+    async ([FromBody] CartCleared request, [FromServices] IEventStore eventStore, [FromServices] ClearCartCommandHandler clearCartCommandHandler) =>
     {
-        await clearCartCommandHandler.Handle(request);
+        object[] stream = await eventStore.ReadStream(request.CartId.ToString());
+        var result = clearCartCommandHandler.Handle(stream, request);
+        await eventStore.AppendToStream(request.CartId.ToString(), result);
     });
 
 
-app.MapGet("/inventories", async ([FromServices] InventoriesProjector inventoriesSVHandler ) => await inventoriesSVHandler.ProjectAsync());
+app.MapGet("/inventories", async ([FromServices] IEventStore eventStore, [FromServices] InventoriesProjector inventoriesSVHandler ) =>
+{
+    object[] stream = await eventStore.ReadStream("inventories");
+    return inventoriesSVHandler.Project(stream);
+});
 app.MapPost("/submit-cart",
-    async ([FromBody] SubmitCartCommand submitCart, [FromServices] SubmitCartCommandHandler submitCartCommandHandler, [FromServices] CartPublisherProcessor cartPublisher) =>
+    async ([FromBody] SubmitCartCommand request, [FromServices] IEventStore eventStore, [FromServices] SubmitCartCommandHandler submitCartCommandHandler, [FromServices] CartPublisherProcessor cartPublisher) =>
     {
-        await submitCartCommandHandler.Handle(submitCart);
+        object[] cartStream = await eventStore.ReadStream(request.CartId.ToString());
+        object[] inventoriesStream = await eventStore.ReadStream("inventories");
+        var uncommittedEvents = submitCartCommandHandler.Handle(cartStream, inventoriesStream, request);
+        await eventStore.AppendToStream(request.CartId.ToString(), uncommittedEvents);
         await cartPublisher.RunAsync();
     });
-
-
 app.MapPost("/debug/simulate-inventory-changed", async ([FromBody] InventoryChangedExternal triggerInventoryChangedModel,
+    [FromServices] IEventStore eventStore,
     [FromServices] ChangeInventoryCommandHandler changeInventoryCommandHandler) =>
 {
-    await changeInventoryCommandHandler.HandleAsync(triggerInventoryChangedModel);
+    var uncommittedEvent = changeInventoryCommandHandler.Handle(triggerInventoryChangedModel);
+    await eventStore.AppendToStream("inventories", [uncommittedEvent]);
 });
 app.MapPost("/debug/simulate-price-changed", async ([FromBody] PriceChangedExternal priceChangedExternal,
+    [FromServices] IEventStore eventStore,
     [FromServices] ChangePriceCommandHandler changePriceCommandHandler,
     [FromServices] ArchiveItemSchedulerProcessor archiveItemProcessor) =>
 {
-    await changePriceCommandHandler.HandleAsync(priceChangedExternal);
+    var uncommittedEvent = changePriceCommandHandler.Handle(priceChangedExternal);
+    await eventStore.AppendToStream("pricing", [uncommittedEvent]);
     await archiveItemProcessor.RunAsync();
 });
-app.MapGet("/debug/carts-with-products", async ([FromServices] CartsWithProductsProjector cartsWithProductsSV ) => await cartsWithProductsSV.ProjectAsync());
+app.MapGet("/debug/carts-with-products", async ([FromServices] IEventStore eventStore, [FromServices] CartsWithProductsProjector cartsWithProductsSV ) =>
+{
+    object[] all = await eventStore.ReadAll();
+    return cartsWithProductsSV.Project(all);
+});
 
 app.Run();
