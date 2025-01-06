@@ -8,7 +8,7 @@ public record SubmitCartCommand(Guid CartId, IList<SubmitCartCommand.OrderedProd
     public record OrderedProduct(Guid ProductId, double TotalPrice);
 }
 
-public class SubmitCartCommandHandler(InventoriesProjector inventoriesProjector)
+public class SubmitCartCommandHandler
 {
     public IList<object> Handle(object[] stream, IDictionary<Guid, int> inventoriesSV, SubmitCartCommand submitCart)
     {
