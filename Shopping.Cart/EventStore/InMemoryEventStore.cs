@@ -48,7 +48,7 @@ public class InMemoryEventStore(EventSerializer eventSerializer) : IEventStore
 
     public ValueTask<object[]> ReadStream(string streamId)
     {
-        if (!events.TryGetValue(streamId, out var stream))
+         if (!events.TryGetValue(streamId, out var stream))
             return ValueTask.FromResult(Array.Empty<object>());
 
         var sorted = stream.OrderBy(e => e.GlobalPosition).ToList();

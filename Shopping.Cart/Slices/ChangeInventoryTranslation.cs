@@ -4,10 +4,10 @@ public record InventoryChangedExternal(Guid ProductId, int Inventory);
 
 public class ChangeInventoryCommandHandler
 {
-    public IList<object> Handle(InventoryChangedExternal inventoryChangedModel)
+    public object Handle(InventoryChangedExternal inventoryChangedModel)
     {
         InventoryChanged translatedEvent = new InventoryChanged(inventoryChangedModel.Inventory, inventoryChangedModel.ProductId);
-        return [translatedEvent];
+        return translatedEvent;
     }
 }
 
