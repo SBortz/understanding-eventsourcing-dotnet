@@ -12,18 +12,36 @@ public class SubmitCartCommandHandler
 {
     public IList<object> Handle(object[] stream, IDictionary<Guid, int> inventoriesSV, SubmitCartCommand submitCart)
     {
-        CartAggregate cartAggregate = new CartAggregate(stream);
-       
-        CheckInventory(cartAggregate, inventoriesSV);
-        
-        cartAggregate.SubmitCart(submitCart);
+        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
 
-        return cartAggregate.UncommittedEvents;
+        CheckInventory(state, inventoriesSV);
+        
+        if (!state.CartItems.Any())
+        {
+            throw new CannotSubmitEmptyCartException();
+        }
+
+        if (state.isSubmitted)
+        {
+            throw new CartCannotBeSubmittedTwiceException();
+        }
+
+        return [new CartSubmitted(
+            CartId: state.CartId.Value,
+            OrderedProducts: state.CartItems
+                .Select(cartItem =>
+                    new CartSubmitted.OrderedProduct(
+                        cartItem.Value,
+                        state.productPrice[cartItem.Value])),
+            TotalPrice: state.CartItems
+                .Select(cartItem =>
+                    state.productPrice[cartItem.Value])
+                .Sum())];
     }
 
-    private static void CheckInventory(CartAggregate cartAggregate, IDictionary<Guid, int> inventoriesSV)
+    private static void CheckInventory(Domain.Cart state, IDictionary<Guid, int> inventoriesSV)
     {
-        foreach (var cartItemsProductId in cartAggregate.CartItemsProductIds)
+        foreach (var cartItemsProductId in state.CartItems)
         {
             if (!inventoriesSV.ContainsKey(cartItemsProductId.Value) || inventoriesSV[cartItemsProductId.Value] <= 0)
             {

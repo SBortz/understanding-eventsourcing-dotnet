@@ -8,13 +8,16 @@ public record RemoveItemCommand(Guid ItemId, Guid CartId);
 
 public class RemoveItemCommandHandler : ICommandHandler<RemoveItemCommand>
 {
-    public IList<object> Handle(object[] stream, RemoveItemCommand command)
+    public IList<object> Handle(object[] stream, RemoveItemCommand removeItemCommand)
     {
-        CartAggregate cartAggregate = new CartAggregate(stream);
+        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
 
-        cartAggregate.RemoveItem(command);
+        if (!state.CartItems.ContainsKey(removeItemCommand.ItemId))
+        {
+            throw new ItemCanNotBeRemovedException(removeItemCommand.ItemId);
+        }
 
-        return cartAggregate.UncommittedEvents;
+        return [new ItemRemoved(removeItemCommand.ItemId, removeItemCommand.CartId)];
     }
 }
 

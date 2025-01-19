@@ -8,13 +8,11 @@ public record CartClearedCommand(Guid CartId);
 
 public class ClearCartCommandHandler : ICommandHandler<CartCleared>
 {
-    public IList<object> Handle(object[] stream, CartCleared cleared)
+    public IList<object> Handle(object[] stream, CartCleared removeItemCommand)
     {
-        CartAggregate cartAggregate = new CartAggregate(stream);
-
-        cartAggregate.Clear(cleared);
-
-        return cartAggregate.UncommittedEvents.ToArray();
+        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
+        
+        return [new CartClearedCommand(state.CartId.Value)];
     }
 }
 

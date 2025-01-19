@@ -16,13 +16,31 @@ public record AddItemCommand(
 
 public class AddItemCommandHandler : ICommandHandler<AddItemCommand>
 {
-    public IList<object> Handle(object[] stream, AddItemCommand command)
+    public IList<object> Handle(object[] stream, AddItemCommand removeItemCommand)
     {
-        CartAggregate cartAggregate = new CartAggregate(stream);
-
-        cartAggregate.AddItem(command);
+        IList<object> events = new List<object>();
         
-        return cartAggregate.UncommittedEvents;
+        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
+
+        if (state.CartId == null)
+        {
+            events.Add(new CartCreated(removeItemCommand.CartId));
+        }
+
+        if (state.CartItems.Count >= 3)
+        {
+            throw new TooManyItemsInCartException(state.CartId, removeItemCommand.ItemId);
+        }
+        
+        events.Add(new ItemAdded(
+            CartId: removeItemCommand.CartId,
+            Description: removeItemCommand.Description,
+            Image: removeItemCommand.Image,
+            Price: removeItemCommand.Price,
+            ItemId: removeItemCommand.ItemId,
+            ProductId: removeItemCommand.ProductId));
+
+        return events;
     }
 }
 

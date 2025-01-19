@@ -3,61 +3,45 @@ using Shopping.Cart.Slices;
 namespace Shopping.Cart.Domain;
 
 public record Cart(
-    Guid? cartId,
-    IDictionary<Guid, Guid> cartItems,
+    Guid? CartId,
+    IDictionary<Guid, Guid> CartItems,
     IDictionary<Guid, double> productPrice,
     bool isSubmitted,
     bool isPublished,
     bool publicationFailed)
 {
+    public static readonly Cart Initial = new Cart(null, new Dictionary<Guid, Guid>(),
+        new Dictionary<Guid, double>(), false, false, false);
+    
     public static Cart Evolve(Cart state, object @event)
     {
-        // Local static helper that removes the item with the given itemId
-        // and its associated product price (if present).
-        static (Dictionary<Guid, Guid> NewCartItems, Dictionary<Guid, double> NewProductPrice)
-            RemoveItem(Cart state, Guid itemId)
-        {
-            // Make new dictionaries based on the existing state.
-            var newCartItems = new Dictionary<Guid, Guid>(state.cartItems);
-            var newProductPrice = new Dictionary<Guid, double>(state.productPrice);
-
-            // Try to get the product id corresponding to the removed item.
-            if (newCartItems.TryGetValue(itemId, out var productId))
-            {
-                newCartItems.Remove(itemId);
-                newProductPrice.Remove(productId);
-            }
-
-            return (newCartItems, newProductPrice);
-        }
-        
         switch(@event)
         {
             case CartCreated cartCreated:
-                return state with { cartId = cartCreated.CartId };
+                return state with { CartId = cartCreated.CartId };
             case ItemAdded itemAdded:
                 return state with
                 {
-                    cartItems = new Dictionary<Guid, Guid>(state.cartItems) { [itemAdded.ProductId] = itemAdded.ProductId },
+                    CartItems = new Dictionary<Guid, Guid>(state.CartItems) { [itemAdded.ItemId] = itemAdded.ProductId },
                     productPrice = new Dictionary<Guid, double>(state.productPrice) { [itemAdded.ProductId] = itemAdded.Price }
                 };
             case ItemRemoved itemRemoved:
             {
-                var newCartItems = new Dictionary<Guid, Guid>(state.cartItems);
+                var newCartItems = new Dictionary<Guid, Guid>(state.CartItems);
                 var newProductPrice = new Dictionary<Guid, double>(state.productPrice);
                 
-                newCartItems.Remove(itemRemoved.ItemId);
                 newProductPrice.Remove(newCartItems[itemRemoved.ItemId]);
+                newCartItems.Remove(itemRemoved.ItemId);
                 
                 return state with
                 {
-                    cartItems = newCartItems,
+                    CartItems = newCartItems,
                     productPrice = newProductPrice
                 };
             }
             case ItemArchived itemArchived:
             {
-                var newCartItems = new Dictionary<Guid, Guid>(state.cartItems);
+                var newCartItems = new Dictionary<Guid, Guid>(state.CartItems);
                 var newProductPrice = new Dictionary<Guid, double>(state.productPrice);
                 
                 newCartItems.Remove(itemArchived.ItemId);
@@ -65,14 +49,14 @@ public record Cart(
                 
                 return state with
                 {
-                    cartItems = newCartItems,
+                    CartItems = newCartItems,
                     productPrice = newProductPrice
                 };
             }
             case CartSubmitted cartSubmitted:
                 return state with { isSubmitted = true };
             case CartCleared cartCleared:
-                return state with { cartItems = new Dictionary<Guid, Guid>() };
+                return state with { CartItems = new Dictionary<Guid, Guid>() };
             case CartPublished cartPublished:
                 return state with { isPublished = true };
             case CartPublicationFailed cartPublicationFailed:

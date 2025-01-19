@@ -8,13 +8,13 @@ public record ArchiveItemCommand(Guid CartId, Guid ProductId);
 
 public class ArchiveItemCommandHandler : ICommandHandler<ArchiveItemCommand>
 {
-    public IList<object> Handle(object[] stream, ArchiveItemCommand archiveItemCommand)
+    public IList<object> Handle(object[] stream, ArchiveItemCommand removeItemCommand)
     {
-        CartAggregate cartAggregate = new CartAggregate(stream);
+        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
 
-        cartAggregate.ArchiveItem(archiveItemCommand);
-        
-        return cartAggregate.UncommittedEvents;
+        return [
+            new ItemArchived(CartId: state.CartId.Value, ItemId: removeItemCommand.ProductId)
+        ];
     }
 }
 

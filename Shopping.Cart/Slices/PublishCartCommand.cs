@@ -14,7 +14,7 @@ public class PublishCartCommandHandler(IKafkaPublisher kafkaPublisher) : IAsyncC
 {
     public async Task<IList<object>> HandleAsync(object[] stream, PublishCartCommand command)
     {
-        CartAggregate cartAggregate = new CartAggregate(stream);
+        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
 
         try
         {
@@ -24,14 +24,22 @@ public class PublishCartCommandHandler(IKafkaPublisher kafkaPublisher) : IAsyncC
                         new ExternalCartPublished.OrderedProduct(x.ProductId, x.Price)),
                 command.TotalPrice));
             
-            cartAggregate.Publish(command);
+            if (!state.isSubmitted)
+            {
+                throw new CannotPublishUnsubmittedCartException();
+            }
+
+            if (state.isPublished)
+            {
+                throw new CartCannotBePublishedTwiceException();
+            }
+
+            return [new CartPublished(command.CartId)];
         }
         catch
         {
-            cartAggregate.PublishFailed(command);
+            return [new CartPublicationFailed(command.CartId)];
         }
-
-        return cartAggregate.UncommittedEvents;
     }
 }
 
