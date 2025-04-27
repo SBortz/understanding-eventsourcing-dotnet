@@ -20,6 +20,6 @@ public class CartClearedTests
             cartId
         ));        
         
-        Assert.That(uncommittedEvents[2], Is.TypeOf<CartClearedCommand>());
+        Assert.That(uncommittedEvents[0], Is.TypeOf<CartClearedCommand>());
     }
 }
