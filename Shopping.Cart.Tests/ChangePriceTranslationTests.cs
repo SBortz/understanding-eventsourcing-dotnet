@@ -6,7 +6,7 @@ namespace Shopping.Cart.Tests;
 public class ChangePriceTranslationTests
 {
     [Test]
-    public async Task Test()
+    public void Test()
     {
         ChangePriceCommandHandler changePriceCommandHandler = new ChangePriceCommandHandler();
         var uncommittedEvents = changePriceCommandHandler.Handle(new PriceChangedExternal(new Guid("00000000-0000-0000-0000-000000000001"), 20, 25));

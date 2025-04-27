@@ -6,7 +6,7 @@ namespace Shopping.Cart.Tests;
 public class CartWithProductsSVTests
 {
     [Test]
-    public async Task CartShouldContainProductIdOfAddedItem()
+    public void CartShouldContainProductIdOfAddedItem()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
         Guid productId = new Guid("00000000-0000-0000-0000-000000000002");
@@ -24,7 +24,7 @@ public class CartWithProductsSVTests
     }
     
     [Test]
-    public async Task ArchivedItemsShouldBeRemovedFromList()
+    public void ArchivedItemsShouldBeRemovedFromList()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
         Guid productId = new Guid("00000000-0000-0000-0000-000000000002");
@@ -44,7 +44,7 @@ public class CartWithProductsSVTests
     }    
     
     [Test]
-    public async Task RemovedItemsShouldBeRemovedFromList()
+    public void RemovedItemsShouldBeRemovedFromList()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
         Guid productId = new Guid("00000000-0000-0000-0000-000000000002");
@@ -64,7 +64,7 @@ public class CartWithProductsSVTests
     }
     
     [Test]
-    public async Task CartClearedShouldRemoveItemsFromList()
+    public void CartClearedShouldRemoveItemsFromList()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
 
