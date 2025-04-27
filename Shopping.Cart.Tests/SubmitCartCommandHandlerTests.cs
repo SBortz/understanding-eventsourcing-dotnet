@@ -6,7 +6,7 @@ namespace Shopping.Cart.Tests;
 public class SubmitCartCommandHandlerTests
 {
     [Test]
-    public async Task CantSubmitNoProductsInStock()
+    public void CantSubmitNoProductsInStock()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
         Guid productId1 = new Guid("00000000-0000-0000-0000-000000000002");
@@ -109,7 +109,7 @@ public class SubmitCartCommandHandlerTests
     }
     
     [Test]
-    public async Task ShouldSubmit()
+    public void ShouldSubmit()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
         Guid productId1 = new Guid("00000000-0000-0000-0000-000000000002");
@@ -144,7 +144,7 @@ public class SubmitCartCommandHandlerTests
     }
     
     [Test]
-    public async Task SubmitEmptyCartFails()
+    public void SubmitEmptyCartFails()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
         Guid productId1 = new Guid("00000000-0000-0000-0000-000000000002");

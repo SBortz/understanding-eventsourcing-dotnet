@@ -6,7 +6,7 @@ namespace Shopping.Cart.Tests;
 public class RemoveItemCommandTests
 {
     [Test]
-    public async Task RemoveItemTest()
+    public void RemoveItemTest()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
         Guid itemId = new Guid("00000000-0000-0000-0000-000000000002");
@@ -22,7 +22,7 @@ public class RemoveItemCommandTests
     }
     
     [Test]
-    public async Task RemoveItemWhichWasAlreadyRemovedThrowsException()
+    public void RemoveItemWhichWasAlreadyRemovedThrowsException()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
         Guid itemId = new Guid("00000000-0000-0000-0000-000000000002");
