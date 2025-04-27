@@ -16,10 +16,10 @@ public class CartClearedTests
             new ItemAdded( cartId, "Description", "Image", 10,  itemId, Guid.NewGuid()),
         ];
         ClearCartCommandHandler clearCartCommandHandler = new ClearCartCommandHandler();
-        IList<object> uncommittedEvents = clearCartCommandHandler.Handle(given, new CartCleared(
+        IList<object> uncommittedEvents = clearCartCommandHandler.Handle(given, new CartClearedCommand(
             cartId
         ));        
         
-        Assert.That(uncommittedEvents[0], Is.TypeOf<CartClearedCommand>());
+        Assert.That(uncommittedEvents[0], Is.TypeOf<CartCleared>());
     }
 }

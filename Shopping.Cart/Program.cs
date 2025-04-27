@@ -62,7 +62,7 @@ app.MapPost("/removeitem",
 
     });
 app.MapPost("/clearcart",
-    async ([FromBody] CartCleared request, [FromServices] IEventStore eventStore, [FromServices] ClearCartCommandHandler clearCartCommandHandler) =>
+    async ([FromBody] CartClearedCommand request, [FromServices] IEventStore eventStore, [FromServices] ClearCartCommandHandler clearCartCommandHandler) =>
     {
         object[] stream = await eventStore.ReadStream(request.CartId.ToString());
         var result = clearCartCommandHandler.Handle(stream, request);
