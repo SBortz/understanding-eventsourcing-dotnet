@@ -16,7 +16,7 @@ public record AddItemCommand(
 
 public class AddItemCommandHandler : ICommandHandler<AddItemCommand>
 {
-    public IList<object> Handle(object[] stream, AddItemCommand removeItemCommand)
+    public IList<object> Handle(object[] stream, AddItemCommand command)
     {
         IList<object> events = new List<object>();
         
@@ -24,21 +24,21 @@ public class AddItemCommandHandler : ICommandHandler<AddItemCommand>
 
         if (state.CartId == null)
         {
-            events.Add(new CartCreated(removeItemCommand.CartId));
+            events.Add(new CartCreated(command.CartId));
         }
 
         if (state.CartItems.Count >= 3)
         {
-            throw new TooManyItemsInCartException(state.CartId, removeItemCommand.ItemId);
+            throw new TooManyItemsInCartException(state.CartId, command.ItemId);
         }
         
         events.Add(new ItemAdded(
-            CartId: removeItemCommand.CartId,
-            Description: removeItemCommand.Description,
-            Image: removeItemCommand.Image,
-            Price: removeItemCommand.Price,
-            ItemId: removeItemCommand.ItemId,
-            ProductId: removeItemCommand.ProductId));
+            CartId: command.CartId,
+            Description: command.Description,
+            Image: command.Image,
+            Price: command.Price,
+            ItemId: command.ItemId,
+            ProductId: command.ProductId));
 
         return events;
     }
