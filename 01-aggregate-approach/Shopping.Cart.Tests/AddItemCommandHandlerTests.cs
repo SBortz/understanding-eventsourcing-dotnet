@@ -24,7 +24,6 @@ public class AddItemCommandHandlerTests
             "Description",
             "Image",
             10,
-            10,
             Guid.NewGuid(),
             Guid.NewGuid()));
 
@@ -55,7 +54,6 @@ public class AddItemCommandHandlerTests
                 cartId,
                 "Description",
                 "Image",
-                10,
                 10,
                 Guid.NewGuid(),
                 Guid.NewGuid()));

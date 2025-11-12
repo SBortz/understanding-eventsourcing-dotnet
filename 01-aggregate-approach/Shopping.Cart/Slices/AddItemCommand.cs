@@ -8,7 +8,6 @@ public record AddItemCommand(
     string? Description,
     string? Image,
     double Price,
-    double TotalPrice,
     Guid ItemId,
     Guid ProductId
 );
