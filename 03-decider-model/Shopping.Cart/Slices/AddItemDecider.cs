@@ -13,7 +13,7 @@ public record AddItemCommand(
     Guid ProductId
 );
 
-public class AddItemCommandHandler : ICommandHandler<AddItemCommand, Domain.Cart>
+public class AddItemDecider : IDecider<AddItemCommand, Domain.Cart>
 {
     public IList<object> Handle(Domain.Cart state, AddItemCommand command)
     {

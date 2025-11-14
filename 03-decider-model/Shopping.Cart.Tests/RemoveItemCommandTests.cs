@@ -16,8 +16,8 @@ public class RemoveItemCommandTests
             new ItemAdded( cartId, "Description", "Image",  10, itemId, Guid.NewGuid()),
         ];
         Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
-        RemoveItemCommandHandler removeItemCommandHandler = new RemoveItemCommandHandler();
-        var uncommittedEvents = removeItemCommandHandler.Handle(state, new RemoveItemCommand(itemId, cartId));
+        RemoveItemDecider removeItemDecider = new RemoveItemDecider();
+        var uncommittedEvents = removeItemDecider.Handle(state, new RemoveItemCommand(itemId, cartId));
         
         Assert.That(uncommittedEvents[0], Is.TypeOf<ItemRemoved>());
     }
@@ -34,11 +34,11 @@ public class RemoveItemCommandTests
             new ItemRemoved(itemId, cartId),
         ];
         Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
-        RemoveItemCommandHandler removeItemCommandHandler = new RemoveItemCommandHandler();
+        RemoveItemDecider removeItemDecider = new RemoveItemDecider();
         
         Assert.Throws<ItemCanNotBeRemovedException>(() =>
         {
-            removeItemCommandHandler.Handle(state, new RemoveItemCommand(
+            removeItemDecider.Handle(state, new RemoveItemCommand(
                 ItemId: itemId,
                 CartId: cartId
             ));

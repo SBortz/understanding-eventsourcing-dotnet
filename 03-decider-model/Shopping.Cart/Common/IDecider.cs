@@ -2,7 +2,7 @@ using Shopping.Cart.Infrastructure;
 
 namespace Shopping.Cart.Common;
 
-public interface ICommandHandler<Cmd, State>
+public interface IDecider<Cmd, State>
 {
     IList<object> Handle(State state, Cmd command);
 }

@@ -6,7 +6,7 @@ namespace Shopping.Cart.Slices;
 
 public record RemoveItemCommand(Guid ItemId, Guid CartId);
 
-public class RemoveItemCommandHandler : ICommandHandler<RemoveItemCommand, Domain.Cart>
+public class RemoveItemDecider : IDecider<RemoveItemCommand, Domain.Cart>
 {
     public IList<object> Handle(Domain.Cart state, RemoveItemCommand command)
     {

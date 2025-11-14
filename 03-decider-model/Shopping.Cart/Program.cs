@@ -7,17 +7,17 @@ using Shopping.Cart.Slices;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
-builder.Services.AddTransient<AddItemCommandHandler>();
-builder.Services.AddTransient<RemoveItemCommandHandler>();
+builder.Services.AddTransient<AddItemDecider>();
+builder.Services.AddTransient<RemoveItemDecider>();
 builder.Services.AddTransient<CartItemsProjector>();
-builder.Services.AddTransient<ClearCartCommandHandler>();
+builder.Services.AddTransient<ClearCartDecider>();
 builder.Services.AddTransient<ChangeInventoryCommandHandler>();
 builder.Services.AddTransient<InventoriesProjector>();
 builder.Services.AddTransient<ChangePriceCommandHandler>();
 builder.Services.AddSingleton<ArchiveItemSchedulerProcessor>();
 builder.Services.AddTransient<CartsWithProductsProjector>();
 builder.Services.AddTransient<ChangedPricesProjector>();
-builder.Services.AddTransient<ArchiveItemCommandHandler>();
+builder.Services.AddTransient<ArchiveItemDecider>();
 builder.Services.AddTransient<SubmitCartCommandHandler>();
 builder.Services.AddSingleton<CartPublisherProcessor>();
 builder.Services.AddTransient<SubmittedCartDataProjector>();
@@ -40,11 +40,11 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.MapPost("/additem",
-    async ([FromBody] AddItemCommand command, [FromServices] IEventStore eventStore, [FromServices] AddItemCommandHandler addItemCommandHandler) =>
+    async ([FromBody] AddItemCommand command, [FromServices] IEventStore eventStore, [FromServices] AddItemDecider addItemDecider) =>
     {
         var stream = await eventStore.ReadStream(command.CartId.ToString());
         Cart state = stream.Aggregate(Cart.Initial, Cart.Evolve);
-        var uncommittedEvents = addItemCommandHandler.Handle(state, command);
+        var uncommittedEvents = addItemDecider.Handle(state, command);
         await eventStore.AppendToStream(command.CartId.ToString(), uncommittedEvents);
     });
 app.MapGet("/{cartId}/cartitems", 
@@ -54,20 +54,20 @@ app.MapGet("/{cartId}/cartitems",
         return cartItemsStateViewHandler.Projects(stream);
     });
 app.MapPost("/removeitem",
-    async ([FromBody] RemoveItemCommand request, [FromServices] IEventStore eventStore, [FromServices] RemoveItemCommandHandler removeItemCommandHandler) =>
+    async ([FromBody] RemoveItemCommand request, [FromServices] IEventStore eventStore, [FromServices] RemoveItemDecider removeItemDecider) =>
     {
         object[] stream = await eventStore.ReadStream(request.CartId.ToString());
         Cart state = stream.Aggregate(Cart.Initial, Cart.Evolve);
-        var uncommittedEvents = removeItemCommandHandler.Handle(state, request);
+        var uncommittedEvents = removeItemDecider.Handle(state, request);
         await eventStore.AppendToStream(request.CartId.ToString(), uncommittedEvents);
 
     });
 app.MapPost("/clearcart",
-    async ([FromBody] CartClearedCommand request, [FromServices] IEventStore eventStore, [FromServices] ClearCartCommandHandler clearCartCommandHandler) =>
+    async ([FromBody] CartClearedCommand request, [FromServices] IEventStore eventStore, [FromServices] ClearCartDecider clearCartDecider) =>
     {
         object[] stream = await eventStore.ReadStream(request.CartId.ToString());
         Cart state = stream.Aggregate(Cart.Initial, Cart.Evolve);
-        var result = clearCartCommandHandler.Handle(state, request);
+        var result = clearCartDecider.Handle(state, request);
         await eventStore.AppendToStream(request.CartId.ToString(), result);
     });
 

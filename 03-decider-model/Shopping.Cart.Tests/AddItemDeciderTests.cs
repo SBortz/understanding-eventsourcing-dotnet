@@ -3,18 +3,18 @@ using Shopping.Cart.Slices;
 
 namespace Shopping.Cart.Tests;
 
-public class AddItemCommandHandlerTests
+public class AddItemDeciderTests
 {
     [Test]
     public void CartSessionCreatedAutomatically()
     {
-        AddItemCommandHandler commandHandler = new AddItemCommandHandler();
+        AddItemDecider decider = new AddItemDecider();
         
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
 
         object[] stream = [];
         Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
-        var uncommittedEvents = commandHandler.Handle(state, new AddItemCommand(
+        var uncommittedEvents = decider.Handle(state, new AddItemCommand(
             cartId,
             "Description",
             "Image",
@@ -40,11 +40,11 @@ public class AddItemCommandHandlerTests
         };
         
         Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
-        AddItemCommandHandler commandHandler = new AddItemCommandHandler();
+        AddItemDecider decider = new AddItemDecider();
 
         Assert.Throws<TooManyItemsInCartException>(() =>
         {
-            commandHandler.Handle(state, new AddItemCommand(
+            decider.Handle(state, new AddItemCommand(
                 cartId,
                 "Description",
                 "Image",
