@@ -1,6 +1,4 @@
-using Shopping.Cart.Common;
 using Shopping.Cart.Domain;
-using Shopping.Cart.EventStore;
 
 namespace Shopping.Cart.Slices;
 public record SubmitCartCommand(Guid CartId, IList<SubmitCartCommand.OrderedProduct> OrderedProducts)
@@ -8,9 +6,9 @@ public record SubmitCartCommand(Guid CartId, IList<SubmitCartCommand.OrderedProd
     public record OrderedProduct(Guid ProductId, double TotalPrice);
 }
 
-public class SubmitCartCommandHandler
+public static class SubmitCartDecider
 {
-    public IList<object> Handle(Domain.Cart state, IDictionary<Guid, int> inventoriesSV, SubmitCartCommand submitCart)
+    public static IList<object> Handle(Domain.Cart state, IDictionary<Guid, int> inventoriesSV, SubmitCartCommand submitCart)
     {
         CheckInventory(state, inventoriesSV);
         

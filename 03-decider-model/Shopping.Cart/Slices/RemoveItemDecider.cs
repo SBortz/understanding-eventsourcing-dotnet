@@ -1,14 +1,12 @@
-using Shopping.Cart.Common;
 using Shopping.Cart.Domain;
-using Shopping.Cart.EventStore;
 
 namespace Shopping.Cart.Slices;
 
 public record RemoveItemCommand(Guid ItemId, Guid CartId);
 
-public class RemoveItemDecider : IDecider<RemoveItemCommand, Domain.Cart>
+public static class RemoveItemDecider
 {
-    public IList<object> Handle(Domain.Cart state, RemoveItemCommand command)
+    public static IList<object> Handle(Domain.Cart state, RemoveItemCommand command)
     {
         if (!state.CartItems.ContainsKey(command.ItemId))
         {

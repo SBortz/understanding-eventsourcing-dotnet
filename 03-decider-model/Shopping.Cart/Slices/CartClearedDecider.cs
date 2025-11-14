@@ -1,14 +1,12 @@
-using Shopping.Cart.Common;
 using Shopping.Cart.Domain;
-using Shopping.Cart.EventStore;
 
 namespace Shopping.Cart.Slices;
 
 public record CartClearedCommand(Guid CartId);
 
-public class ClearCartDecider : IDecider<CartClearedCommand, Domain.Cart>
+public static class ClearCartDecider
 {
-    public IList<object> Handle(Domain.Cart state, CartClearedCommand command)
+    public static IList<object> Handle(Domain.Cart state, CartClearedCommand command)
     {
         return [new CartCleared(state.CartId.Value)];
     }

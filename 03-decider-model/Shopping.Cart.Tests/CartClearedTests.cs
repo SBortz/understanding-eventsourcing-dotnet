@@ -16,8 +16,7 @@ public class CartClearedTests
             new ItemAdded( cartId, "Description", "Image", 10,  itemId, Guid.NewGuid()),
         ];
         Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
-        ClearCartDecider clearCartDecider = new ClearCartDecider();
-        IList<object> uncommittedEvents = clearCartDecider.Handle(state, new CartClearedCommand(
+        IList<object> uncommittedEvents = ClearCartDecider.Handle(state, new CartClearedCommand(
             cartId
         ));        
         

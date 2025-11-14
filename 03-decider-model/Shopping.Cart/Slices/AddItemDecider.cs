@@ -1,6 +1,4 @@
-using Shopping.Cart.Common;
 using Shopping.Cart.Domain;
-using Shopping.Cart.EventStore;
 
 namespace Shopping.Cart.Slices;
 
@@ -13,9 +11,9 @@ public record AddItemCommand(
     Guid ProductId
 );
 
-public class AddItemDecider : IDecider<AddItemCommand, Domain.Cart>
+public static class AddItemDecider
 {
-    public IList<object> Handle(Domain.Cart state, AddItemCommand command)
+    public static IList<object> Handle(Domain.Cart state, AddItemCommand command)
     {
         IList<object> events = new List<object>();
 
