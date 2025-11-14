@@ -6,12 +6,10 @@ namespace Shopping.Cart.Slices;
 
 public record CartClearedCommand(Guid CartId);
 
-public class ClearCartCommandHandler : ICommandHandler<CartClearedCommand>
+public class ClearCartCommandHandler : ICommandHandler<CartClearedCommand, Domain.Cart>
 {
-    public IList<object> Handle(object[] stream, CartClearedCommand command)
+    public IList<object> Handle(Domain.Cart state, CartClearedCommand command)
     {
-        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
-        
         return [new CartCleared(state.CartId.Value)];
     }
 }

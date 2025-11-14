@@ -1,4 +1,4 @@
-using Shopping.Cart.EventStore;
+using Shopping.Cart.Domain;
 using Shopping.Cart.Infrastructure;
 using Shopping.Cart.Slices;
 
@@ -23,8 +23,9 @@ public class PublishCartTests
                 20),
         ];
         
+        Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
         PublishCartCommandHandler publishCartCommandHandler = new PublishCartCommandHandler(new FakeKafkaPublisher(FakeKafkaPublisher.FakeType.AlwaysSucceed));
-        IEnumerable<object> uncommittedEvents = await publishCartCommandHandler.HandleAsync(given, new PublishCartCommand(cartId, [
+        IEnumerable<object> uncommittedEvents = await publishCartCommandHandler.HandleAsync(state, new PublishCartCommand(cartId, [
             new PublishCartCommand.OrderedProduct(productId1, 10),
             new PublishCartCommand.OrderedProduct(productId2, 5),
         ], 15));
@@ -49,8 +50,9 @@ public class PublishCartTests
                 20),
         ];
         
+        Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
         PublishCartCommandHandler publishCartCommandHandler = new PublishCartCommandHandler(new FakeKafkaPublisher(FakeKafkaPublisher.FakeType.AlwaysFail));
-        var uncommittedEvents = await publishCartCommandHandler.HandleAsync(given, new PublishCartCommand(cartId, [
+        var uncommittedEvents = await publishCartCommandHandler.HandleAsync(state, new PublishCartCommand(cartId, [
             new PublishCartCommand.OrderedProduct(productId1, 10),
             new PublishCartCommand.OrderedProduct(productId2, 5),
         ], 15));
@@ -76,8 +78,9 @@ public class PublishCartTests
             new CartPublished(cartId)
         ];
         
+        Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
         PublishCartCommandHandler publishCartCommandHandler = new PublishCartCommandHandler(new FakeKafkaPublisher(FakeKafkaPublisher.FakeType.AlwaysSucceed));
-        var uncommittedEvents = await publishCartCommandHandler.HandleAsync(given, new PublishCartCommand(cartId, [
+        var uncommittedEvents = await publishCartCommandHandler.HandleAsync(state, new PublishCartCommand(cartId, [
             new PublishCartCommand.OrderedProduct(productId1, 10),
             new PublishCartCommand.OrderedProduct(productId2, 5),
         ], 15));

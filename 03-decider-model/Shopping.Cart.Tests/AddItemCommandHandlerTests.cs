@@ -1,4 +1,4 @@
-using Shopping.Cart.EventStore;
+using Shopping.Cart.Domain;
 using Shopping.Cart.Slices;
 
 namespace Shopping.Cart.Tests;
@@ -13,7 +13,8 @@ public class AddItemCommandHandlerTests
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
 
         object[] stream = [];
-        var uncommittedEvents = commandHandler.Handle(stream, new AddItemCommand(
+        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
+        var uncommittedEvents = commandHandler.Handle(state, new AddItemCommand(
             cartId,
             "Description",
             "Image",
@@ -38,11 +39,12 @@ public class AddItemCommandHandlerTests
             new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), Guid.NewGuid()),
         };
         
+        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
         AddItemCommandHandler commandHandler = new AddItemCommandHandler();
 
         Assert.Throws<TooManyItemsInCartException>(() =>
         {
-            commandHandler.Handle(stream, new AddItemCommand(
+            commandHandler.Handle(state, new AddItemCommand(
                 cartId,
                 "Description",
                 "Image",

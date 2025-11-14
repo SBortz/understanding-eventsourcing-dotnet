@@ -1,3 +1,4 @@
+using Shopping.Cart.Domain;
 using Shopping.Cart.EventStore;
 
 namespace Shopping.Cart.Slices;
@@ -35,8 +36,9 @@ public class ArchiveItemSchedulerProcessor(IEventStore eventStore,
                     foreach (ProductInCart productInCartToArchive in productsInCartToArchive)
                     {
                         object[] stream = await eventStore.ReadStream(productInCartToArchive.CartId.ToString());
+                        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
                         
-                        var uncommittedEvents = archiveItemCommandHandler.Handle(stream, new ArchiveItemCommand(CartId: productInCartToArchive.CartId, ProductId: changedPrice.Key));
+                        var uncommittedEvents = archiveItemCommandHandler.Handle(state, new ArchiveItemCommand(CartId: productInCartToArchive.CartId, ProductId: changedPrice.Key));
                         
                         await eventStore.AppendToStream(productInCartToArchive.CartId.ToString(), uncommittedEvents);
                     }

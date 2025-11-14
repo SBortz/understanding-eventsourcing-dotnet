@@ -6,12 +6,10 @@ namespace Shopping.Cart.Slices;
 
 public record RemoveItemCommand(Guid ItemId, Guid CartId);
 
-public class RemoveItemCommandHandler : ICommandHandler<RemoveItemCommand>
+public class RemoveItemCommandHandler : ICommandHandler<RemoveItemCommand, Domain.Cart>
 {
-    public IList<object> Handle(object[] stream, RemoveItemCommand command)
+    public IList<object> Handle(Domain.Cart state, RemoveItemCommand command)
     {
-        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
-
         if (!state.CartItems.ContainsKey(command.ItemId))
         {
             throw new ItemCanNotBeRemovedException(command.ItemId);

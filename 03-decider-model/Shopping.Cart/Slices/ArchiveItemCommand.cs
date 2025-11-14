@@ -6,12 +6,10 @@ namespace Shopping.Cart.Slices;
 
 public record ArchiveItemCommand(Guid CartId, Guid ProductId);
 
-public class ArchiveItemCommandHandler : ICommandHandler<ArchiveItemCommand>
+public class ArchiveItemCommandHandler : ICommandHandler<ArchiveItemCommand, Domain.Cart>
 {
-    public IList<object> Handle(object[] stream, ArchiveItemCommand command)
+    public IList<object> Handle(Domain.Cart state, ArchiveItemCommand command)
     {
-        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
-
         return [
             new ItemArchived(CartId: state.CartId.Value, ItemId: command.ProductId)
         ];

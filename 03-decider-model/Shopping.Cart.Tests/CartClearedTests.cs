@@ -1,4 +1,4 @@
-using Shopping.Cart.EventStore;
+using Shopping.Cart.Domain;
 using Shopping.Cart.Slices;
 
 namespace Shopping.Cart.Tests;
@@ -15,8 +15,9 @@ public class CartClearedTests
             new CartCreated( CartId: cartId),
             new ItemAdded( cartId, "Description", "Image", 10,  itemId, Guid.NewGuid()),
         ];
+        Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
         ClearCartCommandHandler clearCartCommandHandler = new ClearCartCommandHandler();
-        IList<object> uncommittedEvents = clearCartCommandHandler.Handle(given, new CartClearedCommand(
+        IList<object> uncommittedEvents = clearCartCommandHandler.Handle(state, new CartClearedCommand(
             cartId
         ));        
         

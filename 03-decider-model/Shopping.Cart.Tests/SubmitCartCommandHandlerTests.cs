@@ -1,4 +1,4 @@
-using Shopping.Cart.EventStore;
+using Shopping.Cart.Domain;
 using Shopping.Cart.Slices;
 
 namespace Shopping.Cart.Tests;
@@ -22,10 +22,11 @@ public class SubmitCartCommandHandlerTests
         var inventoriesProjector = new InventoriesProjector();
         IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(givenInventoriesStream);
         
+        Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
         SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler();
         Assert.Throws<NotEnoughInStockException>(() =>
         {
-            submitCartCommandHandler.Handle(given,
+            submitCartCommandHandler.Handle(state,
                 inventoriesSV,
                 new SubmitCartCommand(cartId,
                     [
@@ -57,10 +58,11 @@ public class SubmitCartCommandHandlerTests
         var inventoriesProjector = new InventoriesProjector();
         IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(givenInventoriesStream);
         
+        Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
         SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler();
         Assert.Throws<NotEnoughInStockException>(() =>
         {
-            submitCartCommandHandler.Handle(given, inventoriesSV,
+            submitCartCommandHandler.Handle(state, inventoriesSV,
                 new SubmitCartCommand(cartId,
                     [
                         new SubmitCartCommand.OrderedProduct(productId1, 10),
@@ -95,10 +97,11 @@ public class SubmitCartCommandHandlerTests
         var inventoriesProjector = new InventoriesProjector();
         IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(givenInventoriesStream);
         
+        Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
         SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler();
         Assert.Throws<CartCannotBeSubmittedTwiceException>(() =>
         {
-            submitCartCommandHandler.Handle(given, inventoriesSV,
+            submitCartCommandHandler.Handle(state, inventoriesSV,
                 new SubmitCartCommand(cartId,
                     [
                         new SubmitCartCommand.OrderedProduct(productId1, 10),
@@ -130,9 +133,10 @@ public class SubmitCartCommandHandlerTests
         var inventoriesProjector = new InventoriesProjector();
         IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(givenInventoriesStream);
         
+        Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
         SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler();
         var uncommittedEvents = submitCartCommandHandler.Handle(
-            given, inventoriesSV,
+            state, inventoriesSV,
             new SubmitCartCommand(cartId,
                 [
                     new SubmitCartCommand.OrderedProduct(productId1, 10),
@@ -164,10 +168,11 @@ public class SubmitCartCommandHandlerTests
         var inventoriesProjector = new InventoriesProjector();
         IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(givenInventoriesStream);
         
+        Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
         SubmitCartCommandHandler submitCartCommandHandler = new SubmitCartCommandHandler();
         Assert.Throws<CannotSubmitEmptyCartException>(() =>
         {
-            submitCartCommandHandler.Handle(given, inventoriesSV,
+            submitCartCommandHandler.Handle(state, inventoriesSV,
                 new SubmitCartCommand(cartId,
                     []
                 ));

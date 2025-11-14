@@ -1,4 +1,4 @@
-using Shopping.Cart.EventStore;
+using Shopping.Cart.Domain;
 using Shopping.Cart.Slices;
 
 namespace Shopping.Cart.Tests;
@@ -15,8 +15,9 @@ public class RemoveItemCommandTests
             new CartCreated( CartId: cartId),
             new ItemAdded( cartId, "Description", "Image",  10, itemId, Guid.NewGuid()),
         ];
+        Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
         RemoveItemCommandHandler removeItemCommandHandler = new RemoveItemCommandHandler();
-        var uncommittedEvents = removeItemCommandHandler.Handle(given, new RemoveItemCommand(itemId, cartId));
+        var uncommittedEvents = removeItemCommandHandler.Handle(state, new RemoveItemCommand(itemId, cartId));
         
         Assert.That(uncommittedEvents[0], Is.TypeOf<ItemRemoved>());
     }
@@ -32,11 +33,12 @@ public class RemoveItemCommandTests
             new ItemAdded(CartId: cartId, Description: "Description", Image: "Image", Price: 10, ItemId: itemId, ProductId: Guid.NewGuid()),
             new ItemRemoved(itemId, cartId),
         ];
+        Domain.Cart state = given.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
         RemoveItemCommandHandler removeItemCommandHandler = new RemoveItemCommandHandler();
         
         Assert.Throws<ItemCanNotBeRemovedException>(() =>
         {
-            removeItemCommandHandler.Handle(given, new RemoveItemCommand(
+            removeItemCommandHandler.Handle(state, new RemoveItemCommand(
                 ItemId: itemId,
                 CartId: cartId
             ));

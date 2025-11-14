@@ -18,8 +18,6 @@ public class AddItemCommandHandler : ICommandHandler<AddItemCommand, Domain.Cart
     public IList<object> Handle(Domain.Cart state, AddItemCommand command)
     {
         IList<object> events = new List<object>();
-        
-        
 
         if (state.CartId == null)
         {

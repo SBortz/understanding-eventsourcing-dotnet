@@ -1,6 +1,4 @@
-using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
-using Shopping.Cart;
 using Shopping.Cart.Domain;
 using Shopping.Cart.EventStore;
 using Shopping.Cart.Infrastructure;
@@ -59,7 +57,8 @@ app.MapPost("/removeitem",
     async ([FromBody] RemoveItemCommand request, [FromServices] IEventStore eventStore, [FromServices] RemoveItemCommandHandler removeItemCommandHandler) =>
     {
         object[] stream = await eventStore.ReadStream(request.CartId.ToString());
-        var uncommittedEvents = removeItemCommandHandler.Handle(stream, request);
+        Cart state = stream.Aggregate(Cart.Initial, Cart.Evolve);
+        var uncommittedEvents = removeItemCommandHandler.Handle(state, request);
         await eventStore.AppendToStream(request.CartId.ToString(), uncommittedEvents);
 
     });
@@ -67,7 +66,8 @@ app.MapPost("/clearcart",
     async ([FromBody] CartClearedCommand request, [FromServices] IEventStore eventStore, [FromServices] ClearCartCommandHandler clearCartCommandHandler) =>
     {
         object[] stream = await eventStore.ReadStream(request.CartId.ToString());
-        var result = clearCartCommandHandler.Handle(stream, request);
+        Cart state = stream.Aggregate(Cart.Initial, Cart.Evolve);
+        var result = clearCartCommandHandler.Handle(state, request);
         await eventStore.AppendToStream(request.CartId.ToString(), result);
     });
 
@@ -83,8 +83,9 @@ app.MapPost("/submit-cart",
         object[] cartStream = await eventStore.ReadStream(request.CartId.ToString());
         object[] inventoriesStream = await eventStore.ReadStream("inventories");
         
+        Cart state = cartStream.Aggregate(Cart.Initial, Cart.Evolve);
         IDictionary<Guid, int> inventoriesSV = inventoriesProjector.Project(inventoriesStream);
-        var uncommittedEvents = submitCartCommandHandler.Handle(cartStream, inventoriesSV, request);
+        var uncommittedEvents = submitCartCommandHandler.Handle(state, inventoriesSV, request);
         await eventStore.AppendToStream(request.CartId.ToString(), uncommittedEvents);
         await cartPublisher.RunAsync();
     });

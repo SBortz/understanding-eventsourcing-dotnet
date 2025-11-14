@@ -1,3 +1,4 @@
+using Shopping.Cart.Domain;
 using Shopping.Cart.EventStore;
 
 namespace Shopping.Cart.Slices;
@@ -23,8 +24,9 @@ public class CartPublisherProcessor(
             foreach (SubmittedCartDataSV cartToBePublished in cartsToBePublished)
             {
                 object[] cartStream = await eventStore.ReadStream(cartToBePublished.CartId.ToString());
+                Domain.Cart state = cartStream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
                 
-                IEnumerable<object> uncommittedEvents = await publishCartCommandHandler.HandleAsync(cartStream, new PublishCartCommand(cartToBePublished.CartId, 
+                IEnumerable<object> uncommittedEvents = await publishCartCommandHandler.HandleAsync(state, new PublishCartCommand(cartToBePublished.CartId, 
                     cartToBePublished
                         .OrderedProducts
                         .Select(x => new PublishCartCommand.OrderedProduct(x.ProductId, x.Price)),

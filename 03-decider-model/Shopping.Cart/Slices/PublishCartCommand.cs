@@ -10,12 +10,10 @@ public record PublishCartCommand(Guid CartId, IEnumerable<PublishCartCommand.Ord
     public record OrderedProduct(Guid ProductId, double Price);
 };
 
-public class PublishCartCommandHandler(IKafkaPublisher kafkaPublisher) : IAsyncCommandHandler<PublishCartCommand>
+public class PublishCartCommandHandler(IKafkaPublisher kafkaPublisher) : IAsyncCommandHandler<PublishCartCommand, Domain.Cart>
 {
-    public async Task<IList<object>> HandleAsync(object[] stream, PublishCartCommand command)
+    public async Task<IList<object>> HandleAsync(Domain.Cart state, PublishCartCommand command)
     {
-        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
-
         try
         {
             await kafkaPublisher.PublishAsync("published_carts", new ExternalCartPublished(command.CartId,

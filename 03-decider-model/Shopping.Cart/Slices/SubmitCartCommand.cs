@@ -10,10 +10,8 @@ public record SubmitCartCommand(Guid CartId, IList<SubmitCartCommand.OrderedProd
 
 public class SubmitCartCommandHandler
 {
-    public IList<object> Handle(object[] stream, IDictionary<Guid, int> inventoriesSV, SubmitCartCommand submitCart)
+    public IList<object> Handle(Domain.Cart state, IDictionary<Guid, int> inventoriesSV, SubmitCartCommand submitCart)
     {
-        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
-
         CheckInventory(state, inventoriesSV);
         
         if (!state.CartItems.Any())

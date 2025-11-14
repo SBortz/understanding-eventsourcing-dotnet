@@ -1,4 +1,3 @@
-using Shopping.Cart.Infrastructure;
 using Shopping.Cart.Slices;
 
 namespace Shopping.Cart.Domain;
@@ -45,8 +44,9 @@ public record Cart(
                 var newCartItems = new Dictionary<Guid, Guid>(state.CartItems);
                 var newProductPrice = new Dictionary<Guid, double>(state.productPrice);
                 
+                var productId = newCartItems[itemArchived.ItemId];
                 newCartItems.Remove(itemArchived.ItemId);
-                newProductPrice.Remove(newCartItems[itemArchived.ItemId]);
+                newProductPrice.Remove(productId);
                 
                 return state with
                 {
