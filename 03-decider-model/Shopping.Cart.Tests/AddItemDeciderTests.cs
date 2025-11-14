@@ -9,10 +9,10 @@ public class AddItemDeciderTests
     public void CartSessionCreatedAutomatically()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
-
         object[] stream = [];
         Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
-        var uncommittedEvents = AddItemDecider.Handle(state, new AddItemCommand(
+        
+        IList<object> uncommittedEvents = AddItemDecider.Handle(state, new AddItemCommand(
             cartId,
             "Description",
             "Image",
@@ -28,7 +28,6 @@ public class AddItemDeciderTests
     public void AddsMaximum3Items()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
-
         object[] stream = new object[]
         {
             new CartCreated(CartId: cartId),
@@ -36,7 +35,6 @@ public class AddItemDeciderTests
             new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), Guid.NewGuid()),
             new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), Guid.NewGuid()),
         };
-        
         Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
 
         Assert.Throws<TooManyItemsInCartException>(() =>
