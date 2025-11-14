@@ -13,13 +13,13 @@ public record AddItemCommand(
     Guid ProductId
 );
 
-public class AddItemCommandHandler : ICommandHandler<AddItemCommand>
+public class AddItemCommandHandler : ICommandHandler<AddItemCommand, Domain.Cart>
 {
-    public IList<object> Handle(object[] stream, AddItemCommand command)
+    public IList<object> Handle(Domain.Cart state, AddItemCommand command)
     {
         IList<object> events = new List<object>();
         
-        Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
+        
 
         if (state.CartId == null)
         {

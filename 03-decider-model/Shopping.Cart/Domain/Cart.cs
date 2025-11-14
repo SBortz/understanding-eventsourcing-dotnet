@@ -1,3 +1,4 @@
+using Shopping.Cart.Infrastructure;
 using Shopping.Cart.Slices;
 
 namespace Shopping.Cart.Domain;

@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc;
 using Shopping.Cart;
+using Shopping.Cart.Domain;
 using Shopping.Cart.EventStore;
 using Shopping.Cart.Infrastructure;
 using Shopping.Cart.Slices;
@@ -44,7 +45,8 @@ app.MapPost("/additem",
     async ([FromBody] AddItemCommand command, [FromServices] IEventStore eventStore, [FromServices] AddItemCommandHandler addItemCommandHandler) =>
     {
         var stream = await eventStore.ReadStream(command.CartId.ToString());
-        var uncommittedEvents = addItemCommandHandler.Handle(stream, command);
+        Cart state = stream.Aggregate(Cart.Initial, Cart.Evolve);
+        var uncommittedEvents = addItemCommandHandler.Handle(state, command);
         await eventStore.AppendToStream(command.CartId.ToString(), uncommittedEvents);
     });
 app.MapGet("/{cartId}/cartitems", 
