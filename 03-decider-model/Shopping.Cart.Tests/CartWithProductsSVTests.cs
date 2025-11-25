@@ -15,8 +15,7 @@ public class CartWithProductsSVTests
             new CartCreated(CartId: cartId),
             new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), productId),
         ];
-        CartsWithProductsProjector cartsWithProductsProjector = new CartsWithProductsProjector();
-        IList<ProductInCart> stateView = cartsWithProductsProjector.Project(given);
+        IList<ProductInCart> stateView = CartsWithProductsProjector.Project(given);
         
         Assert.That(stateView.Count, Is.EqualTo(1));
         Assert.That(stateView[0].CartId, Is.EqualTo(cartId));
@@ -37,8 +36,7 @@ public class CartWithProductsSVTests
             new ItemArchived(cartId, itemId),
         ];
         
-        CartsWithProductsProjector cartsWithProductsProjector = new CartsWithProductsProjector();
-        IList<ProductInCart> stateView = cartsWithProductsProjector.Project(given);
+        IList<ProductInCart> stateView = CartsWithProductsProjector.Project(given);
         
         Assert.That(stateView.Count, Is.EqualTo(0));
     }    
@@ -57,8 +55,7 @@ public class CartWithProductsSVTests
             new ItemRemoved(itemId, cartId),
         ];
         
-        CartsWithProductsProjector cartsWithProductsProjector = new CartsWithProductsProjector();
-        IList<ProductInCart> stateView = cartsWithProductsProjector.Project(given);
+        IList<ProductInCart> stateView = CartsWithProductsProjector.Project(given);
         
         Assert.That(stateView.Count, Is.EqualTo(0));
     }
@@ -76,8 +73,7 @@ public class CartWithProductsSVTests
             new CartClearedCommand(cartId),
         ];
         
-        CartsWithProductsProjector cartsWithProductsProjector = new CartsWithProductsProjector();
-        IList<ProductInCart> stateView = cartsWithProductsProjector.Project(given);
+        IList<ProductInCart> stateView = CartsWithProductsProjector.Project(given);
         
         Assert.That(stateView.Count, Is.EqualTo(0));
     }

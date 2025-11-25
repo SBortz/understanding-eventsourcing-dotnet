@@ -13,8 +13,7 @@ public class CartItemsSVTests
             new CartCreated(CartId: cartId),
         ];
         
-        CartItemsProjector cartItemsProjector = new CartItemsProjector();
-        CartItemsStateView state = cartItemsProjector.Project(given);
+        CartItemsStateView state = CartItemsProjector.Project(given);
         
         Assert.That(state.CartId, Is.EqualTo(cartId));
         Assert.That(state.CartItems.Count, Is.EqualTo(0));
@@ -32,8 +31,7 @@ public class CartItemsSVTests
             new ItemAdded(cartId, "Description", "Image", 10, item1Id, product1Id),
         ];
         
-        CartItemsProjector cartItemsProjector = new CartItemsProjector();
-        CartItemsStateView state = cartItemsProjector.Project(given);
+        CartItemsStateView state = CartItemsProjector.Project(given);
         
         Assert.That(state.CartId, Is.EqualTo(cartId));
         Assert.That(state.CartItems.Count, Is.EqualTo(1));
@@ -57,8 +55,7 @@ public class CartItemsSVTests
             new ItemAdded(cartId, "Description", "Image", 10, item2Id, product2Id),
         ];
         
-        CartItemsProjector cartItemsProjector = new CartItemsProjector();
-        CartItemsStateView state = cartItemsProjector.Project(given);
+        CartItemsStateView state = CartItemsProjector.Project(given);
         
         Assert.That(state.CartId, Is.EqualTo(cartId));
         Assert.That(state.CartItems.Count, Is.EqualTo(2));
