@@ -20,9 +20,9 @@ public class CartItem
     public Guid ProductId { get; set; }
 }
 
-public class CartItemsProjector
+public static class CartItemsProjector
 {
-    public CartItemsStateView Projects(object[] stream)
+    public static CartItemsStateView Project(object[] stream)
     {
         return stream.Aggregate(new CartItemsStateView(), (sv, @event) =>
         {

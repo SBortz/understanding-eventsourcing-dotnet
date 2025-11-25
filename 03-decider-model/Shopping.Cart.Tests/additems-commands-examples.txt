@@ -1,0 +1,41 @@
+﻿CartId: 3fa85f64-5717-4562-b3fc-2c963f66afa6
+
+{
+  "cartId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "description": "A nice mug",
+  "image": ".../coffeemug.jpg",
+  "price": 14.99,
+  "totalPrice": 0,
+  "itemId": "3fa85f64-5717-4562-b3fc-2c963f66afa1",
+  "productId": "3fa85f64-5717-4562-b3fc-2c963f66afb1"
+}
+
+{
+  "cartId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "description": "Spoon",
+  "image": ".../spoon.jpg",
+  "price": 1.99,
+  "totalPrice": 0,
+  "itemId": "3fa85f64-5717-4562-b3fc-2c963f66afa2",
+  "productId": "3fa85f64-5717-4562-b3fc-2c963f66afb2"
+}
+
+{
+  "cartId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "description": "Table",
+  "image": ".../table.jpg",
+  "price": 149.99,
+  "totalPrice": 0,
+  "itemId": "3fa85f64-5717-4562-b3fc-2c963f66afa3",
+  "productId": "3fa85f64-5717-4562-b3fc-2c963f66afb3"
+}
+
+{
+  "cartId": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "description": "Chair",
+  "image": ".../chair.jpg",
+  "price": 27.99,
+  "totalPrice": 0,
+  "itemId": "3fa85f64-5717-4562-b3fc-2c963f66afa4",
+  "productId": "3fa85f64-5717-4562-b3fc-2c963f66afb4"
+}

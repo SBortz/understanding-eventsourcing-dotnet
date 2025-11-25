@@ -5,7 +5,6 @@ namespace Shopping.Cart.Slices;
 
 public class ArchiveItemSchedulerProcessor(IEventStore eventStore, 
     ChangedPricesProjector changedPricesProjector, 
-    CartsWithProductsProjector cartsWithProductsProjector,
     ILogger<ArchiveItemSchedulerProcessor> logger)
 {
     private readonly SemaphoreSlim semaphore = new(1, 1);
@@ -19,7 +18,7 @@ public class ArchiveItemSchedulerProcessor(IEventStore eventStore,
             object[] pricingStream = await eventStore.ReadStream("pricing");
             IDictionary<Guid, ChangedPrice> productsToArchive = changedPricesProjector.Project(pricingStream);
             object[] all = await eventStore.ReadAll();
-            IList<ProductInCart> productsInCarts = cartsWithProductsProjector.Project(all);
+            IList<ProductInCart> productsInCarts = CartsWithProductsProjector.Project(all);
             
             LogItemsToArchive(productsToArchive);
             LogProductsInCart(productsInCarts);

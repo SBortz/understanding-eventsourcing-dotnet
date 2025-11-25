@@ -4,9 +4,9 @@ namespace Shopping.Cart.Slices;
 
 public record ProductInCart(Guid CartId, Guid ProductId);
 
-public class CartsWithProductsProjector
+public static class CartsWithProductsProjector
 {
-    public IList<ProductInCart> Project(object[] stream)
+    public static IList<ProductInCart> Project(object[] stream)
     {
         IDictionary<Guid, Guid> itemIdToProductIdMap = new Dictionary<Guid, Guid>();
         

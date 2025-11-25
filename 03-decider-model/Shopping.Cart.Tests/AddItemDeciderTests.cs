@@ -28,13 +28,13 @@ public class AddItemDeciderTests
     public void AddsMaximum3Items()
     {
         Guid cartId = new Guid("00000000-0000-0000-0000-000000000001");
-        object[] stream = new object[]
-        {
+        object[] stream =
+        [
             new CartCreated(CartId: cartId),
             new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), Guid.NewGuid()),
             new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), Guid.NewGuid()),
-            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), Guid.NewGuid()),
-        };
+            new ItemAdded(cartId, "Description", "Image", 10, Guid.NewGuid(), Guid.NewGuid())
+        ];
         Domain.Cart state = stream.Aggregate(Domain.Cart.Initial, Domain.Cart.Evolve);
 
         Assert.Throws<TooManyItemsInCartException>(() =>

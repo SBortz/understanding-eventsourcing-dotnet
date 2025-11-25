@@ -7,12 +7,10 @@ using Shopping.Cart.Slices;
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddOpenApi();
-builder.Services.AddTransient<CartItemsProjector>();
 builder.Services.AddTransient<ChangeInventoryCommandHandler>();
 builder.Services.AddTransient<InventoriesProjector>();
 builder.Services.AddTransient<ChangePriceCommandHandler>();
 builder.Services.AddSingleton<ArchiveItemSchedulerProcessor>();
-builder.Services.AddTransient<CartsWithProductsProjector>();
 builder.Services.AddTransient<ChangedPricesProjector>();
 builder.Services.AddSingleton<CartPublisherProcessor>();
 builder.Services.AddTransient<SubmittedCartDataProjector>();
@@ -43,10 +41,10 @@ app.MapPost("/additem",
         await eventStore.AppendToStream(command.CartId.ToString(), uncommittedEvents);
     });
 app.MapGet("/{cartId}/cartitems", 
-    async (string cartId, [FromServices] IEventStore eventStore, [FromServices] CartItemsProjector cartItemsStateViewHandler) =>
+    async (string cartId, [FromServices] IEventStore eventStore) =>
     {
         object[] stream = await eventStore.ReadStream(cartId);
-        return cartItemsStateViewHandler.Projects(stream);
+        return CartItemsProjector.Project(stream);
     });
 app.MapPost("/removeitem",
     async ([FromBody] RemoveItemCommand request, [FromServices] IEventStore eventStore) =>
@@ -100,10 +98,10 @@ app.MapPost("/debug/simulate-price-changed", async ([FromBody] PriceChangedExter
     await eventStore.AppendToStream("pricing", [uncommittedEvent]);
     await archiveItemProcessor.RunAsync();
 });
-app.MapGet("/debug/carts-with-products", async ([FromServices] IEventStore eventStore, [FromServices] CartsWithProductsProjector cartsWithProductsSV ) =>
+app.MapGet("/debug/carts-with-products", async ([FromServices] IEventStore eventStore) =>
 {
     object[] all = await eventStore.ReadAll();
-    return cartsWithProductsSV.Project(all);
+    return CartsWithProductsProjector.Project(all);
 });
 
 app.Run();
