@@ -79,7 +79,7 @@ export default function InfoPage() {
             both documentation and test cases.
           </p>
           <p>
-            <a href="https://giraflow.dev/app#https://raw.githubusercontent.com/SBortz/understanding-eventsourcing-dotnet/refs/heads/feat/boundless-typescript/04-boundless-typescript/shopping.giraflow.json" target="_blank" rel="noopener noreferrer">
+            <a href="https://giraflow.dev/app#https://raw.githubusercontent.com/SBortz/understanding-eventsourcing-dotnet/refs/heads/main/04-boundless-typescript/shopping.giraflow.json" target="_blank" rel="noopener noreferrer">
               🔗 View the Shopping Cart Event Model on giraflow.dev
             </a>
           </p>
@@ -131,10 +131,12 @@ export default function InfoPage() {
           <h2>🏗️ Architecture</h2>
           <div className="info-code">
             <ul>
-              <li><strong>Backend:</strong> Express + TypeScript + BoundlessDB (SQLite)</li>
+              <li><strong>Hosting:</strong> Vercel (Serverless Functions) + Supabase (PostgreSQL)</li>
+              <li><strong>Backend:</strong> TypeScript + BoundlessDB (PostgresStorage)</li>
               <li><strong>Frontend:</strong> React 19 + Vite + React Router</li>
               <li><strong>Pattern:</strong> Decider Pattern — each command handler reads events, builds state, validates, produces new events</li>
-              <li><strong>Storage:</strong> Single SQLite file (<code>shopping-cart.db</code>), persistent across restarts</li>
+              <li><strong>Hexagonal:</strong> Shared usecases, switchable heads (Express for local dev, Vercel Functions for production)</li>
+              <li><strong>Storage:</strong> Supabase PostgreSQL — BoundlessDB uses SERIALIZABLE transactions for multi-node safety</li>
               <li><strong>No ORM, no separate DB:</strong> Events are the single source of truth</li>
             </ul>
           </div>
@@ -143,7 +145,7 @@ export default function InfoPage() {
         <section className="info-section">
           <h2>📂 Source Code</h2>
           <p>
-            <a href="https://github.com/SBortz/understanding-eventsourcing-dotnet/tree/feat/boundless-typescript/04-boundless-typescript" target="_blank" rel="noopener noreferrer">
+            <a href="https://github.com/SBortz/understanding-eventsourcing-dotnet/tree/main/04-boundless-typescript" target="_blank" rel="noopener noreferrer">
               🔗 GitHub: SBortz/understanding-eventsourcing-dotnet
             </a>
           </p>
