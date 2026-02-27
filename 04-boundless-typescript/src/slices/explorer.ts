@@ -17,13 +17,16 @@ function getNestedValue(obj: unknown, path: string): unknown {
 // Usecases
 // ---------------------------------------------------------------------------
 
-export async function getDebugEvents() {
+export async function getDebugEvents(limit = 100) {
   const store = await getStore();
   const result = await store.read({
     conditions: ALL_EVENT_TYPES.map(type => ({ type })),
   });
 
-  return result.events.map(e => {
+  // Take only the last N events (newest first for display)
+  const latest = result.events.slice(-limit);
+
+  return { total: result.events.length, events: latest.map(e => {
     // Extract keys from consistency config
     const config = consistency.eventTypes[e.type];
     const keys: Array<{ name: string; value: string }> = [];
@@ -43,10 +46,10 @@ export async function getDebugEvents() {
       keys,
       timestamp: e.timestamp,
     };
-  });
+  }) };
 }
 
-export async function getDebugState() {
+export async function getDebugState(cartLimit = 50, orderLimit = 50) {
   const store = await getStore();
   const result = await store.read({
     conditions: ALL_EVENT_TYPES.map(type => ({ type })),
@@ -89,12 +92,23 @@ export async function getDebugState() {
     carts[cartId] = { ...view, isSubmitted, lastPosition: lastPos };
   }
 
+  // Limit orders (newest last in array, so slice from end)
+  const limitedOrders = orders.slice(-orderLimit);
+
+  // Limit carts: sort by lastPosition desc, take first N
+  const sortedCartEntries = Object.entries(carts)
+    .sort(([, a]: any, [, b]: any) => b.lastPosition - a.lastPosition)
+    .slice(0, cartLimit);
+  const limitedCarts = Object.fromEntries(sortedCartEntries);
+
   return {
     inventories,
-    orders,
+    orders: limitedOrders,
+    totalOrders: orders.length,
     prices,
     cartsWithProducts,
-    carts,
+    carts: limitedCarts,
+    totalCarts: Object.keys(carts).length,
     totalEvents: result.events.length,
   };
 }

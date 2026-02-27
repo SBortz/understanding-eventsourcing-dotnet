@@ -22,6 +22,8 @@ interface StateView {
   orders: Array<{ cartId: string; totalPrice: number; orderedProducts: Array<{ productId: string; totalPrice: number }> }>;
   prices: Record<string, number>;
   carts: Record<string, CartView>;
+  totalCarts: number;
+  totalOrders: number;
   totalEvents: number;
 }
 
@@ -70,7 +72,7 @@ export default function StateViewsPage() {
         {/* CartItemsStateView per cart */}
         <div className="state-card wide">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h3 style={{ margin: 0 }}>🛒 CartItemsStateView ({Object.keys(state.carts).length} carts)</h3>
+            <h3 style={{ margin: 0 }}>🛒 CartItemsStateView ({Object.keys(state.carts).length}{state.totalCarts > Object.keys(state.carts).length ? ` of ${state.totalCarts}` : ''} carts)</h3>
             <div className="cart-filter-toggle">
               <button
                 className={`cart-filter-btn ${cartFilter === 'all' ? 'active' : ''}`}
@@ -153,7 +155,7 @@ export default function StateViewsPage() {
 
         {/* Orders */}
         <div className="state-card wide">
-          <h3>📋 OrdersSV ({state.orders.length})</h3>
+          <h3>📋 OrdersSV ({state.orders.length}{state.totalOrders > state.orders.length ? ` of ${state.totalOrders}` : ''})</h3>
           {state.orders.length === 0 ? (
             <p className="state-empty">No orders yet</p>
           ) : (

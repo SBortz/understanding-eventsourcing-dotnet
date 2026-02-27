@@ -26,6 +26,7 @@ const EVENT_COLORS: Record<string, string> = {
 export default function EventsPage() {
   const [events, setEvents] = useState<StoredEvent[]>([]);
   const [totalEvents, setTotalEvents] = useState(0);
+  const [shownEvents, setShownEvents] = useState(0);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<string>('');
   const [filterKey, setFilterKey] = useState<string>('');
@@ -35,8 +36,9 @@ export default function EventsPage() {
     try {
       const res = await fetch(`${BASE}/debug-events`);
       const data = await res.json();
-      setEvents(data);
-      setTotalEvents(data.length);
+      setEvents(data.events ?? data);
+      setTotalEvents(data.total ?? (data.events ?? data).length);
+      setShownEvents((data.events ?? data).length);
     } catch {
       // ignore
     } finally {
@@ -66,7 +68,7 @@ export default function EventsPage() {
     <div className="page" style={{ maxWidth: 1100 }}>
       <h1>📜 Events</h1>
       <p className="subtitle">
-        Live event stream — <strong>{totalEvents}</strong> events total
+        Showing last <strong>{shownEvents}</strong> of <strong>{totalEvents}</strong> events
       </p>
 
       <div className="explorer-tabs">
