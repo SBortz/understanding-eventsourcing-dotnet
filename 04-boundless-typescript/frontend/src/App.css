@@ -704,6 +704,135 @@ h1 {
 .state-value.danger { color: #e74c3c; }
 .state-value.warn { color: #e67e22; }
 
+/* Cart detail views */
+.cart-views {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cart-view-card {
+  background: #f8f8f8;
+  border-radius: 8px;
+  padding: 12px 16px;
+  border-left: 4px solid #27ae60;
+}
+
+.cart-view-card.submitted {
+  border-left-color: #999;
+  opacity: 0.7;
+}
+
+.cart-view-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.cart-view-id {
+  font-family: monospace;
+  font-size: 12px;
+  color: #666;
+}
+
+.cart-view-link {
+  text-decoration: none;
+  color: #3498db;
+  cursor: pointer;
+}
+
+.cart-view-link:hover {
+  text-decoration: underline;
+  color: #2980b9;
+}
+
+.cart-status {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.cart-status.active {
+  background: #d4edda;
+  color: #155724;
+}
+
+.cart-status.submitted {
+  background: #e2e3e5;
+  color: #6c757d;
+}
+
+.cart-status.empty {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.cart-view-total {
+  margin-left: auto;
+  font-size: 16px;
+  font-weight: 700;
+  color: #27ae60;
+}
+
+.cart-view-items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.cart-view-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: #fff;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
+.cart-view-emoji {
+  font-size: 16px;
+}
+
+.cart-view-product {
+  flex: 1;
+  color: #2c3e50;
+}
+
+.cart-view-price {
+  font-weight: 600;
+  color: #27ae60;
+}
+
+.cart-filter-toggle {
+  display: flex;
+  gap: 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.cart-filter-btn {
+  padding: 4px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  background: #fff;
+  color: #999;
+  cursor: pointer;
+}
+
+.cart-filter-btn:not(:last-child) {
+  border-right: 1px solid #ddd;
+}
+
+.cart-filter-btn.active {
+  background: #27ae60;
+  color: #fff;
+}
+
 /* ===== Info Page ===== */
 .info-content {
   max-width: 720px;

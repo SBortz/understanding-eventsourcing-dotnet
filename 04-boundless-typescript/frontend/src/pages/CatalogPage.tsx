@@ -9,7 +9,7 @@ function stockLabel(count: number | undefined): {
   className: string;
 } {
   if (count === undefined)
-    return { text: 'Unknown', className: 'stock-badge stock-out' };
+    return { text: 'Not Available', className: 'stock-badge stock-out' };
   if (count <= 0)
     return { text: 'Out of Stock', className: 'stock-badge stock-out' };
   if (count <= 5)
@@ -114,7 +114,7 @@ export default function CatalogPage() {
         {PRODUCTS.map((product) => {
           const stock = inventories[product.productId];
           const label = stockLabel(stock);
-          const outOfStock = stock !== undefined && stock <= 0;
+          const outOfStock = stock === undefined || stock <= 0;
           const currentPrice = getPrice(product);
           const priceChanged = currentPrice !== product.price;
 

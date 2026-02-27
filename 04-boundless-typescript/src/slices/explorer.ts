@@ -50,46 +50,54 @@ export function explorerRoutes(app: Express): void {
       });
 
       // Import projections dynamically to avoid circular deps
-      const { projectCartItems } = await import('./cart-items.js');
       const { projectOrders } = await import('./orders.js');
       const { projectCurrentPrices } = await import('./change-price.js');
+      const { projectCartsWithProducts } = await import('./carts-with-products.js');
+      const { projectCartItems } = await import('./cart-items.js');
 
-      // Build inventories
+      const allTyped = result.events.map(e => ({ type: e.type, data: e.data }) as any);
+
+      // InventoriesSV
       const inventories: Record<string, number> = {};
-      // Build carts map (cartId → events)
-      const cartEvents = new Map<string, typeof result.events>();
-
       for (const e of result.events) {
-        const data = e.data as Record<string, unknown>;
-
         if (e.type === 'InventoryChanged') {
+          const data = e.data as Record<string, unknown>;
           inventories[data.productId as string] = data.inventory as number;
         }
+      }
 
-        const cartId = data.cartId as string | undefined;
-        if (cartId) {
-          if (!cartEvents.has(cartId)) cartEvents.set(cartId, []);
-          cartEvents.get(cartId)!.push(e);
+      // OrdersSV
+      const orders = projectOrders(allTyped);
+
+      // ChangedPricesSV
+      const prices = projectCurrentPrices(allTyped);
+
+      // CartsWithProductsSV
+      const cartsWithProducts = projectCartsWithProducts(allTyped);
+
+      // CartItemsStateView per cart (track last event position for sort order)
+      const cartLastPosition = new Map<string, number>();
+      for (let i = 0; i < result.events.length; i++) {
+        const data = result.events[i].data as Record<string, unknown>;
+        if (data.cartId) {
+          cartLastPosition.set(data.cartId as string, Number(result.events[i].position));
         }
       }
 
-      // Build cart projections
       const carts: Record<string, unknown> = {};
-      for (const [cartId, events] of cartEvents) {
-        const typed = events.map(e => ({ type: e.type, data: e.data }) as any);
-        carts[cartId] = projectCartItems(typed);
+      for (const [cartId, lastPos] of cartLastPosition) {
+        const cartEvts = allTyped.filter((e: any) => e.data.cartId === cartId);
+        const view = projectCartItems(cartEvts);
+        const isSubmitted = cartEvts.some((e: any) => e.type === 'CartSubmitted');
+        carts[cartId] = { ...view, isSubmitted, lastPosition: lastPos };
       }
-
-      // Build orders
-      const allTyped = result.events.map(e => ({ type: e.type, data: e.data }) as any);
-      const orders = projectOrders(allTyped);
-      const prices = projectCurrentPrices(allTyped);
 
       res.status(200).json({
         inventories,
-        carts,
         orders,
         prices,
+        cartsWithProducts,
+        carts,
         totalEvents: result.events.length,
       });
     } catch (error: unknown) {

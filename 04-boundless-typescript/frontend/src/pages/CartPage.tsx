@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { PRODUCTS } from '../products';
 import {
   fetchCartItems,
@@ -19,8 +19,11 @@ export default function CartPage() {
     type: 'success' | 'error';
   } | null>(null);
   const navigate = useNavigate();
+  const params = useParams<{ cartId?: string }>();
 
-  const cartId = getCartId();
+  // URL param = read-only view of a specific cart, otherwise own cart from localStorage
+  const cartId = params.cartId || getCartId();
+  const isReadOnly = !!params.cartId;
 
   const refresh = useCallback(async () => {
     try {
@@ -125,13 +128,19 @@ export default function CartPage() {
 
   return (
     <div className="page">
-      <h1>Your Shopping Cart</h1>
+      <h1>{isReadOnly ? 'Cart Viewer' : 'Your Shopping Cart'}</h1>
 
-      <p className="subtitle">Review your items and proceed to checkout</p>
+      <p className="subtitle">
+        {isReadOnly
+          ? <span style={{ fontFamily: 'monospace', fontSize: 13 }}>{cartId}</span>
+          : 'Review your items and proceed to checkout'}
+      </p>
 
-      <div className="cart-limit-notice">
-        <strong>Note:</strong> A cart can hold a maximum of 3 items.
-      </div>
+      {!isReadOnly && (
+        <div className="cart-limit-notice">
+          <strong>Note:</strong> A cart can hold a maximum of 3 items.
+        </div>
+      )}
 
       {items.length === 0 ? (
         <div className="empty-cart">
@@ -163,13 +172,15 @@ export default function CartPage() {
                       ${item.price.toFixed(2)}
                     </div>
                   </div>
-                  <button
-                    className="remove-button"
-                    disabled={busy}
-                    onClick={() => handleRemove(item.itemId)}
-                  >
-                    Remove
-                  </button>
+                  {!isReadOnly && (
+                    <button
+                      className="remove-button"
+                      disabled={busy}
+                      onClick={() => handleRemove(item.itemId)}
+                    >
+                      Remove
+                    </button>
+                  )}
                 </div>
               );
             })}
@@ -193,25 +204,34 @@ export default function CartPage() {
               <span className="value">${totalPrice.toFixed(2)}</span>
             </div>
 
-            <button
-              className="submit-button"
-              disabled={busy || items.length === 0}
-              onClick={handleSubmit}
-            >
-              {busy ? 'Submitting...' : 'Submit Cart'}
-            </button>
+            {!isReadOnly && (
+              <>
+                <button
+                  className="submit-button"
+                  disabled={busy || items.length === 0}
+                  onClick={handleSubmit}
+                >
+                  {busy ? 'Submitting...' : 'Submit Cart'}
+                </button>
 
-            <button
-              className="clear-button"
-              disabled={busy}
-              onClick={handleClear}
-            >
-              Clear Cart
-            </button>
+                <button
+                  className="clear-button"
+                  disabled={busy}
+                  onClick={handleClear}
+                >
+                  Clear Cart
+                </button>
 
-            <Link to="/" className="continue-link">
-              Continue Shopping
-            </Link>
+                <Link to="/" className="continue-link">
+                  Continue Shopping
+                </Link>
+              </>
+            )}
+            {isReadOnly && (
+              <Link to="/explorer" className="continue-link" style={{ marginTop: 16 }}>
+                ← Back to Explorer
+              </Link>
+            )}
           </div>
         </div>
       )}
