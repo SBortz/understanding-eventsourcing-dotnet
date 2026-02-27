@@ -1,5 +1,9 @@
 const CART_ID_KEY = 'shopping-cart-id';
 
+export function generateItemId(): string {
+  return generateId();
+}
+
 function generateId(): string {
   // crypto.randomUUID() requires secure context (HTTPS/localhost)
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {

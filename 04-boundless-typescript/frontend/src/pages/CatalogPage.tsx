@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { PRODUCTS } from '../products';
 import { fetchInventories, fetchCartItems, addItem } from '../api';
-import { getCartId } from '../cartId';
+import { getCartId, generateItemId } from '../cartId';
 import type { Inventories } from '../types';
 
 function stockLabel(count: number | undefined): {
@@ -67,7 +67,7 @@ export default function CatalogPage() {
     try {
       await addItem({
         cartId,
-        itemId: crypto.randomUUID(),
+        itemId: generateItemId(),
         productId: product.productId,
         description: product.description,
         image: product.emoji,
