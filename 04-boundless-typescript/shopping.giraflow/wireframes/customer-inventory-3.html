@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Catalog - Shopping Cart</title>
+  <script type="module" src="/lib/wired-elements.js"></script>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f5f5f5;
+      padding: 20px;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    h1 {
+      color: #2c3e50;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+    .subtitle {
+      text-align: center;
+      color: #666;
+      margin-bottom: 30px;
+    }
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .product-card {
+      padding: 15px;
+    }
+    .product-image {
+      width: 100%;
+      height: 150px;
+      background: #e0e0e0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+      font-size: 48px;
+    }
+    .product-name {
+      font-size: 18px;
+      font-weight: bold;
+      color: #2c3e50;
+      margin-bottom: 8px;
+    }
+    .product-price {
+      font-size: 22px;
+      color: #27ae60;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+    .stock-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    .stock-badge {
+      padding: 4px 10px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: bold;
+    }
+    .stock-high {
+      background: #d4edda;
+      color: #155724;
+    }
+    .stock-medium {
+      background: #fff3cd;
+      color: #856404;
+    }
+    .stock-low {
+      background: #f8d7da;
+      color: #721c24;
+    }
+    .stock-count {
+      font-size: 13px;
+      color: #666;
+    }
+    .add-button {
+      width: 100%;
+      display: block;
+    }
+    .cart-summary {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 15px 20px;
+    }
+    .cart-summary h3 {
+      margin: 0 0 5px 0;
+      font-size: 14px;
+      color: #666;
+    }
+    .cart-count {
+      font-size: 24px;
+      font-weight: bold;
+      color: #2c3e50;
+    }
+  </style>
+</head>
+<body>
+  <wired-card elevation="2" class="cart-summary">
+    <h3>Your Cart</h3>
+    <span class="cart-count">0 items</span>
+  </wired-card>
+
+  <h1>Product Catalog</h1>
+  <p class="subtitle">Browse our products and add them to your cart</p>
+
+  <div class="product-grid">
+    <!-- Product 1: Wireless Mouse -->
+    <wired-card elevation="2" class="product-card">
+      <div class="product-image">🖱️</div>
+      <div class="product-name">Wireless Mouse</div>
+      <div class="product-price">$29.99</div>
+      <div class="stock-info">
+        <span class="stock-badge stock-high">In Stock</span>
+        <span class="stock-count">50 available</span>
+      </div>
+      <wired-button elevation="2" class="add-button">Add to Cart</wired-button>
+    </wired-card>
+
+    <!-- Product 2: Mechanical Keyboard -->
+    <wired-card elevation="2" class="product-card">
+      <div class="product-image">⌨️</div>
+      <div class="product-name">Mechanical Keyboard</div>
+      <div class="product-price">$79.99</div>
+      <div class="stock-info">
+        <span class="stock-badge stock-medium">Low Stock</span>
+        <span class="stock-count">8 available</span>
+      </div>
+      <wired-button elevation="2" class="add-button">Add to Cart</wired-button>
+    </wired-card>
+
+    <!-- Product 3: USB-C Hub -->
+    <wired-card elevation="2" class="product-card">
+      <div class="product-image">🔌</div>
+      <div class="product-name">USB-C Hub</div>
+      <div class="product-price">$49.99</div>
+      <div class="stock-info">
+        <span class="stock-badge stock-high">In Stock</span>
+        <span class="stock-count">25 available</span>
+      </div>
+      <wired-button elevation="2" class="add-button">Add to Cart</wired-button>
+    </wired-card>
+
+    <!-- Product 4: Webcam HD -->
+    <wired-card elevation="2" class="product-card">
+      <div class="product-image">📷</div>
+      <div class="product-name">Webcam HD</div>
+      <div class="product-price">$59.99</div>
+      <div class="stock-info">
+        <span class="stock-badge stock-low">Almost Gone</span>
+        <span class="stock-count">3 available</span>
+      </div>
+      <wired-button elevation="2" class="add-button">Add to Cart</wired-button>
+    </wired-card>
+
+    <!-- Product 5: Monitor Stand -->
+    <wired-card elevation="2" class="product-card">
+      <div class="product-image">🖥️</div>
+      <div class="product-name">Monitor Stand</div>
+      <div class="product-price">$39.99</div>
+      <div class="stock-info">
+        <span class="stock-badge stock-high">In Stock</span>
+        <span class="stock-count">42 available</span>
+      </div>
+      <wired-button elevation="2" class="add-button">Add to Cart</wired-button>
+    </wired-card>
+
+    <!-- Product 6: Headphones -->
+    <wired-card elevation="2" class="product-card">
+      <div class="product-image">🎧</div>
+      <div class="product-name">Wireless Headphones</div>
+      <div class="product-price">$89.99</div>
+      <div class="stock-info">
+        <span class="stock-badge stock-high">In Stock</span>
+        <span class="stock-count">18 available</span>
+      </div>
+      <wired-button elevation="2" class="add-button">Add to Cart</wired-button>
+    </wired-card>
+  </div>
+</body>
+</html>
