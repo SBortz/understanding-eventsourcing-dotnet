@@ -19,7 +19,7 @@ interface CartView {
 
 interface StateView {
   inventories: Record<string, number>;
-  orders: Array<{ cartId: string; totalPrice: number }>;
+  orders: Array<{ cartId: string; totalPrice: number; orderedProducts: Array<{ productId: string; totalPrice: number }> }>;
   prices: Record<string, number>;
   carts: Record<string, CartView>;
   totalEvents: number;
@@ -152,16 +152,30 @@ export default function StateViewsPage() {
         </div>
 
         {/* Orders */}
-        <div className="state-card">
+        <div className="state-card wide">
           <h3>📋 OrdersSV ({state.orders.length})</h3>
           {state.orders.length === 0 ? (
             <p className="state-empty">No orders yet</p>
           ) : (
-            <div className="state-table">
+            <div className="cart-views">
               {state.orders.map((order, i) => (
-                <div className="state-row" key={i}>
-                  <span className="state-key">{order.cartId.substring(0, 8)}…</span>
-                  <span className="state-value">${order.totalPrice.toFixed(2)}</span>
+                <div className="cart-view-card submitted" key={i}>
+                  <div className="cart-view-header">
+                    <Link to={`/cart/${order.cartId}`} className="cart-view-id cart-view-link">{order.cartId.substring(0, 12)}…</Link>
+                    <span className="cart-status submitted">✅ Submitted</span>
+                    <span className="cart-view-total">${order.totalPrice.toFixed(2)}</span>
+                  </div>
+                  {order.orderedProducts && order.orderedProducts.length > 0 && (
+                    <div className="cart-view-items">
+                      {order.orderedProducts.map((p, j) => (
+                        <div className="cart-view-item" key={j}>
+                          <span className="cart-view-emoji">📦</span>
+                          <span className="cart-view-product">{p.productId}</span>
+                          <span className="cart-view-price">${p.totalPrice.toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ))}
             </div>
