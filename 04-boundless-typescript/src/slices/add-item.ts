@@ -1,5 +1,4 @@
-import type { Express } from 'express';
-import type { ShoppingEvent, CartCreated, ItemAdded } from '../domain/events.js';
+import type { ShoppingEvent } from '../domain/events.js';
 import { buildState, type CartState } from '../domain/cart.js';
 import { readCartEvents, appendCartEvents } from '../store/helpers.js';
 
@@ -40,21 +39,10 @@ export function addItemDecider(state: CartState, command: AddItemCommand): Shopp
   return events;
 }
 
-export function addItemRoutes(app: Express): void {
-  app.post('/additem', async (req, res) => {
-    try {
-      const command: AddItemCommand = req.body;
-
-      const existingEvents = await readCartEvents(command.cartId);
-      const state = buildState(existingEvents);
-      const newEvents = addItemDecider(state, command);
-
-      await appendCartEvents(command.cartId, newEvents);
-
-      res.status(200).json({ success: true, events: newEvents });
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      res.status(400).json({ success: false, error: message });
-    }
-  });
+export async function executeAddItem(command: AddItemCommand): Promise<{ success: boolean; events: ShoppingEvent[] }> {
+  const existingEvents = await readCartEvents(command.cartId);
+  const state = buildState(existingEvents);
+  const newEvents = addItemDecider(state, command);
+  await appendCartEvents(command.cartId, newEvents);
+  return { success: true, events: newEvents };
 }

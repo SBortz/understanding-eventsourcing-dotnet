@@ -1,5 +1,4 @@
-import type { Express } from 'express';
-import type { ShoppingEvent, CartSubmitted, InventoryChanged } from '../domain/events.js';
+import type { ShoppingEvent, InventoryChanged } from '../domain/events.js';
 import { buildState, type CartState } from '../domain/cart.js';
 import { readCartEvents, readEventsByType, appendCartEvents, appendEvents } from '../store/helpers.js';
 
@@ -73,32 +72,23 @@ export function submitCartDecider(
   return events;
 }
 
-export function submitCartRoutes(app: Express): void {
-  app.post('/submit-cart', async (req, res) => {
-    try {
-      const command: SubmitCartCommand = req.body;
+export async function executeSubmitCart(command: SubmitCartCommand): Promise<{ success: boolean; events: ShoppingEvent[] }> {
+  const cartEvents = await readCartEvents(command.cartId);
+  const state = buildState(cartEvents);
 
-      const cartEvents = await readCartEvents(command.cartId);
-      const state = buildState(cartEvents);
+  const inventoryEvents = await readEventsByType('InventoryChanged') as InventoryChanged[];
+  const inventories = buildInventories(inventoryEvents);
 
-      const inventoryEvents = await readEventsByType('InventoryChanged') as InventoryChanged[];
-      const inventories = buildInventories(inventoryEvents);
+  const newEvents = submitCartDecider(state, inventories, command);
 
-      const newEvents = submitCartDecider(state, inventories, command);
+  // Separate cart events from inventory events (different keys)
+  const cartOnly = newEvents.filter(e => e.type !== 'InventoryChanged');
+  const inventoryUpdates = newEvents.filter(e => e.type === 'InventoryChanged');
 
-      // Separate cart events from inventory events (different keys)
-      const cartOnly = newEvents.filter(e => e.type !== 'InventoryChanged');
-      const inventoryUpdates = newEvents.filter(e => e.type === 'InventoryChanged');
+  await appendCartEvents(command.cartId, cartOnly);
+  if (inventoryUpdates.length > 0) {
+    await appendEvents(inventoryUpdates);
+  }
 
-      await appendCartEvents(command.cartId, cartOnly);
-      if (inventoryUpdates.length > 0) {
-        await appendEvents(inventoryUpdates);
-      }
-
-      res.status(200).json({ success: true, events: newEvents });
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      res.status(400).json({ success: false, error: message });
-    }
-  });
+  return { success: true, events: newEvents };
 }

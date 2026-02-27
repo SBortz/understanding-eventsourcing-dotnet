@@ -1,4 +1,3 @@
-import type { Express } from 'express';
 import type { ShoppingEvent } from '../domain/events.js';
 import { readEventsByType } from '../store/helpers.js';
 
@@ -26,15 +25,7 @@ export function projectOrders(events: ShoppingEvent[]): Order[] {
   return orders;
 }
 
-export function ordersRoutes(app: Express): void {
-  app.get('/orders', async (_req, res) => {
-    try {
-      const events = await readEventsByType('CartSubmitted');
-      const orders = projectOrders(events);
-      res.status(200).json(orders);
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json({ error: message });
-    }
-  });
+export async function getOrders(): Promise<Order[]> {
+  const events = await readEventsByType('CartSubmitted');
+  return projectOrders(events);
 }
