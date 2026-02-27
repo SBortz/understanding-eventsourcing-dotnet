@@ -16,78 +16,6 @@ export default function InfoPage() {
             stored as an immutable event. The current state (your cart, inventories, orders)
             is always derived by replaying these events.
           </p>
-          <p>
-            This demo is a <strong>TypeScript port</strong> of the .NET implementation from the
-            book, re-implemented using <strong>BoundlessDB</strong> as the event store and
-            the <strong>Decider Pattern</strong> for command handling.
-          </p>
-        </section>
-
-        <section className="info-section">
-          <h2>📖 The Book</h2>
-          <p>
-            This demo is based on the Shopping Cart model from
-            {' '}<strong>Martin Dilger's</strong> book{' '}
-            <a href="https://leanpub.com/eventmodeling-and-eventsourcing" target="_blank" rel="noopener noreferrer">
-              Understanding Event Sourcing
-            </a>.
-            The book introduces the principles of Event Sourcing and Event Modeling,
-            providing practical insights and techniques to design and implement
-            event-sourced systems.
-          </p>
-          <p>
-            Available on{' '}
-            <a href="https://leanpub.com/eventmodeling-and-eventsourcing" target="_blank" rel="noopener noreferrer">
-              Leanpub
-            </a>{' '}and{' '}
-            <a href="https://www.amazon.com/Understanding-Eventsourcing-Planning-Implementing-Eventmodeling/dp/B0DNXQJM9Z" target="_blank" rel="noopener noreferrer">
-              Amazon
-            </a>.
-          </p>
-        </section>
-
-        <section className="info-section">
-          <h2>📐 Event Modeling</h2>
-          <p>
-            This application was designed with{' '}
-            <a href="https://eventmodeling.org" target="_blank" rel="noopener noreferrer">
-              Event Modeling
-            </a>
-            {' '}— a method for describing systems using events as the primary building
-            blocks. Instead of starting with database schemas or class diagrams, you model
-            the flow of information through time: what events happen, what commands trigger
-            them, and what views are derived from them.
-          </p>
-          <p>
-            The consistency boundaries in this demo follow the{' '}
-            <a href="https://dcb.events" target="_blank" rel="noopener noreferrer">
-              Dynamic Consistency Boundary (DCB)
-            </a>
-            {' '}specification — a modern approach that replaces traditional streams with
-            flexible, key-based consistency. This means events can belong to multiple
-            boundaries simultaneously (e.g., an ItemAdded event belongs to both a cart
-            and a product boundary).
-          </p>
-        </section>
-
-        <section className="info-section">
-          <h2>🔀 Giraflow — The Event Model</h2>
-          <p>
-            The entire system was designed using <strong>Giraflow</strong>, a JSON-based
-            format for Event Modeling. The model defines every event, command, state view,
-            and their relationships — plus specifications (Given/When/Then) that serve as
-            both documentation and test cases.
-          </p>
-          <p>
-            <a href="https://giraflow.dev/app#https://raw.githubusercontent.com/SBortz/understanding-eventsourcing-dotnet/refs/heads/main/04-boundless-typescript/shopping.giraflow.json" target="_blank" rel="noopener noreferrer">
-              🔗 View the Shopping Cart Event Model on giraflow.dev
-            </a>
-          </p>
-          <p>
-            The model contains 12 slices — each slice is a vertical feature with its own
-            command, events, state views, and test scenarios. The implementation code maps
-            1:1 to the model.
-          </p>
         </section>
 
         <section className="info-section">
@@ -124,6 +52,54 @@ export default function InfoPage() {
             <a href="https://github.com/SBortz/boundlessdb" target="_blank" rel="noopener noreferrer">
               GitHub
             </a>
+            {' · '}
+            <a href="https://boundlessdb.dev" target="_blank" rel="noopener noreferrer">
+              Website
+            </a>
+          </p>
+        </section>
+
+        <section className="info-section">
+          <h2>🔀 Giraflow — The Event Model</h2>
+          <p>
+            The entire system was designed using <strong>Giraflow</strong>, a JSON-based
+            format for Event Modeling. The model defines every event, command, state view,
+            and their relationships — plus specifications (Given/When/Then) that serve as
+            both documentation and test cases.
+          </p>
+          <p>
+            <a href="https://giraflow.dev/app#https://raw.githubusercontent.com/SBortz/understanding-eventsourcing-dotnet/refs/heads/main/04-boundless-typescript/shopping.giraflow.json" target="_blank" rel="noopener noreferrer">
+              🔗 View the Shopping Cart Event Model on giraflow.dev
+            </a>
+          </p>
+          <p>
+            The model contains 12 slices — each slice is a vertical feature with its own
+            command, events, state views, and test scenarios. The implementation code maps
+            1:1 to the model.
+          </p>
+        </section>
+
+        <section className="info-section">
+          <h2>📐 Event Modeling &amp; DCB</h2>
+          <p>
+            This application was designed with{' '}
+            <a href="https://eventmodeling.org" target="_blank" rel="noopener noreferrer">
+              Event Modeling
+            </a>
+            {' '}— a method for describing systems using events as the primary building
+            blocks. Instead of starting with database schemas or class diagrams, you model
+            the flow of information through time: what events happen, what commands trigger
+            them, and what views are derived from them.
+          </p>
+          <p>
+            The consistency boundaries follow the{' '}
+            <a href="https://dcb.events" target="_blank" rel="noopener noreferrer">
+              Dynamic Consistency Boundary (DCB)
+            </a>
+            {' '}specification — a modern approach that replaces traditional streams with
+            flexible, key-based consistency. Events can belong to multiple
+            boundaries simultaneously (e.g., an ItemAdded event belongs to both a cart
+            and a product boundary).
           </p>
         </section>
 
@@ -140,6 +116,28 @@ export default function InfoPage() {
               <li><strong>No ORM, no separate DB:</strong> Events are the single source of truth</li>
             </ul>
           </div>
+        </section>
+
+        <section className="info-section">
+          <h2>📖 The Book</h2>
+          <p>
+            The Shopping Cart model is from{' '}
+            <strong>Martin Dilger's</strong> book{' '}
+            <a href="https://leanpub.com/eventmodeling-and-eventsourcing" target="_blank" rel="noopener noreferrer">
+              Understanding Event Sourcing
+            </a>
+            {' '}— a practical guide to Event Sourcing and Event Modeling.
+            This TypeScript port re-implements the .NET version using BoundlessDB and the Decider Pattern.
+          </p>
+          <p>
+            Available on{' '}
+            <a href="https://leanpub.com/eventmodeling-and-eventsourcing" target="_blank" rel="noopener noreferrer">
+              Leanpub
+            </a>{' '}and{' '}
+            <a href="https://www.amazon.com/Understanding-Eventsourcing-Planning-Implementing-Eventmodeling/dp/B0DNXQJM9Z" target="_blank" rel="noopener noreferrer">
+              Amazon
+            </a>.
+          </p>
         </section>
 
         <section className="info-section">
