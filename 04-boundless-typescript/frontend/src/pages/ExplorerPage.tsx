@@ -57,17 +57,22 @@ export default function ExplorerPage() {
 
   useEffect(() => {
     refresh();
+    const interval = setInterval(refresh, 1000);
+    return () => clearInterval(interval);
   }, [refresh]);
 
   // Get unique event types and key names for filters
   const eventTypes = [...new Set(events.map(e => e.type))].sort();
   const keyNames = [...new Set(events.flatMap(e => e.keys.map(k => `${k.name}:${k.value}`)))].sort();
 
-  const filtered = events.filter(e => {
-    if (filterType && e.type !== filterType) return false;
-    if (filterKey && !e.keys.some(k => `${k.name}:${k.value}` === filterKey)) return false;
-    return true;
-  });
+  const filtered = events
+    .filter(e => {
+      if (filterType && e.type !== filterType) return false;
+      if (filterKey && !e.keys.some(k => `${k.name}:${k.value}` === filterKey)) return false;
+      return true;
+    })
+    .slice()
+    .reverse();
 
   return (
     <div className="page" style={{ maxWidth: 1100 }}>
