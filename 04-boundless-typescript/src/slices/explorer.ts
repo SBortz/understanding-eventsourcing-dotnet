@@ -75,20 +75,21 @@ export function explorerRoutes(app: Express): void {
       // CartsWithProductsSV
       const cartsWithProducts = projectCartsWithProducts(allTyped);
 
-      // CartItemsStateView per cart
-      const cartIds = new Set<string>();
-      for (const e of result.events) {
-        const data = e.data as Record<string, unknown>;
-        if (data.cartId) cartIds.add(data.cartId as string);
+      // CartItemsStateView per cart (track last event position for sort order)
+      const cartLastPosition = new Map<string, number>();
+      for (let i = 0; i < result.events.length; i++) {
+        const data = result.events[i].data as Record<string, unknown>;
+        if (data.cartId) {
+          cartLastPosition.set(data.cartId as string, result.events[i].position as number);
+        }
       }
 
       const carts: Record<string, unknown> = {};
-      for (const cartId of cartIds) {
+      for (const [cartId, lastPos] of cartLastPosition) {
         const cartEvts = allTyped.filter((e: any) => e.data.cartId === cartId);
         const view = projectCartItems(cartEvts);
-        // Check if submitted
         const isSubmitted = cartEvts.some((e: any) => e.type === 'CartSubmitted');
-        carts[cartId] = { ...view, isSubmitted };
+        carts[cartId] = { ...view, isSubmitted, lastPosition: lastPos };
       }
 
       res.status(200).json({

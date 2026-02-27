@@ -7,6 +7,7 @@ interface CartView {
   cartId: string;
   totalPrice: number;
   isSubmitted: boolean;
+  lastPosition: number;
   items: Array<{
     itemId: string;
     productId: string;
@@ -125,7 +126,9 @@ export default function StateViewsPage() {
             <p className="state-empty">No carts yet</p>
           ) : (
             <div className="cart-views">
-              {Object.entries(state.carts).map(([cartId, cart]) => (
+              {Object.entries(state.carts)
+                .sort(([, a], [, b]) => b.lastPosition - a.lastPosition)
+                .map(([cartId, cart]) => (
                 <div className={`cart-view-card ${cart.isSubmitted ? 'submitted' : ''}`} key={cartId}>
                   <div className="cart-view-header">
                     <Link to={`/cart/${cartId}`} className="cart-view-id cart-view-link">{cartId.substring(0, 12)}…</Link>
