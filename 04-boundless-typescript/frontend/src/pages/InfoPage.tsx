@@ -47,6 +47,30 @@ export default function InfoPage() {
         </section>
 
         <section className="info-section">
+          <h2>📐 Event Modeling</h2>
+          <p>
+            This application was designed with{' '}
+            <a href="https://eventmodeling.org" target="_blank" rel="noopener noreferrer">
+              Event Modeling
+            </a>
+            {' '}— a method for describing systems using events as the primary building
+            blocks. Instead of starting with database schemas or class diagrams, you model
+            the flow of information through time: what events happen, what commands trigger
+            them, and what views are derived from them.
+          </p>
+          <p>
+            The consistency boundaries in this demo follow the{' '}
+            <a href="https://dcb.events" target="_blank" rel="noopener noreferrer">
+              Dynamic Consistency Boundary (DCB)
+            </a>
+            {' '}specification — a modern approach that replaces traditional streams with
+            flexible, key-based consistency. This means events can belong to multiple
+            boundaries simultaneously (e.g., an ItemAdded event belongs to both a cart
+            and a product boundary).
+          </p>
+        </section>
+
+        <section className="info-section">
           <h2>🔀 Giraflow — The Event Model</h2>
           <p>
             The entire system was designed using <strong>Giraflow</strong>, a JSON-based
