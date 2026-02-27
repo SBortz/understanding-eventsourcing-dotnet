@@ -153,9 +153,19 @@
       }
     },
     {
+      "type": "event",
+      "name": "InventoryChanged",
+      "tick": 11,
+      "producedBy": "SubmitCartCommand-9",
+      "example": {
+        "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+        "Inventory": 49
+      }
+    },
+    {
       "type": "state",
       "name": "OrdersSV",
-      "tick": 11,
+      "tick": 12,
       "sourcedFrom": [
         "CartSubmitted"
       ],
@@ -176,7 +186,7 @@
     {
       "type": "actor",
       "name": "Customer",
-      "tick": 12,
+      "tick": 13,
       "readsView": "OrdersSV",
       "role": "Customer",
       "wireframes": [
@@ -186,7 +196,7 @@
     {
       "type": "state",
       "name": "SubmittedCartDataSV",
-      "tick": 13,
+      "tick": 14,
       "sourcedFrom": [
         "CartSubmitted",
         "CartPublished"
@@ -207,7 +217,7 @@
     {
       "type": "actor",
       "name": "CartPublisherProcessor",
-      "tick": 14,
+      "tick": 15,
       "readsView": "SubmittedCartDataSV",
       "sendsCommand": "PublishCartCommand",
       "role": "system"
@@ -215,7 +225,7 @@
     {
       "type": "command",
       "name": "PublishCartCommand",
-      "tick": 15,
+      "tick": 16,
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010",
         "OrderedProducts": [
@@ -230,8 +240,8 @@
     {
       "type": "event",
       "name": "CartPublished",
-      "tick": 16,
-      "producedBy": "PublishCartCommand-15",
+      "tick": 17,
+      "producedBy": "PublishCartCommand-16",
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
       }
@@ -239,7 +249,7 @@
     {
       "type": "event",
       "name": "PriceChanged",
-      "tick": 17,
+      "tick": 18,
       "system": "Pricing System",
       "example": {
         "ProductId": "550e8400-e29b-41d4-a716-446655440001",
@@ -250,7 +260,7 @@
     {
       "type": "state",
       "name": "ChangedPricesSV",
-      "tick": 18,
+      "tick": 19,
       "sourcedFrom": [
         "PriceChanged"
       ],
@@ -264,7 +274,7 @@
     {
       "type": "state",
       "name": "CartsWithProductsSV",
-      "tick": 19,
+      "tick": 20,
       "sourcedFrom": [
         "ItemAdded",
         "ItemRemoved",
@@ -281,7 +291,7 @@
     {
       "type": "actor",
       "name": "ArchiveItemSchedulerProcessor",
-      "tick": 20,
+      "tick": 21,
       "readsView": "ChangedPricesSV",
       "sendsCommand": "ArchiveItemCommand",
       "role": "system"
@@ -289,7 +299,7 @@
     {
       "type": "command",
       "name": "ArchiveItemCommand",
-      "tick": 21,
+      "tick": 22,
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010",
         "ProductId": "550e8400-e29b-41d4-a716-446655440001"
@@ -298,8 +308,8 @@
     {
       "type": "event",
       "name": "ItemArchived",
-      "tick": 22,
-      "producedBy": "ArchiveItemCommand-21",
+      "tick": 23,
+      "producedBy": "ArchiveItemCommand-22",
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010",
         "ItemId": "550e8400-e29b-41d4-a716-446655440001"
@@ -308,7 +318,7 @@
     {
       "type": "command",
       "name": "RemoveItemCommand",
-      "tick": 23,
+      "tick": 24,
       "example": {
         "ItemId": "550e8400-e29b-41d4-a716-446655440020",
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
@@ -317,8 +327,8 @@
     {
       "type": "event",
       "name": "ItemRemoved",
-      "tick": 24,
-      "producedBy": "RemoveItemCommand-23",
+      "tick": 25,
+      "producedBy": "RemoveItemCommand-24",
       "example": {
         "ItemId": "550e8400-e29b-41d4-a716-446655440020",
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
@@ -327,7 +337,7 @@
     {
       "type": "command",
       "name": "CartClearedCommand",
-      "tick": 25,
+      "tick": 26,
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
       }
@@ -335,8 +345,8 @@
     {
       "type": "event",
       "name": "CartCleared",
-      "tick": 26,
-      "producedBy": "CartClearedCommand-25",
+      "tick": 27,
+      "producedBy": "CartClearedCommand-26",
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
       }
@@ -344,8 +354,8 @@
     {
       "type": "event",
       "name": "CartPublicationFailed",
-      "tick": 27,
-      "producedBy": "PublishCartCommand-15",
+      "tick": 28,
+      "producedBy": "PublishCartCommand-16",
       "example": {
         "CommandCartId": "550e8400-e29b-41d4-a716-446655440010"
       }
@@ -753,6 +763,13 @@
                   "data": {
                     "CartId": "cart-1",
                     "TotalPrice": 29.99
+                  }
+                },
+                {
+                  "event": "InventoryChanged",
+                  "data": {
+                    "ProductId": "product-1",
+                    "Inventory": 0
                   }
                 }
               ]
