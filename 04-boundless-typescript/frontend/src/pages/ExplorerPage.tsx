@@ -39,8 +39,8 @@ export default function ExplorerPage() {
   const [filterType, setFilterType] = useState<string>('');
   const [filterKey, setFilterKey] = useState<string>('');
 
-  const refresh = useCallback(async () => {
-    setLoading(true);
+  const refresh = useCallback(async (initial = false) => {
+    if (initial) setLoading(true);
     try {
       const [evRes, stRes] = await Promise.all([
         fetch(`${BASE}/debug/events`),
@@ -51,13 +51,13 @@ export default function ExplorerPage() {
     } catch {
       // ignore
     } finally {
-      setLoading(false);
+      if (initial) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
-    refresh();
-    const interval = setInterval(refresh, 1000);
+    refresh(true);
+    const interval = setInterval(() => refresh(), 1000);
     return () => clearInterval(interval);
   }, [refresh]);
 
