@@ -80,7 +80,7 @@ export function explorerRoutes(app: Express): void {
       for (let i = 0; i < result.events.length; i++) {
         const data = result.events[i].data as Record<string, unknown>;
         if (data.cartId) {
-          cartLastPosition.set(data.cartId as string, result.events[i].position as number);
+          cartLastPosition.set(data.cartId as string, Number(result.events[i].position));
         }
       }
 
