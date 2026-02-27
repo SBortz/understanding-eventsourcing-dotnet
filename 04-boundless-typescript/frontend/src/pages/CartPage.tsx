@@ -97,6 +97,7 @@ export default function CartPage() {
         totalPrice: item.price * item.quantity,
       }));
       await submitCart({ cartId, orderedProducts });
+      resetCartId();
       setSubmitted(true);
     } catch (err: unknown) {
       const msg =
