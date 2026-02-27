@@ -18,6 +18,9 @@ export default function Navbar() {
           <NavLink to="/admin" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
             Admin
           </NavLink>
+          <NavLink to="/explorer" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+            Explorer
+          </NavLink>
           <NavLink to="/info" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
             Info
           </NavLink>
