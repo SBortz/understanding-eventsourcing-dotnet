@@ -12,9 +12,9 @@ interface StoredEvent {
 
 interface StateView {
   inventories: Record<string, number>;
-  carts: Record<string, { cartId: string; totalPrice: number; items: unknown[] }>;
   orders: Array<{ cartId: string; totalPrice: number }>;
   prices: Record<string, number>;
+  cartsWithProducts: Array<{ cartId: string; productId: string }>;
   totalEvents: number;
 }
 
@@ -158,7 +158,7 @@ export default function ExplorerPage() {
         <div className="state-grid">
           {/* Inventories */}
           <div className="state-card">
-            <h3>📦 Inventories</h3>
+            <h3>📦 InventoriesSV</h3>
             {Object.keys(state.inventories).length === 0 ? (
               <p className="state-empty">No inventory data</p>
             ) : (
@@ -177,7 +177,7 @@ export default function ExplorerPage() {
 
           {/* Prices */}
           <div className="state-card">
-            <h3>💰 Price Changes</h3>
+            <h3>💰 ChangedPricesSV</h3>
             {Object.keys(state.prices).length === 0 ? (
               <p className="state-empty">No price changes</p>
             ) : (
@@ -194,7 +194,7 @@ export default function ExplorerPage() {
 
           {/* Orders */}
           <div className="state-card">
-            <h3>📋 Orders ({state.orders.length})</h3>
+            <h3>📋 OrdersSV ({state.orders.length})</h3>
             {state.orders.length === 0 ? (
               <p className="state-empty">No orders yet</p>
             ) : (
@@ -209,19 +209,17 @@ export default function ExplorerPage() {
             )}
           </div>
 
-          {/* Carts */}
+          {/* CartsWithProductsSV */}
           <div className="state-card wide">
-            <h3>🛒 Active Carts ({Object.keys(state.carts).length})</h3>
-            {Object.keys(state.carts).length === 0 ? (
-              <p className="state-empty">No carts</p>
+            <h3>🛒 CartsWithProductsSV ({state.cartsWithProducts.length})</h3>
+            {state.cartsWithProducts.length === 0 ? (
+              <p className="state-empty">No items in carts</p>
             ) : (
               <div className="state-table">
-                {Object.entries(state.carts).map(([cartId, cart]) => (
-                  <div className="state-row" key={cartId} style={{ flexDirection: 'column', alignItems: 'flex-start', gap: 4 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%' }}>
-                      <span className="state-key">{cartId.substring(0, 8)}…</span>
-                      <span className="state-value">${cart.totalPrice.toFixed(2)} ({cart.items.length} items)</span>
-                    </div>
+                {state.cartsWithProducts.map((entry, i) => (
+                  <div className="state-row" key={i}>
+                    <span className="state-key">cart: {entry.cartId.substring(0, 8)}…</span>
+                    <span className="state-value">{entry.productId}</span>
                   </div>
                 ))}
               </div>
