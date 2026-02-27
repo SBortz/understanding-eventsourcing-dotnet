@@ -1,0 +1,2545 @@
+[
+  {
+    "name": "InventoriesSV",
+    "type": "state",
+    "ticks": [
+      2
+    ],
+    "sourcedFrom": [
+      {
+        "name": "InventoryChanged",
+        "ticks": [
+          1,
+          11
+        ],
+        "system": "Inventory System"
+      }
+    ],
+    "produces": [],
+    "attachments": [],
+    "scenarios": [
+      {
+        "name": "Timeline Scenario",
+        "steps": [
+          {
+            "given": {
+              "event": "InventoryChanged",
+              "data": {
+                "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                "Inventory": 50
+              }
+            },
+            "then": {
+              "550e8400-e29b-41d4-a716-446655440001": 50
+            }
+          }
+        ]
+      },
+      {
+        "name": "Track inventory for multiple products",
+        "steps": [
+          {
+            "given": {
+              "event": "InventoryChanged",
+              "data": {
+                "ProductId": "product-1",
+                "Inventory": 50
+              }
+            },
+            "then": {
+              "product-1": 50
+            }
+          },
+          {
+            "given": {
+              "event": "InventoryChanged",
+              "data": {
+                "ProductId": "product-2",
+                "Inventory": 25
+              }
+            },
+            "then": {
+              "product-1": 50,
+              "product-2": 25
+            }
+          },
+          {
+            "given": {
+              "event": "InventoryChanged",
+              "data": {
+                "ProductId": "product-1",
+                "Inventory": 45
+              }
+            },
+            "then": {
+              "product-1": 45,
+              "product-2": 25
+            }
+          }
+        ]
+      }
+    ],
+    "specScenarioCount": 1,
+    "stateOccurrences": [
+      {
+        "tick": 2,
+        "state": {
+          "type": "state",
+          "name": "InventoriesSV",
+          "tick": 2,
+          "sourcedFrom": [
+            "InventoryChanged"
+          ],
+          "example": {
+            "550e8400-e29b-41d4-a716-446655440001": 50
+          }
+        }
+      }
+    ],
+    "commandOccurrences": [],
+    "example": {
+      "550e8400-e29b-41d4-a716-446655440001": 50
+    }
+  },
+  {
+    "name": "AddItemCommand",
+    "type": "command",
+    "ticks": [
+      4
+    ],
+    "sourcedFrom": [],
+    "produces": [
+      {
+        "name": "CartCreated",
+        "ticks": [
+          5
+        ]
+      },
+      {
+        "name": "ItemAdded",
+        "ticks": [
+          6
+        ]
+      }
+    ],
+    "attachments": [
+      {
+        "type": "note",
+        "label": "Business Rule",
+        "content": "A cart can hold a maximum of 3 items. This limit is enforced at the command level."
+      },
+      {
+        "type": "link",
+        "label": "Cart API Documentation",
+        "url": "https://example.com/api/cart"
+      }
+    ],
+    "scenarios": [
+      {
+        "name": "Timeline Scenario",
+        "rows": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "InventoryChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Inventory": 50
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "command": {
+              "name": "AddItemCommand",
+              "data": {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                "Description": "Wireless Mouse",
+                "Image": "mouse.jpg",
+                "Price": 29.99,
+                "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+                "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+              }
+            },
+            "producedEvents": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "Description": "Wireless Mouse",
+                  "Image": "mouse.jpg",
+                  "Price": 29.99,
+                  "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Create cart and add first item",
+        "steps": [
+          {
+            "type": "command",
+            "when": {
+              "CartId": "cart-1",
+              "Description": "Wireless Mouse",
+              "Image": "mouse.jpg",
+              "Price": 29.99,
+              "ItemId": "item-1",
+              "ProductId": "product-1"
+            },
+            "produces": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "Description": "Wireless Mouse",
+                  "Image": "mouse.jpg",
+                  "Price": 29.99,
+                  "ItemId": "item-1",
+                  "ProductId": "product-1"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Add item to existing cart",
+        "steps": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "item-1",
+                  "ProductId": "product-1",
+                  "Price": 29.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "when": {
+              "CartId": "cart-1",
+              "Description": "Keyboard",
+              "Image": "keyboard.jpg",
+              "Price": 49.99,
+              "ItemId": "item-2",
+              "ProductId": "product-2"
+            },
+            "produces": [
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "Description": "Keyboard",
+                  "Image": "keyboard.jpg",
+                  "Price": 49.99,
+                  "ItemId": "item-2",
+                  "ProductId": "product-2"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Reject when cart has 3 items",
+        "steps": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "item-1",
+                  "ProductId": "product-1",
+                  "Price": 10
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "item-2",
+                  "ProductId": "product-2",
+                  "Price": 20
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "item-3",
+                  "ProductId": "product-3",
+                  "Price": 30
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "when": {
+              "CartId": "cart-1",
+              "Description": "Fourth Item",
+              "Price": 40,
+              "ItemId": "item-4",
+              "ProductId": "product-4"
+            },
+            "fails": "TooManyItemsInCartException: Can only add 3 items to cart"
+          }
+        ]
+      }
+    ],
+    "specScenarioCount": 3,
+    "stateOccurrences": [],
+    "commandOccurrences": [
+      {
+        "tick": 4,
+        "command": {
+          "type": "command",
+          "name": "AddItemCommand",
+          "tick": 4,
+          "example": {
+            "CartId": "550e8400-e29b-41d4-a716-446655440010",
+            "Description": "Wireless Mouse",
+            "Image": "mouse.jpg",
+            "Price": 29.99,
+            "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+            "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+          },
+          "attachments": [
+            {
+              "type": "note",
+              "label": "Business Rule",
+              "content": "A cart can hold a maximum of 3 items. This limit is enforced at the command level."
+            },
+            {
+              "type": "link",
+              "label": "Cart API Documentation",
+              "url": "https://example.com/api/cart"
+            }
+          ]
+        },
+        "producedEvents": [
+          {
+            "type": "event",
+            "name": "CartCreated",
+            "tick": 5,
+            "producedBy": "AddItemCommand-4",
+            "example": {
+              "CartId": "550e8400-e29b-41d4-a716-446655440010"
+            }
+          },
+          {
+            "type": "event",
+            "name": "ItemAdded",
+            "tick": 6,
+            "producedBy": "AddItemCommand-4",
+            "example": {
+              "CartId": "550e8400-e29b-41d4-a716-446655440010",
+              "Description": "Wireless Mouse",
+              "Image": "mouse.jpg",
+              "Price": 29.99,
+              "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+              "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+            }
+          }
+        ]
+      }
+    ],
+    "example": {
+      "CartId": "550e8400-e29b-41d4-a716-446655440010",
+      "Description": "Wireless Mouse",
+      "Image": "mouse.jpg",
+      "Price": 29.99,
+      "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+      "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+    }
+  },
+  {
+    "name": "CartItemsStateView",
+    "type": "state",
+    "ticks": [
+      7
+    ],
+    "sourcedFrom": [
+      {
+        "name": "CartCreated",
+        "ticks": [
+          5
+        ]
+      },
+      {
+        "name": "ItemAdded",
+        "ticks": [
+          6
+        ]
+      },
+      {
+        "name": "ItemRemoved",
+        "ticks": [
+          25
+        ]
+      },
+      {
+        "name": "ItemArchived",
+        "ticks": [
+          23
+        ]
+      },
+      {
+        "name": "CartCleared",
+        "ticks": [
+          27
+        ]
+      }
+    ],
+    "produces": [],
+    "attachments": [],
+    "scenarios": [
+      {
+        "name": "Timeline Scenario",
+        "steps": [
+          {
+            "given": {
+              "event": "CartCreated",
+              "data": {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010"
+              }
+            },
+            "then": {
+              "CartId": "550e8400-e29b-41d4-a716-446655440010",
+              "TotalPrice": 29.99,
+              "CartItems": [
+                {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "Description": "Wireless Mouse",
+                  "Image": "mouse.jpg",
+                  "Price": 29.99,
+                  "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Show cart with multiple items",
+        "steps": [
+          {
+            "given": {
+              "event": "CartCreated",
+              "data": {
+                "CartId": "cart-1"
+              }
+            },
+            "then": {
+              "CartId": "cart-1",
+              "TotalPrice": 0,
+              "CartItems": []
+            }
+          },
+          {
+            "given": {
+              "event": "ItemAdded",
+              "data": {
+                "CartId": "cart-1",
+                "Description": "Mouse",
+                "Price": 29.99,
+                "ItemId": "item-1",
+                "ProductId": "product-1"
+              }
+            },
+            "then": {
+              "CartId": "cart-1",
+              "TotalPrice": 29.99,
+              "CartItems": [
+                {
+                  "Description": "Mouse",
+                  "Price": 29.99,
+                  "ItemId": "item-1"
+                }
+              ]
+            }
+          },
+          {
+            "given": {
+              "event": "ItemAdded",
+              "data": {
+                "CartId": "cart-1",
+                "Description": "Keyboard",
+                "Price": 49.99,
+                "ItemId": "item-2",
+                "ProductId": "product-2"
+              }
+            },
+            "then": {
+              "CartId": "cart-1",
+              "TotalPrice": 79.98,
+              "CartItems": [
+                {
+                  "Description": "Mouse",
+                  "Price": 29.99,
+                  "ItemId": "item-1"
+                },
+                {
+                  "Description": "Keyboard",
+                  "Price": 49.99,
+                  "ItemId": "item-2"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      {
+        "name": "Update total when item removed",
+        "steps": [
+          {
+            "given": {
+              "event": "CartCreated",
+              "data": {
+                "CartId": "cart-1"
+              }
+            },
+            "then": {
+              "CartId": "cart-1",
+              "TotalPrice": 0,
+              "CartItems": []
+            }
+          },
+          {
+            "given": {
+              "event": "ItemAdded",
+              "data": {
+                "CartId": "cart-1",
+                "Description": "Mouse",
+                "Price": 29.99,
+                "ItemId": "item-1",
+                "ProductId": "product-1"
+              }
+            },
+            "then": {
+              "CartId": "cart-1",
+              "TotalPrice": 29.99,
+              "CartItems": [
+                {
+                  "Description": "Mouse",
+                  "Price": 29.99,
+                  "ItemId": "item-1"
+                }
+              ]
+            }
+          },
+          {
+            "given": {
+              "event": "ItemAdded",
+              "data": {
+                "CartId": "cart-1",
+                "Description": "Keyboard",
+                "Price": 49.99,
+                "ItemId": "item-2",
+                "ProductId": "product-2"
+              }
+            },
+            "then": {
+              "CartId": "cart-1",
+              "TotalPrice": 79.98,
+              "CartItems": [
+                {
+                  "Description": "Mouse",
+                  "Price": 29.99,
+                  "ItemId": "item-1"
+                },
+                {
+                  "Description": "Keyboard",
+                  "Price": 49.99,
+                  "ItemId": "item-2"
+                }
+              ]
+            }
+          },
+          {
+            "given": {
+              "event": "ItemRemoved",
+              "data": {
+                "ItemId": "item-1",
+                "CartId": "cart-1"
+              }
+            },
+            "then": {
+              "CartId": "cart-1",
+              "TotalPrice": 49.99,
+              "CartItems": [
+                {
+                  "Description": "Keyboard",
+                  "Price": 49.99,
+                  "ItemId": "item-2"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    ],
+    "specScenarioCount": 2,
+    "stateOccurrences": [
+      {
+        "tick": 7,
+        "state": {
+          "type": "state",
+          "name": "CartItemsStateView",
+          "tick": 7,
+          "sourcedFrom": [
+            "CartCreated",
+            "ItemAdded",
+            "ItemRemoved",
+            "ItemArchived",
+            "CartCleared"
+          ],
+          "example": {
+            "CartId": "550e8400-e29b-41d4-a716-446655440010",
+            "TotalPrice": 29.99,
+            "CartItems": [
+              {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                "Description": "Wireless Mouse",
+                "Image": "mouse.jpg",
+                "Price": 29.99,
+                "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+                "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "commandOccurrences": [],
+    "example": {
+      "CartId": "550e8400-e29b-41d4-a716-446655440010",
+      "TotalPrice": 29.99,
+      "CartItems": [
+        {
+          "CartId": "550e8400-e29b-41d4-a716-446655440010",
+          "Description": "Wireless Mouse",
+          "Image": "mouse.jpg",
+          "Price": 29.99,
+          "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+          "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+        }
+      ]
+    }
+  },
+  {
+    "name": "SubmitCartCommand",
+    "type": "command",
+    "ticks": [
+      9
+    ],
+    "sourcedFrom": [],
+    "produces": [
+      {
+        "name": "CartSubmitted",
+        "ticks": [
+          10
+        ]
+      },
+      {
+        "name": "InventoryChanged",
+        "ticks": [
+          11
+        ],
+        "system": "Inventory System"
+      }
+    ],
+    "attachments": [],
+    "scenarios": [
+      {
+        "name": "Timeline Scenario",
+        "rows": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "InventoryChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Inventory": 50
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "Description": "Wireless Mouse",
+                  "Image": "mouse.jpg",
+                  "Price": 29.99,
+                  "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "command": {
+              "name": "SubmitCartCommand",
+              "data": {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                "OrderedProducts": [
+                  {
+                    "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                    "TotalPrice": 29.99
+                  }
+                ]
+              }
+            },
+            "producedEvents": [
+              {
+                "event": "CartSubmitted",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "OrderedProducts": [
+                    {
+                      "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                      "Price": 29.99
+                    }
+                  ],
+                  "TotalPrice": 29.99
+                }
+              },
+              {
+                "event": "InventoryChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Inventory": 49
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Successfully submit cart with items in stock",
+        "steps": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "item-1",
+                  "ProductId": "product-1",
+                  "Price": 29.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "when": {
+              "CartId": "cart-1",
+              "OrderedProducts": [
+                {
+                  "ProductId": "product-1",
+                  "TotalPrice": 29.99
+                }
+              ]
+            },
+            "produces": [
+              {
+                "event": "CartSubmitted",
+                "data": {
+                  "CartId": "cart-1",
+                  "TotalPrice": 29.99
+                }
+              },
+              {
+                "event": "InventoryChanged",
+                "data": {
+                  "ProductId": "product-1",
+                  "Inventory": 0
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Reject empty cart submission",
+        "steps": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "when": {
+              "CartId": "cart-1",
+              "OrderedProducts": []
+            },
+            "fails": "CannotSubmitEmptyCartException: Empty Cart cannot be submitted"
+          }
+        ]
+      },
+      {
+        "name": "Reject double submission",
+        "steps": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "item-1",
+                  "ProductId": "product-1",
+                  "Price": 29.99
+                }
+              },
+              {
+                "event": "CartSubmitted",
+                "data": {
+                  "CartId": "cart-1",
+                  "TotalPrice": 29.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "when": {
+              "CartId": "cart-1"
+            },
+            "fails": "CartCannotBeSubmittedTwiceException: Cart cannot be submitted twice"
+          }
+        ]
+      },
+      {
+        "name": "Reject when product out of stock",
+        "steps": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "item-1",
+                  "ProductId": "product-1",
+                  "Price": 29.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "when": {
+              "CartId": "cart-1",
+              "_note": "InventoriesSV has no inventory for product-1"
+            },
+            "fails": "NotEnoughInStockException"
+          }
+        ]
+      }
+    ],
+    "specScenarioCount": 4,
+    "stateOccurrences": [],
+    "commandOccurrences": [
+      {
+        "tick": 9,
+        "command": {
+          "type": "command",
+          "name": "SubmitCartCommand",
+          "tick": 9,
+          "example": {
+            "CartId": "550e8400-e29b-41d4-a716-446655440010",
+            "OrderedProducts": [
+              {
+                "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                "TotalPrice": 29.99
+              }
+            ]
+          }
+        },
+        "producedEvents": [
+          {
+            "type": "event",
+            "name": "CartSubmitted",
+            "tick": 10,
+            "producedBy": "SubmitCartCommand-9",
+            "example": {
+              "CartId": "550e8400-e29b-41d4-a716-446655440010",
+              "OrderedProducts": [
+                {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Price": 29.99
+                }
+              ],
+              "TotalPrice": 29.99
+            }
+          },
+          {
+            "type": "event",
+            "name": "InventoryChanged",
+            "tick": 11,
+            "producedBy": "SubmitCartCommand-9",
+            "example": {
+              "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+              "Inventory": 49
+            }
+          }
+        ]
+      }
+    ],
+    "example": {
+      "CartId": "550e8400-e29b-41d4-a716-446655440010",
+      "OrderedProducts": [
+        {
+          "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+          "TotalPrice": 29.99
+        }
+      ]
+    }
+  },
+  {
+    "name": "OrdersSV",
+    "type": "state",
+    "ticks": [
+      12
+    ],
+    "sourcedFrom": [
+      {
+        "name": "CartSubmitted",
+        "ticks": [
+          10
+        ]
+      }
+    ],
+    "produces": [],
+    "attachments": [],
+    "scenarios": [
+      {
+        "name": "Timeline Scenario",
+        "steps": [
+          {
+            "given": {
+              "event": "CartSubmitted",
+              "data": {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                "OrderedProducts": [
+                  {
+                    "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                    "Price": 29.99
+                  }
+                ],
+                "TotalPrice": 29.99
+              }
+            },
+            "then": [
+              {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                "OrderedProducts": [
+                  {
+                    "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                    "Price": 29.99
+                  }
+                ],
+                "TotalPrice": 29.99,
+                "SubmittedAt": "2026-02-27T12:00:00Z"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Track submitted orders",
+        "steps": [
+          {
+            "given": {
+              "event": "CartSubmitted",
+              "data": {
+                "CartId": "cart-1",
+                "OrderedProducts": [
+                  {
+                    "ProductId": "product-1",
+                    "Price": 29.99
+                  }
+                ],
+                "TotalPrice": 29.99
+              }
+            },
+            "then": [
+              {
+                "CartId": "cart-1",
+                "TotalPrice": 29.99,
+                "OrderedProducts": [
+                  {
+                    "ProductId": "product-1",
+                    "Price": 29.99
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "given": {
+              "event": "CartSubmitted",
+              "data": {
+                "CartId": "cart-2",
+                "OrderedProducts": [
+                  {
+                    "ProductId": "product-2",
+                    "Price": 49.99
+                  },
+                  {
+                    "ProductId": "product-3",
+                    "Price": 79.99
+                  }
+                ],
+                "TotalPrice": 129.98
+              }
+            },
+            "then": [
+              {
+                "CartId": "cart-1",
+                "TotalPrice": 29.99,
+                "OrderedProducts": [
+                  {
+                    "ProductId": "product-1",
+                    "Price": 29.99
+                  }
+                ]
+              },
+              {
+                "CartId": "cart-2",
+                "TotalPrice": 129.98,
+                "OrderedProducts": [
+                  {
+                    "ProductId": "product-2",
+                    "Price": 49.99
+                  },
+                  {
+                    "ProductId": "product-3",
+                    "Price": 79.99
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "specScenarioCount": 1,
+    "stateOccurrences": [
+      {
+        "tick": 12,
+        "state": {
+          "type": "state",
+          "name": "OrdersSV",
+          "tick": 12,
+          "sourcedFrom": [
+            "CartSubmitted"
+          ],
+          "example": [
+            {
+              "CartId": "550e8400-e29b-41d4-a716-446655440010",
+              "OrderedProducts": [
+                {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Price": 29.99
+                }
+              ],
+              "TotalPrice": 29.99,
+              "SubmittedAt": "2026-02-27T12:00:00Z"
+            }
+          ]
+        }
+      }
+    ],
+    "commandOccurrences": [],
+    "example": [
+      {
+        "CartId": "550e8400-e29b-41d4-a716-446655440010",
+        "OrderedProducts": [
+          {
+            "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+            "Price": 29.99
+          }
+        ],
+        "TotalPrice": 29.99,
+        "SubmittedAt": "2026-02-27T12:00:00Z"
+      }
+    ]
+  },
+  {
+    "name": "SubmittedCartDataSV",
+    "type": "state",
+    "ticks": [
+      14
+    ],
+    "sourcedFrom": [
+      {
+        "name": "CartSubmitted",
+        "ticks": [
+          10
+        ]
+      },
+      {
+        "name": "CartPublished",
+        "ticks": [
+          17
+        ]
+      }
+    ],
+    "produces": [],
+    "attachments": [],
+    "scenarios": [
+      {
+        "name": "Timeline Scenario",
+        "steps": [
+          {
+            "given": {
+              "event": "CartSubmitted",
+              "data": {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                "OrderedProducts": [
+                  {
+                    "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                    "Price": 29.99
+                  }
+                ],
+                "TotalPrice": 29.99
+              }
+            },
+            "then": [
+              {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                "OrderedProducts": [
+                  {
+                    "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                    "Price": 29.99
+                  }
+                ],
+                "TotalPrice": 29.99
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Track submitted cart awaiting publication",
+        "steps": [
+          {
+            "given": {
+              "event": "CartSubmitted",
+              "data": {
+                "CartId": "cart-1",
+                "TotalPrice": 29.99
+              }
+            },
+            "then": [
+              {
+                "CartId": "cart-1",
+                "TotalPrice": 29.99
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Remove cart after publication",
+        "steps": [
+          {
+            "given": {
+              "event": "CartSubmitted",
+              "data": {
+                "CartId": "cart-1",
+                "TotalPrice": 29.99
+              }
+            },
+            "then": [
+              {
+                "CartId": "cart-1",
+                "TotalPrice": 29.99
+              }
+            ]
+          },
+          {
+            "given": {
+              "event": "CartPublished",
+              "data": {
+                "CartId": "cart-1"
+              }
+            },
+            "then": []
+          }
+        ]
+      }
+    ],
+    "specScenarioCount": 2,
+    "stateOccurrences": [
+      {
+        "tick": 14,
+        "state": {
+          "type": "state",
+          "name": "SubmittedCartDataSV",
+          "tick": 14,
+          "sourcedFrom": [
+            "CartSubmitted",
+            "CartPublished"
+          ],
+          "example": [
+            {
+              "CartId": "550e8400-e29b-41d4-a716-446655440010",
+              "OrderedProducts": [
+                {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Price": 29.99
+                }
+              ],
+              "TotalPrice": 29.99
+            }
+          ]
+        }
+      }
+    ],
+    "commandOccurrences": [],
+    "example": [
+      {
+        "CartId": "550e8400-e29b-41d4-a716-446655440010",
+        "OrderedProducts": [
+          {
+            "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+            "Price": 29.99
+          }
+        ],
+        "TotalPrice": 29.99
+      }
+    ]
+  },
+  {
+    "name": "PublishCartCommand",
+    "type": "command",
+    "ticks": [
+      16
+    ],
+    "sourcedFrom": [],
+    "produces": [
+      {
+        "name": "CartPublished",
+        "ticks": [
+          17
+        ]
+      },
+      {
+        "name": "CartPublicationFailed",
+        "ticks": [
+          28
+        ]
+      }
+    ],
+    "attachments": [],
+    "scenarios": [
+      {
+        "name": "Timeline Scenario",
+        "rows": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "InventoryChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Inventory": 50
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "Description": "Wireless Mouse",
+                  "Image": "mouse.jpg",
+                  "Price": 29.99,
+                  "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartSubmitted",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "OrderedProducts": [
+                    {
+                      "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                      "Price": 29.99
+                    }
+                  ],
+                  "TotalPrice": 29.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "InventoryChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Inventory": 49
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "command": {
+              "name": "PublishCartCommand",
+              "data": {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                "OrderedProducts": [
+                  {
+                    "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                    "Price": 29.99
+                  }
+                ],
+                "TotalPrice": 29.99
+              }
+            },
+            "producedEvents": [
+              {
+                "event": "CartPublished",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              },
+              {
+                "event": "CartPublicationFailed",
+                "data": {
+                  "CommandCartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Successfully publish submitted cart",
+        "steps": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "item-1",
+                  "ProductId": "product-1",
+                  "Price": 29.99
+                }
+              },
+              {
+                "event": "CartSubmitted",
+                "data": {
+                  "CartId": "cart-1",
+                  "TotalPrice": 29.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "when": {
+              "CartId": "cart-1",
+              "TotalPrice": 29.99
+            },
+            "produces": [
+              {
+                "event": "CartPublished",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Handle Kafka publish failure",
+        "steps": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              },
+              {
+                "event": "CartSubmitted",
+                "data": {
+                  "CartId": "cart-1",
+                  "TotalPrice": 29.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "when": {
+              "CartId": "cart-1",
+              "_note": "Kafka publisher throws exception"
+            },
+            "produces": [
+              {
+                "event": "CartPublicationFailed",
+                "data": {
+                  "CommandCartId": "cart-1"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "specScenarioCount": 2,
+    "stateOccurrences": [],
+    "commandOccurrences": [
+      {
+        "tick": 16,
+        "command": {
+          "type": "command",
+          "name": "PublishCartCommand",
+          "tick": 16,
+          "example": {
+            "CartId": "550e8400-e29b-41d4-a716-446655440010",
+            "OrderedProducts": [
+              {
+                "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                "Price": 29.99
+              }
+            ],
+            "TotalPrice": 29.99
+          }
+        },
+        "producedEvents": [
+          {
+            "type": "event",
+            "name": "CartPublished",
+            "tick": 17,
+            "producedBy": "PublishCartCommand-16",
+            "example": {
+              "CartId": "550e8400-e29b-41d4-a716-446655440010"
+            }
+          },
+          {
+            "type": "event",
+            "name": "CartPublicationFailed",
+            "tick": 28,
+            "producedBy": "PublishCartCommand-16",
+            "example": {
+              "CommandCartId": "550e8400-e29b-41d4-a716-446655440010"
+            }
+          }
+        ]
+      }
+    ],
+    "example": {
+      "CartId": "550e8400-e29b-41d4-a716-446655440010",
+      "OrderedProducts": [
+        {
+          "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+          "Price": 29.99
+        }
+      ],
+      "TotalPrice": 29.99
+    }
+  },
+  {
+    "name": "ChangedPricesSV",
+    "type": "state",
+    "ticks": [
+      19
+    ],
+    "sourcedFrom": [
+      {
+        "name": "PriceChanged",
+        "ticks": [
+          18
+        ],
+        "system": "Pricing System"
+      }
+    ],
+    "produces": [],
+    "attachments": [],
+    "scenarios": [
+      {
+        "name": "Timeline Scenario",
+        "steps": [
+          {
+            "given": {
+              "event": "PriceChanged",
+              "data": {
+                "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                "OldPrice": 29.99,
+                "NewPrice": 24.99
+              }
+            },
+            "then": {
+              "550e8400-e29b-41d4-a716-446655440001": {
+                "OldPrice": 29.99,
+                "NewPrice": 24.99
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "Track latest price change per product",
+        "steps": [
+          {
+            "given": {
+              "event": "PriceChanged",
+              "data": {
+                "ProductId": "product-1",
+                "OldPrice": 29.99,
+                "NewPrice": 24.99
+              }
+            },
+            "then": {
+              "product-1": {
+                "OldPrice": 29.99,
+                "NewPrice": 24.99
+              }
+            }
+          },
+          {
+            "given": {
+              "event": "PriceChanged",
+              "data": {
+                "ProductId": "product-1",
+                "OldPrice": 24.99,
+                "NewPrice": 19.99
+              }
+            },
+            "then": {
+              "product-1": {
+                "OldPrice": 24.99,
+                "NewPrice": 19.99
+              }
+            }
+          }
+        ]
+      }
+    ],
+    "specScenarioCount": 1,
+    "stateOccurrences": [
+      {
+        "tick": 19,
+        "state": {
+          "type": "state",
+          "name": "ChangedPricesSV",
+          "tick": 19,
+          "sourcedFrom": [
+            "PriceChanged"
+          ],
+          "example": {
+            "550e8400-e29b-41d4-a716-446655440001": {
+              "OldPrice": 29.99,
+              "NewPrice": 24.99
+            }
+          }
+        }
+      }
+    ],
+    "commandOccurrences": [],
+    "example": {
+      "550e8400-e29b-41d4-a716-446655440001": {
+        "OldPrice": 29.99,
+        "NewPrice": 24.99
+      }
+    }
+  },
+  {
+    "name": "CartsWithProductsSV",
+    "type": "state",
+    "ticks": [
+      20
+    ],
+    "sourcedFrom": [
+      {
+        "name": "ItemAdded",
+        "ticks": [
+          6
+        ]
+      },
+      {
+        "name": "ItemRemoved",
+        "ticks": [
+          25
+        ]
+      },
+      {
+        "name": "ItemArchived",
+        "ticks": [
+          23
+        ]
+      },
+      {
+        "name": "CartCleared",
+        "ticks": [
+          27
+        ]
+      }
+    ],
+    "produces": [],
+    "attachments": [],
+    "scenarios": [
+      {
+        "name": "Timeline Scenario",
+        "steps": [
+          {
+            "given": {
+              "event": "ItemAdded",
+              "data": {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                "Description": "Wireless Mouse",
+                "Image": "mouse.jpg",
+                "Price": 29.99,
+                "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+                "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+              }
+            },
+            "then": [
+              {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Track products across multiple carts",
+        "steps": [
+          {
+            "given": {
+              "event": "ItemAdded",
+              "data": {
+                "CartId": "cart-1",
+                "ItemId": "item-1",
+                "ProductId": "product-1"
+              }
+            },
+            "then": [
+              {
+                "CartId": "cart-1",
+                "ProductId": "product-1"
+              }
+            ]
+          },
+          {
+            "given": {
+              "event": "ItemAdded",
+              "data": {
+                "CartId": "cart-2",
+                "ItemId": "item-2",
+                "ProductId": "product-1"
+              }
+            },
+            "then": [
+              {
+                "CartId": "cart-1",
+                "ProductId": "product-1"
+              },
+              {
+                "CartId": "cart-2",
+                "ProductId": "product-1"
+              }
+            ]
+          },
+          {
+            "given": {
+              "event": "ItemAdded",
+              "data": {
+                "CartId": "cart-1",
+                "ItemId": "item-3",
+                "ProductId": "product-2"
+              }
+            },
+            "then": [
+              {
+                "CartId": "cart-1",
+                "ProductId": "product-1"
+              },
+              {
+                "CartId": "cart-2",
+                "ProductId": "product-1"
+              },
+              {
+                "CartId": "cart-1",
+                "ProductId": "product-2"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Remove product when item archived",
+        "steps": [
+          {
+            "given": {
+              "event": "ItemAdded",
+              "data": {
+                "CartId": "cart-1",
+                "ItemId": "item-1",
+                "ProductId": "product-1"
+              }
+            },
+            "then": [
+              {
+                "CartId": "cart-1",
+                "ProductId": "product-1"
+              }
+            ]
+          },
+          {
+            "given": {
+              "event": "ItemArchived",
+              "data": {
+                "CartId": "cart-1",
+                "ItemId": "item-1"
+              }
+            },
+            "then": []
+          }
+        ]
+      }
+    ],
+    "specScenarioCount": 2,
+    "stateOccurrences": [
+      {
+        "tick": 20,
+        "state": {
+          "type": "state",
+          "name": "CartsWithProductsSV",
+          "tick": 20,
+          "sourcedFrom": [
+            "ItemAdded",
+            "ItemRemoved",
+            "ItemArchived",
+            "CartCleared"
+          ],
+          "example": [
+            {
+              "CartId": "550e8400-e29b-41d4-a716-446655440010",
+              "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+            }
+          ]
+        }
+      }
+    ],
+    "commandOccurrences": [],
+    "example": [
+      {
+        "CartId": "550e8400-e29b-41d4-a716-446655440010",
+        "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+      }
+    ]
+  },
+  {
+    "name": "ArchiveItemCommand",
+    "type": "command",
+    "ticks": [
+      22
+    ],
+    "sourcedFrom": [],
+    "produces": [
+      {
+        "name": "ItemArchived",
+        "ticks": [
+          23
+        ]
+      }
+    ],
+    "attachments": [],
+    "scenarios": [
+      {
+        "name": "Timeline Scenario",
+        "rows": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "InventoryChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Inventory": 50
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "Description": "Wireless Mouse",
+                  "Image": "mouse.jpg",
+                  "Price": 29.99,
+                  "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartSubmitted",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "OrderedProducts": [
+                    {
+                      "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                      "Price": 29.99
+                    }
+                  ],
+                  "TotalPrice": 29.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "InventoryChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Inventory": 49
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartPublished",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "PriceChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "OldPrice": 29.99,
+                  "NewPrice": 24.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "command": {
+              "name": "ArchiveItemCommand",
+              "data": {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+              }
+            },
+            "producedEvents": [
+              {
+                "event": "ItemArchived",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "ItemId": "550e8400-e29b-41d4-a716-446655440001"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Archive item from cart due to price change",
+        "steps": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "item-1",
+                  "ProductId": "product-1",
+                  "Price": 29.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "when": {
+              "CartId": "cart-1",
+              "ProductId": "product-1"
+            },
+            "produces": [
+              {
+                "event": "ItemArchived",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "product-1"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "specScenarioCount": 1,
+    "stateOccurrences": [],
+    "commandOccurrences": [
+      {
+        "tick": 22,
+        "command": {
+          "type": "command",
+          "name": "ArchiveItemCommand",
+          "tick": 22,
+          "example": {
+            "CartId": "550e8400-e29b-41d4-a716-446655440010",
+            "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+          }
+        },
+        "producedEvents": [
+          {
+            "type": "event",
+            "name": "ItemArchived",
+            "tick": 23,
+            "producedBy": "ArchiveItemCommand-22",
+            "example": {
+              "CartId": "550e8400-e29b-41d4-a716-446655440010",
+              "ItemId": "550e8400-e29b-41d4-a716-446655440001"
+            }
+          }
+        ]
+      }
+    ],
+    "example": {
+      "CartId": "550e8400-e29b-41d4-a716-446655440010",
+      "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+    }
+  },
+  {
+    "name": "RemoveItemCommand",
+    "type": "command",
+    "ticks": [
+      24
+    ],
+    "sourcedFrom": [],
+    "produces": [
+      {
+        "name": "ItemRemoved",
+        "ticks": [
+          25
+        ]
+      }
+    ],
+    "attachments": [],
+    "scenarios": [
+      {
+        "name": "Timeline Scenario",
+        "rows": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "InventoryChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Inventory": 50
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "Description": "Wireless Mouse",
+                  "Image": "mouse.jpg",
+                  "Price": 29.99,
+                  "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartSubmitted",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "OrderedProducts": [
+                    {
+                      "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                      "Price": 29.99
+                    }
+                  ],
+                  "TotalPrice": 29.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "InventoryChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Inventory": 49
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartPublished",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "PriceChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "OldPrice": 29.99,
+                  "NewPrice": 24.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "ItemArchived",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "ItemId": "550e8400-e29b-41d4-a716-446655440001"
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "command": {
+              "name": "RemoveItemCommand",
+              "data": {
+                "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+                "CartId": "550e8400-e29b-41d4-a716-446655440010"
+              }
+            },
+            "producedEvents": [
+              {
+                "event": "ItemRemoved",
+                "data": {
+                  "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Successfully remove item from cart",
+        "steps": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "item-1",
+                  "ProductId": "product-1",
+                  "Price": 29.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "when": {
+              "ItemId": "item-1",
+              "CartId": "cart-1"
+            },
+            "produces": [
+              {
+                "event": "ItemRemoved",
+                "data": {
+                  "ItemId": "item-1",
+                  "CartId": "cart-1"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Reject removal of non-existent item",
+        "steps": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "when": {
+              "ItemId": "non-existent-item",
+              "CartId": "cart-1"
+            },
+            "fails": "ItemCanNotBeRemovedException: Item can not be removed, since it is not part of the list"
+          }
+        ]
+      }
+    ],
+    "specScenarioCount": 2,
+    "stateOccurrences": [],
+    "commandOccurrences": [
+      {
+        "tick": 24,
+        "command": {
+          "type": "command",
+          "name": "RemoveItemCommand",
+          "tick": 24,
+          "example": {
+            "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+            "CartId": "550e8400-e29b-41d4-a716-446655440010"
+          }
+        },
+        "producedEvents": [
+          {
+            "type": "event",
+            "name": "ItemRemoved",
+            "tick": 25,
+            "producedBy": "RemoveItemCommand-24",
+            "example": {
+              "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+              "CartId": "550e8400-e29b-41d4-a716-446655440010"
+            }
+          }
+        ]
+      }
+    ],
+    "example": {
+      "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+      "CartId": "550e8400-e29b-41d4-a716-446655440010"
+    }
+  },
+  {
+    "name": "CartClearedCommand",
+    "type": "command",
+    "ticks": [
+      26
+    ],
+    "sourcedFrom": [],
+    "produces": [
+      {
+        "name": "CartCleared",
+        "ticks": [
+          27
+        ]
+      }
+    ],
+    "attachments": [],
+    "scenarios": [
+      {
+        "name": "Timeline Scenario",
+        "rows": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "InventoryChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Inventory": 50
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "Description": "Wireless Mouse",
+                  "Image": "mouse.jpg",
+                  "Price": 29.99,
+                  "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001"
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartSubmitted",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "OrderedProducts": [
+                    {
+                      "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                      "Price": 29.99
+                    }
+                  ],
+                  "TotalPrice": 29.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "InventoryChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Inventory": 49
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartPublished",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "PriceChanged",
+                "data": {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "OldPrice": 29.99,
+                  "NewPrice": 24.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "ItemArchived",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                  "ItemId": "550e8400-e29b-41d4-a716-446655440001"
+                }
+              }
+            ]
+          },
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "ItemRemoved",
+                "data": {
+                  "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "command": {
+              "name": "CartClearedCommand",
+              "data": {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010"
+              }
+            },
+            "producedEvents": [
+              {
+                "event": "CartCleared",
+                "data": {
+                  "CartId": "550e8400-e29b-41d4-a716-446655440010"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Clear all items from cart",
+        "steps": [
+          {
+            "type": "events-only",
+            "events": [
+              {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "item-1",
+                  "ProductId": "product-1",
+                  "Price": 29.99
+                }
+              },
+              {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "item-2",
+                  "ProductId": "product-2",
+                  "Price": 49.99
+                }
+              }
+            ]
+          },
+          {
+            "type": "command",
+            "when": {
+              "CartId": "cart-1"
+            },
+            "produces": [
+              {
+                "event": "CartCleared",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "specScenarioCount": 1,
+    "stateOccurrences": [],
+    "commandOccurrences": [
+      {
+        "tick": 26,
+        "command": {
+          "type": "command",
+          "name": "CartClearedCommand",
+          "tick": 26,
+          "example": {
+            "CartId": "550e8400-e29b-41d4-a716-446655440010"
+          }
+        },
+        "producedEvents": [
+          {
+            "type": "event",
+            "name": "CartCleared",
+            "tick": 27,
+            "producedBy": "CartClearedCommand-26",
+            "example": {
+              "CartId": "550e8400-e29b-41d4-a716-446655440010"
+            }
+          }
+        ]
+      }
+    ],
+    "example": {
+      "CartId": "550e8400-e29b-41d4-a716-446655440010"
+    }
+  }
+]
