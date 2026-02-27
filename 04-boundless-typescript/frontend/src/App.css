@@ -736,6 +736,17 @@ h1 {
   color: #666;
 }
 
+.cart-view-link {
+  text-decoration: none;
+  color: #3498db;
+  cursor: pointer;
+}
+
+.cart-view-link:hover {
+  text-decoration: underline;
+  color: #2980b9;
+}
+
 .cart-status {
   font-size: 11px;
   font-weight: 700;

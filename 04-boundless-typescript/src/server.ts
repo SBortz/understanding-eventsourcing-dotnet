@@ -50,6 +50,11 @@ for (const route of ['/cart', '/admin', '/orders', '/info', '/explorer']) {
   });
 }
 
+// /cart/:cartId — SPA route for viewing specific carts
+app.get('/cart/:id', (_req, res) => {
+  res.sendFile(join(__dirname, '..', 'frontend', 'dist', 'index.html'));
+});
+
 // Graceful shutdown
 process.on('SIGINT', () => {
   closeStore();

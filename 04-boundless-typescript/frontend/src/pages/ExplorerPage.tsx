@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 
 const BASE = import.meta.env.DEV ? '/api' : '';
 
@@ -233,7 +234,7 @@ export default function ExplorerPage() {
                 {Object.entries(state.carts).map(([cartId, cart]) => (
                   <div className={`cart-view-card ${cart.isSubmitted ? 'submitted' : ''}`} key={cartId}>
                     <div className="cart-view-header">
-                      <span className="cart-view-id">{cartId.substring(0, 12)}…</span>
+                      <Link to={`/cart/${cartId}`} className="cart-view-id cart-view-link">{cartId.substring(0, 12)}…</Link>
                       {cart.isSubmitted && <span className="cart-status submitted">✅ Submitted</span>}
                       {!cart.isSubmitted && cart.items.length > 0 && <span className="cart-status active">Active</span>}
                       {!cart.isSubmitted && cart.items.length === 0 && <span className="cart-status empty">Empty</span>}
