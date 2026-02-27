@@ -515,6 +515,68 @@ h1 {
   flex-shrink: 0;
 }
 
+/* ===== Info Page ===== */
+.info-content {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+.info-section {
+  background: #fff;
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.info-section h2 {
+  font-size: 20px;
+  color: #2c3e50;
+  margin-bottom: 12px;
+}
+
+.info-section p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: #444;
+  margin-bottom: 10px;
+}
+
+.info-section a {
+  color: #27ae60;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.info-section a:hover {
+  text-decoration: underline;
+}
+
+.info-code {
+  background: #f8f8f8;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+}
+
+.info-code ul {
+  margin: 8px 0;
+  padding-left: 20px;
+}
+
+.info-code li {
+  font-size: 14px;
+  line-height: 1.8;
+  color: #444;
+}
+
+.info-code code {
+  background: #e8e8e8;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 13px;
+}
+
 /* ===== Toast / Messages ===== */
 .toast {
   position: fixed;
