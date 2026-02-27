@@ -94,7 +94,8 @@
         "ItemAdded",
         "ItemRemoved",
         "ItemArchived",
-        "CartCleared"
+        "CartCleared",
+        "ItemQuantityChanged"
       ],
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010",
@@ -116,6 +117,45 @@
       "name": "Customer",
       "tick": 8,
       "readsView": "CartItemsStateView",
+      "sendsCommand": "ChangeItemQuantityCommand",
+      "role": "Customer",
+      "wireframes": [
+        "wireframes/customer-cart-8.html"
+      ]
+    },
+    {
+      "type": "command",
+      "name": "ChangeItemQuantityCommand",
+      "tick": 9,
+      "example": {
+        "CartId": "550e8400-e29b-41d4-a716-446655440010",
+        "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+        "NewQuantity": 2
+      },
+      "attachments": [
+        {
+          "type": "note",
+          "label": "Business Rule",
+          "content": "Quantity must be at least 1. To remove an item, use RemoveItemCommand instead."
+        }
+      ]
+    },
+    {
+      "type": "event",
+      "name": "ItemQuantityChanged",
+      "tick": 10,
+      "producedBy": "ChangeItemQuantityCommand-9",
+      "example": {
+        "CartId": "550e8400-e29b-41d4-a716-446655440010",
+        "ItemId": "550e8400-e29b-41d4-a716-446655440020",
+        "NewQuantity": 2
+      }
+    },
+    {
+      "type": "actor",
+      "name": "Customer",
+      "tick": 11,
+      "readsView": "CartItemsStateView",
       "sendsCommand": "SubmitCartCommand",
       "role": "Customer",
       "wireframes": [
@@ -125,7 +165,7 @@
     {
       "type": "command",
       "name": "SubmitCartCommand",
-      "tick": 9,
+      "tick": 12,
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010",
         "OrderedProducts": [
@@ -139,8 +179,8 @@
     {
       "type": "event",
       "name": "CartSubmitted",
-      "tick": 10,
-      "producedBy": "SubmitCartCommand-9",
+      "tick": 13,
+      "producedBy": "SubmitCartCommand-12",
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010",
         "OrderedProducts": [
@@ -155,7 +195,7 @@
     {
       "type": "state",
       "name": "OrdersSV",
-      "tick": 11,
+      "tick": 14,
       "sourcedFrom": [
         "CartSubmitted"
       ],
@@ -176,7 +216,7 @@
     {
       "type": "actor",
       "name": "Customer",
-      "tick": 12,
+      "tick": 15,
       "readsView": "OrdersSV",
       "role": "Customer",
       "wireframes": [
@@ -186,7 +226,7 @@
     {
       "type": "state",
       "name": "SubmittedCartDataSV",
-      "tick": 13,
+      "tick": 16,
       "sourcedFrom": [
         "CartSubmitted",
         "CartPublished"
@@ -207,7 +247,7 @@
     {
       "type": "actor",
       "name": "CartPublisherProcessor",
-      "tick": 14,
+      "tick": 17,
       "readsView": "SubmittedCartDataSV",
       "sendsCommand": "PublishCartCommand",
       "role": "system"
@@ -215,7 +255,7 @@
     {
       "type": "command",
       "name": "PublishCartCommand",
-      "tick": 15,
+      "tick": 18,
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010",
         "OrderedProducts": [
@@ -230,8 +270,8 @@
     {
       "type": "event",
       "name": "CartPublished",
-      "tick": 16,
-      "producedBy": "PublishCartCommand-15",
+      "tick": 19,
+      "producedBy": "PublishCartCommand-18",
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
       }
@@ -239,7 +279,7 @@
     {
       "type": "event",
       "name": "PriceChanged",
-      "tick": 17,
+      "tick": 20,
       "system": "Pricing System",
       "example": {
         "ProductId": "550e8400-e29b-41d4-a716-446655440001",
@@ -250,7 +290,7 @@
     {
       "type": "state",
       "name": "ChangedPricesSV",
-      "tick": 18,
+      "tick": 21,
       "sourcedFrom": [
         "PriceChanged"
       ],
@@ -264,7 +304,7 @@
     {
       "type": "state",
       "name": "CartsWithProductsSV",
-      "tick": 19,
+      "tick": 22,
       "sourcedFrom": [
         "ItemAdded",
         "ItemRemoved",
@@ -281,7 +321,7 @@
     {
       "type": "actor",
       "name": "ArchiveItemSchedulerProcessor",
-      "tick": 20,
+      "tick": 23,
       "readsView": "ChangedPricesSV",
       "sendsCommand": "ArchiveItemCommand",
       "role": "system"
@@ -289,7 +329,7 @@
     {
       "type": "command",
       "name": "ArchiveItemCommand",
-      "tick": 21,
+      "tick": 24,
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010",
         "ProductId": "550e8400-e29b-41d4-a716-446655440001"
@@ -298,8 +338,8 @@
     {
       "type": "event",
       "name": "ItemArchived",
-      "tick": 22,
-      "producedBy": "ArchiveItemCommand-21",
+      "tick": 25,
+      "producedBy": "ArchiveItemCommand-24",
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010",
         "ItemId": "550e8400-e29b-41d4-a716-446655440001"
@@ -308,7 +348,7 @@
     {
       "type": "command",
       "name": "RemoveItemCommand",
-      "tick": 23,
+      "tick": 26,
       "example": {
         "ItemId": "550e8400-e29b-41d4-a716-446655440020",
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
@@ -317,8 +357,8 @@
     {
       "type": "event",
       "name": "ItemRemoved",
-      "tick": 24,
-      "producedBy": "RemoveItemCommand-23",
+      "tick": 27,
+      "producedBy": "RemoveItemCommand-26",
       "example": {
         "ItemId": "550e8400-e29b-41d4-a716-446655440020",
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
@@ -327,7 +367,7 @@
     {
       "type": "command",
       "name": "CartClearedCommand",
-      "tick": 25,
+      "tick": 28,
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
       }
@@ -335,8 +375,8 @@
     {
       "type": "event",
       "name": "CartCleared",
-      "tick": 26,
-      "producedBy": "CartClearedCommand-25",
+      "tick": 29,
+      "producedBy": "CartClearedCommand-28",
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
       }
@@ -344,8 +384,8 @@
     {
       "type": "event",
       "name": "CartPublicationFailed",
-      "tick": 27,
-      "producedBy": "PublishCartCommand-15",
+      "tick": 30,
+      "producedBy": "PublishCartCommand-18",
       "example": {
         "CommandCartId": "550e8400-e29b-41d4-a716-446655440010"
       }
@@ -706,6 +746,70 @@
               }
             }
           ]
+        },
+        {
+          "name": "Update quantity and recalculate total",
+          "steps": [
+            {
+              "given": {
+                "event": "CartCreated",
+                "data": {
+                  "CartId": "cart-1"
+                }
+              },
+              "then": {
+                "CartId": "cart-1",
+                "TotalPrice": 0,
+                "CartItems": []
+              }
+            },
+            {
+              "given": {
+                "event": "ItemAdded",
+                "data": {
+                  "CartId": "cart-1",
+                  "Description": "Mouse",
+                  "Price": 29.99,
+                  "ItemId": "item-1",
+                  "ProductId": "product-1"
+                }
+              },
+              "then": {
+                "CartId": "cart-1",
+                "TotalPrice": 29.99,
+                "CartItems": [
+                  {
+                    "Description": "Mouse",
+                    "Price": 29.99,
+                    "ItemId": "item-1",
+                    "Quantity": 1
+                  }
+                ]
+              }
+            },
+            {
+              "given": {
+                "event": "ItemQuantityChanged",
+                "data": {
+                  "CartId": "cart-1",
+                  "ItemId": "item-1",
+                  "NewQuantity": 3
+                }
+              },
+              "then": {
+                "CartId": "cart-1",
+                "TotalPrice": 89.97,
+                "CartItems": [
+                  {
+                    "Description": "Mouse",
+                    "Price": 29.99,
+                    "ItemId": "item-1",
+                    "Quantity": 3
+                  }
+                ]
+              }
+            }
+          ]
         }
       ]
     },
@@ -852,6 +956,114 @@
                 "_note": "InventoriesSV has no inventory for product-1"
               },
               "fails": "NotEnoughInStockException"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "ChangeItemQuantityCommand",
+      "type": "command",
+      "scenarios": [
+        {
+          "name": "Successfully change item quantity",
+          "steps": [
+            {
+              "type": "events-only",
+              "events": [
+                {
+                  "event": "CartCreated",
+                  "data": {
+                    "CartId": "cart-1"
+                  }
+                },
+                {
+                  "event": "ItemAdded",
+                  "data": {
+                    "CartId": "cart-1",
+                    "ItemId": "item-1",
+                    "ProductId": "product-1",
+                    "Price": 29.99
+                  }
+                }
+              ]
+            },
+            {
+              "type": "command",
+              "when": {
+                "CartId": "cart-1",
+                "ItemId": "item-1",
+                "NewQuantity": 3
+              },
+              "produces": [
+                {
+                  "event": "ItemQuantityChanged",
+                  "data": {
+                    "CartId": "cart-1",
+                    "ItemId": "item-1",
+                    "NewQuantity": 3
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "Reject quantity below 1",
+          "steps": [
+            {
+              "type": "events-only",
+              "events": [
+                {
+                  "event": "CartCreated",
+                  "data": {
+                    "CartId": "cart-1"
+                  }
+                },
+                {
+                  "event": "ItemAdded",
+                  "data": {
+                    "CartId": "cart-1",
+                    "ItemId": "item-1",
+                    "ProductId": "product-1",
+                    "Price": 29.99
+                  }
+                }
+              ]
+            },
+            {
+              "type": "command",
+              "when": {
+                "CartId": "cart-1",
+                "ItemId": "item-1",
+                "NewQuantity": 0
+              },
+              "fails": "InvalidQuantityException: Quantity must be at least 1"
+            }
+          ]
+        },
+        {
+          "name": "Reject quantity change for non-existent item",
+          "steps": [
+            {
+              "type": "events-only",
+              "events": [
+                {
+                  "event": "CartCreated",
+                  "data": {
+                    "CartId": "cart-1"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "command",
+              "when": {
+                "CartId": "cart-1",
+                "ItemId": "non-existent",
+                "NewQuantity": 2
+              },
+              "fails": "ItemNotFoundException: Item not found in cart"
             }
           ]
         }
