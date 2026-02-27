@@ -67,6 +67,54 @@ export default function StateViewsPage() {
       </div>
 
       <div className="state-grid">
+        {/* CartItemsStateView per cart */}
+        <div className="state-card wide">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <h3 style={{ margin: 0 }}>🛒 CartItemsStateView ({Object.keys(state.carts).length} carts)</h3>
+            <div className="cart-filter-toggle">
+              <button
+                className={`cart-filter-btn ${cartFilter === 'all' ? 'active' : ''}`}
+                onClick={() => setCartFilter('all')}
+              >All</button>
+              <button
+                className={`cart-filter-btn ${cartFilter === 'active' ? 'active' : ''}`}
+                onClick={() => setCartFilter('active')}
+              >Active</button>
+            </div>
+          </div>
+          {Object.keys(state.carts).length === 0 ? (
+            <p className="state-empty">No carts yet</p>
+          ) : (
+            <div className="cart-views">
+              {Object.entries(state.carts)
+                .filter(([, cart]) => cartFilter === 'all' || !cart.isSubmitted)
+                .sort(([, a], [, b]) => b.lastPosition - a.lastPosition)
+                .map(([cartId, cart]) => (
+                <div className={`cart-view-card ${cart.isSubmitted ? 'submitted' : ''}`} key={cartId}>
+                  <div className="cart-view-header">
+                    <Link to={`/cart/${cartId}`} className="cart-view-id cart-view-link">{cartId.substring(0, 12)}…</Link>
+                    {cart.isSubmitted && <span className="cart-status submitted">✅ Submitted</span>}
+                    {!cart.isSubmitted && cart.items.length > 0 && <span className="cart-status active">Active</span>}
+                    {!cart.isSubmitted && cart.items.length === 0 && <span className="cart-status empty">Empty</span>}
+                    <span className="cart-view-total">${cart.totalPrice.toFixed(2)}</span>
+                  </div>
+                  {cart.items.length > 0 && (
+                    <div className="cart-view-items">
+                      {cart.items.map((item) => (
+                        <div className="cart-view-item" key={item.itemId}>
+                          <span className="cart-view-emoji">{item.image || '📦'}</span>
+                          <span className="cart-view-product">{item.description || item.productId}</span>
+                          <span className="cart-view-price">${item.price.toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
         {/* Inventories */}
         <div className="state-card">
           <h3>📦 InventoriesSV</h3>
@@ -114,54 +162,6 @@ export default function StateViewsPage() {
                 <div className="state-row" key={i}>
                   <span className="state-key">{order.cartId.substring(0, 8)}…</span>
                   <span className="state-value">${order.totalPrice.toFixed(2)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* CartItemsStateView per cart */}
-        <div className="state-card wide">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <h3 style={{ margin: 0 }}>🛒 CartItemsStateView ({Object.keys(state.carts).length} carts)</h3>
-            <div className="cart-filter-toggle">
-              <button
-                className={`cart-filter-btn ${cartFilter === 'all' ? 'active' : ''}`}
-                onClick={() => setCartFilter('all')}
-              >All</button>
-              <button
-                className={`cart-filter-btn ${cartFilter === 'active' ? 'active' : ''}`}
-                onClick={() => setCartFilter('active')}
-              >Active</button>
-            </div>
-          </div>
-          {Object.keys(state.carts).length === 0 ? (
-            <p className="state-empty">No carts yet</p>
-          ) : (
-            <div className="cart-views">
-              {Object.entries(state.carts)
-                .filter(([, cart]) => cartFilter === 'all' || !cart.isSubmitted)
-                .sort(([, a], [, b]) => b.lastPosition - a.lastPosition)
-                .map(([cartId, cart]) => (
-                <div className={`cart-view-card ${cart.isSubmitted ? 'submitted' : ''}`} key={cartId}>
-                  <div className="cart-view-header">
-                    <Link to={`/cart/${cartId}`} className="cart-view-id cart-view-link">{cartId.substring(0, 12)}…</Link>
-                    {cart.isSubmitted && <span className="cart-status submitted">✅ Submitted</span>}
-                    {!cart.isSubmitted && cart.items.length > 0 && <span className="cart-status active">Active</span>}
-                    {!cart.isSubmitted && cart.items.length === 0 && <span className="cart-status empty">Empty</span>}
-                    <span className="cart-view-total">${cart.totalPrice.toFixed(2)}</span>
-                  </div>
-                  {cart.items.length > 0 && (
-                    <div className="cart-view-items">
-                      {cart.items.map((item) => (
-                        <div className="cart-view-item" key={item.itemId}>
-                          <span className="cart-view-emoji">{item.image || '📦'}</span>
-                          <span className="cart-view-product">{item.description || item.productId}</span>
-                          <span className="cart-view-price">${item.price.toFixed(2)}</span>
-                        </div>
-                      ))}
-                    </div>
-                  )}
                 </div>
               ))}
             </div>
