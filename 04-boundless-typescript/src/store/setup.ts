@@ -27,6 +27,9 @@ export const consistency: ConsistencyConfig = {
     ItemArchived: {
       keys: [{ name: 'cart', path: 'data.cartId' }],
     },
+    ItemQuantityChanged: {
+      keys: [{ name: 'cart', path: 'data.cartId' }],
+    },
     CartSubmitted: {
       keys: [{ name: 'cart', path: 'data.cartId' }],
     },
