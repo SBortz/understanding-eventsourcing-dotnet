@@ -18,7 +18,7 @@ function getNestedValue(obj: unknown, path: string): unknown {
 // ---------------------------------------------------------------------------
 
 export async function getDebugEvents() {
-  const store = getStore();
+  const store = await getStore();
   const result = await store.read({
     conditions: ALL_EVENT_TYPES.map(type => ({ type })),
   });
@@ -47,7 +47,7 @@ export async function getDebugEvents() {
 }
 
 export async function getDebugState() {
-  const store = getStore();
+  const store = await getStore();
   const result = await store.read({
     conditions: ALL_EVENT_TYPES.map(type => ({ type })),
   });

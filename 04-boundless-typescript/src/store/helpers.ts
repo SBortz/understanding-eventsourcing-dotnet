@@ -9,7 +9,7 @@ import { getStore } from './setup.js';
  * Queries each event type that uses the 'cart' key.
  */
 export async function readCartEvents(cartId: string): Promise<ShoppingEvent[]> {
-  const store = getStore();
+  const store = await getStore();
   const cartEventTypes = [
     'CartCreated', 'ItemAdded', 'ItemRemoved', 'ItemArchived',
     'CartSubmitted', 'CartCleared', 'CartPublished', 'CartPublicationFailed',
@@ -29,7 +29,7 @@ export async function readCartEvents(cartId: string): Promise<ShoppingEvent[]> {
  * Read all events for a specific cart and return the appendCondition for concurrency.
  */
 export async function readCartEventsWithCondition(cartId: string) {
-  const store = getStore();
+  const store = await getStore();
   const cartEventTypes = [
     'CartCreated', 'ItemAdded', 'ItemRemoved', 'ItemArchived',
     'CartSubmitted', 'CartCleared', 'CartPublished', 'CartPublicationFailed',
@@ -52,7 +52,7 @@ export async function readCartEventsWithCondition(cartId: string) {
  * Read events by type across all keys (e.g. all InventoryChanged)
  */
 export async function readEventsByType(type: string): Promise<ShoppingEvent[]> {
-  const store = getStore();
+  const store = await getStore();
   const result = await store.read({
     conditions: [{ type }],
   });
@@ -63,7 +63,7 @@ export async function readEventsByType(type: string): Promise<ShoppingEvent[]> {
  * Read all events (global stream)
  */
 export async function readAllEvents(): Promise<ShoppingEvent[]> {
-  const store = getStore();
+  const store = await getStore();
   const result = await store.read({
     conditions: ALL_EVENT_TYPES.map(type => ({ type })),
   });
@@ -75,7 +75,7 @@ export async function readAllEvents(): Promise<ShoppingEvent[]> {
  * Reads current state first to get appendCondition, then appends.
  */
 export async function appendCartEvents(cartId: string, events: ShoppingEvent[]): Promise<void> {
-  const store = getStore();
+  const store = await getStore();
   const toStore = events.map((e) => ({
     type: e.type,
     data: e.data as Record<string, unknown>,
@@ -90,7 +90,7 @@ export async function appendCartEvents(cartId: string, events: ShoppingEvent[]):
  * Blind append (no concurrency check) - for translations/external events
  */
 export async function appendEvents(events: ShoppingEvent[]): Promise<void> {
-  const store = getStore();
+  const store = await getStore();
   const toStore = events.map((e) => ({
     type: e.type,
     data: e.data as Record<string, unknown>,

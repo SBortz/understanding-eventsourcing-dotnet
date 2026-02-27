@@ -129,7 +129,7 @@ async function runArchiveProcessor(): Promise<void> {
 
     if (archiveEvents.length > 0) {
       // Blind append (no concurrency guard)
-      const store = getStore();
+      const store = await getStore();
       await store.append(
         archiveEvents.map((e) => ({ type: e.type, data: e.data as Record<string, unknown> })),
         null,
@@ -170,7 +170,7 @@ export interface ChangePriceCommand {
 export async function executeChangePrice(command: ChangePriceCommand): Promise<{ success: boolean; event: ShoppingEvent }> {
   // 1. Translate & blind-append PriceChanged event
   const event = translatePriceChanged(command);
-  const store = getStore();
+  const store = await getStore();
   await store.append([{ type: event.type, data: event.data as Record<string, unknown> }], null);
 
   // 2. Run archive processor
