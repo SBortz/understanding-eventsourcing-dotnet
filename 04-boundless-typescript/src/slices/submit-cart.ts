@@ -17,10 +17,18 @@ function buildInventories(inventoryEvents: InventoryChanged[]): Map<string, numb
 }
 
 function checkInventory(state: CartState, inventories: Map<string, number>): void {
+  // Count how many of each product are in the cart
+  const productCounts = new Map<string, number>();
   for (const [, productId] of state.cartItems) {
-    const inventory = inventories.get(productId) ?? 0;
-    if (inventory <= 0) {
-      throw new Error(`Product ${productId} is out of stock`);
+    productCounts.set(productId, (productCounts.get(productId) ?? 0) + 1);
+  }
+
+  for (const [productId, needed] of productCounts) {
+    const available = inventories.get(productId) ?? 0;
+    if (available < needed) {
+      throw new Error(
+        `Product ${productId} is out of stock (need ${needed}, have ${available})`,
+      );
     }
   }
 }
