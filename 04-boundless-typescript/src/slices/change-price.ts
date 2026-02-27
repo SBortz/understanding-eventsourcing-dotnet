@@ -144,7 +144,34 @@ async function runArchiveProcessor(): Promise<void> {
 // Route
 // ---------------------------------------------------------------------------
 
+/**
+ * Build a map of productId → latest newPrice from all PriceChanged events.
+ */
+export function projectCurrentPrices(
+  events: ShoppingEvent[],
+): Record<string, number> {
+  const prices: Record<string, number> = {};
+  for (const e of events) {
+    if (e.type === 'PriceChanged') {
+      prices[e.data.productId] = e.data.newPrice;
+    }
+  }
+  return prices;
+}
+
 export function changePriceRoutes(app: Express): void {
+  // Current prices (from PriceChanged events)
+  app.get('/prices', async (_req, res) => {
+    try {
+      const events = await readEventsByType('PriceChanged');
+      const prices = projectCurrentPrices(events);
+      res.status(200).json(prices);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      res.status(500).json({ error: message });
+    }
+  });
+
   app.post('/debug/simulate-price-changed', async (req, res) => {
     try {
       const { productId, oldPrice, newPrice } = req.body;

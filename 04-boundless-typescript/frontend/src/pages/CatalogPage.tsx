@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { PRODUCTS } from '../products';
-import { fetchInventories, fetchCartItems, addItem } from '../api';
+import { fetchInventories, fetchPrices, fetchCartItems, addItem } from '../api';
 import { getCartId, generateItemId } from '../cartId';
 import type { Inventories } from '../types';
 
@@ -21,6 +21,7 @@ function stockLabel(count: number | undefined): {
 
 export default function CatalogPage() {
   const [inventories, setInventories] = useState<Inventories>({});
+  const [prices, setPrices] = useState<Record<string, number>>({});
   const [cartCount, setCartCount] = useState(0);
   const [loading, setLoading] = useState<string | null>(null);
   const [toast, setToast] = useState<{
@@ -32,17 +33,23 @@ export default function CatalogPage() {
 
   const refresh = useCallback(async () => {
     try {
-      const [inv, cart] = await Promise.all([
+      const [inv, priceOverrides, cart] = await Promise.all([
         fetchInventories(),
+        fetchPrices(),
         fetchCartItems(cartId),
       ]);
       setInventories(inv);
+      setPrices(priceOverrides);
       setCartCount(cart.items?.length ?? 0);
     } catch {
       // Cart may not exist yet — that's fine
       try {
-        const inv = await fetchInventories();
+        const [inv, priceOverrides] = await Promise.all([
+          fetchInventories(),
+          fetchPrices(),
+        ]);
         setInventories(inv);
+        setPrices(priceOverrides);
       } catch {
         // backend may be down
       }
@@ -58,6 +65,9 @@ export default function CatalogPage() {
     setTimeout(() => setToast(null), 2500);
   };
 
+  const getPrice = (product: { productId: string; price: number }) =>
+    prices[product.productId] ?? product.price;
+
   const handleAddToCart = async (productId: string) => {
     const product = PRODUCTS.find((p) => p.productId === productId);
     if (!product) return;
@@ -70,7 +80,7 @@ export default function CatalogPage() {
         productId: product.productId,
         description: product.description,
         image: product.emoji,
-        price: product.price,
+        price: getPrice(product),
       });
       showToast(`${product.name} added to cart!`, 'success');
       await refresh();
@@ -105,13 +115,18 @@ export default function CatalogPage() {
           const stock = inventories[product.productId];
           const label = stockLabel(stock);
           const outOfStock = stock !== undefined && stock <= 0;
+          const currentPrice = getPrice(product);
+          const priceChanged = currentPrice !== product.price;
 
           return (
             <div className="product-card" key={product.productId}>
               <div className="product-image">{product.emoji}</div>
               <div className="product-name">{product.name}</div>
               <div className="product-price">
-                ${product.price.toFixed(2)}
+                ${currentPrice.toFixed(2)}
+                {priceChanged && (
+                  <span className="original-price">${product.price.toFixed(2)}</span>
+                )}
               </div>
               <div className="stock-info">
                 <span className={label.className}>{label.text}</span>

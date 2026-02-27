@@ -66,6 +66,27 @@ export async function submitCart(body: {
   return data;
 }
 
+export async function changeItemQuantity(body: {
+  cartId: string;
+  itemId: string;
+  newQuantity: number;
+}) {
+  const res = await fetch(`${BASE}/change-quantity`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  const data = await res.json();
+  if (!res.ok || !data.success) throw new Error(data.error || 'Failed to change quantity');
+  return data;
+}
+
+export async function fetchPrices(): Promise<Record<string, number>> {
+  const res = await fetch(`${BASE}/prices`);
+  if (!res.ok) throw new Error('Failed to fetch prices');
+  return res.json();
+}
+
 export async function fetchOrders(): Promise<Array<{
   cartId: string;
   orderedProducts: Array<{ productId: string; totalPrice: number }>;

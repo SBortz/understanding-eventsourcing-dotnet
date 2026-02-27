@@ -9,6 +9,7 @@ export interface CartItem {
   description?: string;
   image?: string;
   price: number;
+  quantity: number;
 }
 
 export interface CartItemsView {
@@ -30,6 +31,7 @@ export function projectCartItems(events: ShoppingEvent[]): CartItemsView {
           description: event.data.description,
           image: event.data.image,
           price: event.data.price,
+          quantity: 1,
         });
         break;
 
@@ -41,6 +43,14 @@ export function projectCartItems(events: ShoppingEvent[]): CartItemsView {
         items = items.filter((i) => i.itemId !== event.data.itemId);
         break;
 
+      case 'ItemQuantityChanged': {
+        const item = items.find((i) => i.itemId === event.data.itemId);
+        if (item) {
+          item.quantity = event.data.newQuantity;
+        }
+        break;
+      }
+
       case 'CartCleared':
         items = [];
         break;
@@ -51,7 +61,7 @@ export function projectCartItems(events: ShoppingEvent[]): CartItemsView {
     events.find((e) => e.type === 'CartCreated')?.data.cartId ??
     (items.length > 0 ? items[0].cartId : '');
 
-  const totalPrice = items.reduce((sum, item) => sum + item.price, 0);
+  const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return { cartId, totalPrice, items };
 }

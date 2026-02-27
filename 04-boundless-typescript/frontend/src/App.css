@@ -118,6 +118,14 @@ h1 {
   margin-bottom: 10px;
 }
 
+.original-price {
+  font-size: 14px;
+  color: #999;
+  text-decoration: line-through;
+  margin-left: 8px;
+  font-weight: 400;
+}
+
 .stock-info {
   display: flex;
   align-items: center;

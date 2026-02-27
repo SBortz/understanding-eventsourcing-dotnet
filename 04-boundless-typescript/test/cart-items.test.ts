@@ -34,6 +34,24 @@ describe('CartItemsProjector', () => {
     expect(view.items[0].productId).toBe(productId);
   });
 
+  it('QuantityChangeUpdatesTotalPrice', () => {
+    const cartId = '00000000-0000-0000-0000-000000000001';
+    const productId = '10000000-0000-0000-0000-000000000001';
+    const itemId = '20000000-0000-0000-0000-000000000001';
+
+    const events: ShoppingEvent[] = [
+      { type: 'CartCreated', data: { cartId } },
+      { type: 'ItemAdded', data: { cartId, itemId, productId, description: 'Description', image: 'Image', price: 10 } },
+      { type: 'ItemQuantityChanged', data: { cartId, itemId, newQuantity: 3 } },
+    ];
+
+    const view = projectCartItems(events);
+
+    expect(view.items.length).toBe(1);
+    expect(view.items[0].quantity).toBe(3);
+    expect(view.totalPrice).toBe(30); // 10 * 3
+  });
+
   it('Has2Items', () => {
     const cartId = '00000000-0000-0000-0000-000000000001';
     const productId1 = '10000000-0000-0000-0000-000000000001';
