@@ -53,6 +53,7 @@ export function explorerRoutes(app: Express): void {
       const { projectOrders } = await import('./orders.js');
       const { projectCurrentPrices } = await import('./change-price.js');
       const { projectCartsWithProducts } = await import('./carts-with-products.js');
+      const { projectCartItems } = await import('./cart-items.js');
 
       const allTyped = result.events.map(e => ({ type: e.type, data: e.data }) as any);
 
@@ -74,11 +75,28 @@ export function explorerRoutes(app: Express): void {
       // CartsWithProductsSV
       const cartsWithProducts = projectCartsWithProducts(allTyped);
 
+      // CartItemsStateView per cart
+      const cartIds = new Set<string>();
+      for (const e of result.events) {
+        const data = e.data as Record<string, unknown>;
+        if (data.cartId) cartIds.add(data.cartId as string);
+      }
+
+      const carts: Record<string, unknown> = {};
+      for (const cartId of cartIds) {
+        const cartEvts = allTyped.filter((e: any) => e.data.cartId === cartId);
+        const view = projectCartItems(cartEvts);
+        // Check if submitted
+        const isSubmitted = cartEvts.some((e: any) => e.type === 'CartSubmitted');
+        carts[cartId] = { ...view, isSubmitted };
+      }
+
       res.status(200).json({
         inventories,
         orders,
         prices,
         cartsWithProducts,
+        carts,
         totalEvents: result.events.length,
       });
     } catch (error: unknown) {
