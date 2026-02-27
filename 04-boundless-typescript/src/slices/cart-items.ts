@@ -1,4 +1,3 @@
-import type { Express } from 'express';
 import type { ShoppingEvent } from '../domain/events.js';
 import { readCartEvents } from '../store/helpers.js';
 
@@ -66,17 +65,8 @@ export function projectCartItems(events: ShoppingEvent[]): CartItemsView {
   return { cartId, totalPrice, items };
 }
 
-export function cartItemsRoutes(app: Express): void {
-  app.get('/:cartId/cartitems', async (req, res) => {
-    try {
-      const { cartId } = req.params;
-      const events = await readCartEvents(cartId);
-      const view = projectCartItems(events);
-
-      res.status(200).json({ ...view, cartId });
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json({ error: message });
-    }
-  });
+export async function getCartItems(cartId: string): Promise<CartItemsView> {
+  const events = await readCartEvents(cartId);
+  const view = projectCartItems(events);
+  return { ...view, cartId };
 }

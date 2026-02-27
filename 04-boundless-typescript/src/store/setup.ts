@@ -1,6 +1,6 @@
 // BoundlessDB Event Store setup
 
-import { EventStore, SqliteStorage } from 'boundlessdb';
+import { EventStore, SqliteStorage, PostgresStorage } from 'boundlessdb';
 import type { ConsistencyConfig } from 'boundlessdb';
 
 /**
@@ -52,7 +52,10 @@ let storeInstance: EventStore | null = null;
 
 export function getStore(): EventStore {
   if (!storeInstance) {
-    const storage = new SqliteStorage('./shopping-cart.db');
+    const pgUrl = process.env.POSTGRES_URL;
+    const storage = pgUrl
+      ? new PostgresStorage(pgUrl)
+      : new SqliteStorage('./shopping-cart.db');
     storeInstance = new EventStore({ storage, consistency });
   }
   return storeInstance;
