@@ -105,7 +105,10 @@ describe('SubmitCartDecider', () => {
       ],
     });
 
-    expect(uncommittedEvents[uncommittedEvents.length - 1].type).toBe('CartSubmitted');
+    expect(uncommittedEvents[0].type).toBe('CartSubmitted');
+    // Inventory should be reduced for each product in the cart
+    const inventoryEvents = uncommittedEvents.filter(e => e.type === 'InventoryChanged');
+    expect(inventoryEvents).toHaveLength(2);
   });
 
   it('SubmitEmptyCartFails', () => {

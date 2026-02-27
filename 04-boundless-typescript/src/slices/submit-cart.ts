@@ -1,7 +1,7 @@
 import type { Express } from 'express';
 import type { ShoppingEvent, CartSubmitted, InventoryChanged } from '../domain/events.js';
 import { buildState, type CartState } from '../domain/cart.js';
-import { readCartEvents, readEventsByType, appendCartEvents } from '../store/helpers.js';
+import { readCartEvents, readEventsByType, appendCartEvents, appendEvents } from '../store/helpers.js';
 
 export interface SubmitCartCommand {
   cartId: string;
@@ -40,15 +40,29 @@ export function submitCartDecider(
     throw new Error('Cart has already been submitted');
   }
 
-  const event: CartSubmitted = {
+  const events: ShoppingEvent[] = [];
+
+  events.push({
     type: 'CartSubmitted',
     data: {
       cartId: command.cartId,
       orderedProducts: command.orderedProducts,
     },
-  };
+  });
 
-  return [event];
+  // Reduce inventory for each ordered product
+  for (const [, productId] of state.cartItems) {
+    const current = inventories.get(productId) ?? 0;
+    events.push({
+      type: 'InventoryChanged',
+      data: {
+        productId,
+        inventory: current - 1,
+      },
+    });
+  }
+
+  return events;
 }
 
 export function submitCartRoutes(app: Express): void {
@@ -64,7 +78,14 @@ export function submitCartRoutes(app: Express): void {
 
       const newEvents = submitCartDecider(state, inventories, command);
 
-      await appendCartEvents(command.cartId, newEvents);
+      // Separate cart events from inventory events (different keys)
+      const cartOnly = newEvents.filter(e => e.type !== 'InventoryChanged');
+      const inventoryUpdates = newEvents.filter(e => e.type === 'InventoryChanged');
+
+      await appendCartEvents(command.cartId, cartOnly);
+      if (inventoryUpdates.length > 0) {
+        await appendEvents(inventoryUpdates);
+      }
 
       res.status(200).json({ success: true, events: newEvents });
     } catch (error: unknown) {
