@@ -4,7 +4,8 @@ import CatalogPage from './pages/CatalogPage'
 import CartPage from './pages/CartPage'
 import AdminPage from './pages/AdminPage'
 import InfoPage from './pages/InfoPage'
-import ExplorerPage from './pages/ExplorerPage'
+import EventsPage from './pages/EventsPage'
+import StateViewsPage from './pages/StateViewsPage'
 import './App.css'
 
 function App() {
@@ -16,8 +17,9 @@ function App() {
         <Route path="/cart" element={<CartPage />} />
         <Route path="/cart/:cartId" element={<CartPage />} />
         <Route path="/admin" element={<AdminPage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route path="/state" element={<StateViewsPage />} />
         <Route path="/info" element={<InfoPage />} />
-        <Route path="/explorer" element={<ExplorerPage />} />
       </Routes>
     </>
   )

@@ -44,7 +44,7 @@ explorerRoutes(app);
 app.use(express.static(join(__dirname, '..', 'frontend', 'dist')));
 
 // SPA fallback: serve index.html for known frontend routes
-for (const route of ['/cart', '/admin', '/orders', '/info', '/explorer']) {
+for (const route of ['/cart', '/admin', '/orders', '/info', '/events', '/state']) {
   app.get(route, (_req, res) => {
     res.sendFile(join(__dirname, '..', 'frontend', 'dist', 'index.html'));
   });
