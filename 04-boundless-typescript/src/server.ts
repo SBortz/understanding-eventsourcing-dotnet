@@ -15,7 +15,6 @@ import { cartsWithProductsRoutes } from './slices/carts-with-products.js';
 import { changeInventoryRoutes } from './slices/change-inventory.js';
 import { changePriceRoutes } from './slices/change-price.js';
 import { ordersRoutes } from './slices/orders.js';
-import { ordersRoutes } from './slices/orders.js';
 
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -37,7 +36,6 @@ inventoriesRoutes(app);
 cartsWithProductsRoutes(app);
 changeInventoryRoutes(app);
 changePriceRoutes(app);
-ordersRoutes(app);
 ordersRoutes(app);
 
 // Serve frontend static files
