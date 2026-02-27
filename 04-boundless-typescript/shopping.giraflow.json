@@ -154,8 +154,39 @@
     },
     {
       "type": "state",
-      "name": "SubmittedCartDataSV",
+      "name": "OrdersSV",
       "tick": 11,
+      "sourcedFrom": [
+        "CartSubmitted"
+      ],
+      "example": [
+        {
+          "CartId": "550e8400-e29b-41d4-a716-446655440010",
+          "OrderedProducts": [
+            {
+              "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+              "Price": 29.99
+            }
+          ],
+          "TotalPrice": 29.99,
+          "SubmittedAt": "2026-02-27T12:00:00Z"
+        }
+      ]
+    },
+    {
+      "type": "actor",
+      "name": "Customer",
+      "tick": 12,
+      "readsView": "OrdersSV",
+      "role": "Customer",
+      "wireframes": [
+        "wireframes/customer-orders-12.html"
+      ]
+    },
+    {
+      "type": "state",
+      "name": "SubmittedCartDataSV",
+      "tick": 13,
       "sourcedFrom": [
         "CartSubmitted",
         "CartPublished"
@@ -176,7 +207,7 @@
     {
       "type": "actor",
       "name": "CartPublisherProcessor",
-      "tick": 12,
+      "tick": 14,
       "readsView": "SubmittedCartDataSV",
       "sendsCommand": "PublishCartCommand",
       "role": "system"
@@ -184,7 +215,7 @@
     {
       "type": "command",
       "name": "PublishCartCommand",
-      "tick": 13,
+      "tick": 15,
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010",
         "OrderedProducts": [
@@ -199,8 +230,8 @@
     {
       "type": "event",
       "name": "CartPublished",
-      "tick": 14,
-      "producedBy": "PublishCartCommand-13",
+      "tick": 16,
+      "producedBy": "PublishCartCommand-15",
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
       }
@@ -208,7 +239,7 @@
     {
       "type": "event",
       "name": "PriceChanged",
-      "tick": 15,
+      "tick": 17,
       "system": "Pricing System",
       "example": {
         "ProductId": "550e8400-e29b-41d4-a716-446655440001",
@@ -219,7 +250,7 @@
     {
       "type": "state",
       "name": "ChangedPricesSV",
-      "tick": 16,
+      "tick": 18,
       "sourcedFrom": [
         "PriceChanged"
       ],
@@ -233,7 +264,7 @@
     {
       "type": "state",
       "name": "CartsWithProductsSV",
-      "tick": 17,
+      "tick": 19,
       "sourcedFrom": [
         "ItemAdded",
         "ItemRemoved",
@@ -250,7 +281,7 @@
     {
       "type": "actor",
       "name": "ArchiveItemSchedulerProcessor",
-      "tick": 18,
+      "tick": 20,
       "readsView": "ChangedPricesSV",
       "sendsCommand": "ArchiveItemCommand",
       "role": "system"
@@ -258,7 +289,7 @@
     {
       "type": "command",
       "name": "ArchiveItemCommand",
-      "tick": 19,
+      "tick": 21,
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010",
         "ProductId": "550e8400-e29b-41d4-a716-446655440001"
@@ -267,8 +298,8 @@
     {
       "type": "event",
       "name": "ItemArchived",
-      "tick": 20,
-      "producedBy": "ArchiveItemCommand-19",
+      "tick": 22,
+      "producedBy": "ArchiveItemCommand-21",
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010",
         "ItemId": "550e8400-e29b-41d4-a716-446655440001"
@@ -277,7 +308,7 @@
     {
       "type": "command",
       "name": "RemoveItemCommand",
-      "tick": 21,
+      "tick": 23,
       "example": {
         "ItemId": "550e8400-e29b-41d4-a716-446655440020",
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
@@ -286,8 +317,8 @@
     {
       "type": "event",
       "name": "ItemRemoved",
-      "tick": 22,
-      "producedBy": "RemoveItemCommand-21",
+      "tick": 24,
+      "producedBy": "RemoveItemCommand-23",
       "example": {
         "ItemId": "550e8400-e29b-41d4-a716-446655440020",
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
@@ -296,7 +327,7 @@
     {
       "type": "command",
       "name": "CartClearedCommand",
-      "tick": 23,
+      "tick": 25,
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
       }
@@ -304,8 +335,8 @@
     {
       "type": "event",
       "name": "CartCleared",
-      "tick": 24,
-      "producedBy": "CartClearedCommand-23",
+      "tick": 26,
+      "producedBy": "CartClearedCommand-25",
       "example": {
         "CartId": "550e8400-e29b-41d4-a716-446655440010"
       }
@@ -313,8 +344,8 @@
     {
       "type": "event",
       "name": "CartPublicationFailed",
-      "tick": 25,
-      "producedBy": "PublishCartCommand-13",
+      "tick": 27,
+      "producedBy": "PublishCartCommand-15",
       "example": {
         "CommandCartId": "550e8400-e29b-41d4-a716-446655440010"
       }
@@ -821,6 +852,89 @@
                 "_note": "InventoriesSV has no inventory for product-1"
               },
               "fails": "NotEnoughInStockException"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "OrdersSV",
+      "type": "state",
+      "scenarios": [
+        {
+          "name": "Track submitted orders",
+          "steps": [
+            {
+              "given": {
+                "event": "CartSubmitted",
+                "data": {
+                  "CartId": "cart-1",
+                  "OrderedProducts": [
+                    {
+                      "ProductId": "product-1",
+                      "Price": 29.99
+                    }
+                  ],
+                  "TotalPrice": 29.99
+                }
+              },
+              "then": [
+                {
+                  "CartId": "cart-1",
+                  "TotalPrice": 29.99,
+                  "OrderedProducts": [
+                    {
+                      "ProductId": "product-1",
+                      "Price": 29.99
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "given": {
+                "event": "CartSubmitted",
+                "data": {
+                  "CartId": "cart-2",
+                  "OrderedProducts": [
+                    {
+                      "ProductId": "product-2",
+                      "Price": 49.99
+                    },
+                    {
+                      "ProductId": "product-3",
+                      "Price": 79.99
+                    }
+                  ],
+                  "TotalPrice": 129.98
+                }
+              },
+              "then": [
+                {
+                  "CartId": "cart-1",
+                  "TotalPrice": 29.99,
+                  "OrderedProducts": [
+                    {
+                      "ProductId": "product-1",
+                      "Price": 29.99
+                    }
+                  ]
+                },
+                {
+                  "CartId": "cart-2",
+                  "TotalPrice": 129.98,
+                  "OrderedProducts": [
+                    {
+                      "ProductId": "product-2",
+                      "Price": 49.99
+                    },
+                    {
+                      "ProductId": "product-3",
+                      "Price": 79.99
+                    }
+                  ]
+                }
+              ]
             }
           ]
         }

@@ -411,19 +411,19 @@
       {
         "name": "ItemRemoved",
         "ticks": [
-          22
+          24
         ]
       },
       {
         "name": "ItemArchived",
         "ticks": [
-          20
+          22
         ]
       },
       {
         "name": "CartCleared",
         "ticks": [
-          24
+          26
         ]
       }
     ],
@@ -948,10 +948,180 @@
     }
   },
   {
-    "name": "SubmittedCartDataSV",
+    "name": "OrdersSV",
     "type": "state",
     "ticks": [
       11
+    ],
+    "sourcedFrom": [
+      {
+        "name": "CartSubmitted",
+        "ticks": [
+          10
+        ]
+      }
+    ],
+    "produces": [],
+    "attachments": [],
+    "scenarios": [
+      {
+        "name": "Timeline Scenario",
+        "steps": [
+          {
+            "given": {
+              "event": "CartSubmitted",
+              "data": {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                "OrderedProducts": [
+                  {
+                    "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                    "Price": 29.99
+                  }
+                ],
+                "TotalPrice": 29.99
+              }
+            },
+            "then": [
+              {
+                "CartId": "550e8400-e29b-41d4-a716-446655440010",
+                "OrderedProducts": [
+                  {
+                    "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                    "Price": 29.99
+                  }
+                ],
+                "TotalPrice": 29.99,
+                "SubmittedAt": "2026-02-27T12:00:00Z"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Track submitted orders",
+        "steps": [
+          {
+            "given": {
+              "event": "CartSubmitted",
+              "data": {
+                "CartId": "cart-1",
+                "OrderedProducts": [
+                  {
+                    "ProductId": "product-1",
+                    "Price": 29.99
+                  }
+                ],
+                "TotalPrice": 29.99
+              }
+            },
+            "then": [
+              {
+                "CartId": "cart-1",
+                "TotalPrice": 29.99,
+                "OrderedProducts": [
+                  {
+                    "ProductId": "product-1",
+                    "Price": 29.99
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "given": {
+              "event": "CartSubmitted",
+              "data": {
+                "CartId": "cart-2",
+                "OrderedProducts": [
+                  {
+                    "ProductId": "product-2",
+                    "Price": 49.99
+                  },
+                  {
+                    "ProductId": "product-3",
+                    "Price": 79.99
+                  }
+                ],
+                "TotalPrice": 129.98
+              }
+            },
+            "then": [
+              {
+                "CartId": "cart-1",
+                "TotalPrice": 29.99,
+                "OrderedProducts": [
+                  {
+                    "ProductId": "product-1",
+                    "Price": 29.99
+                  }
+                ]
+              },
+              {
+                "CartId": "cart-2",
+                "TotalPrice": 129.98,
+                "OrderedProducts": [
+                  {
+                    "ProductId": "product-2",
+                    "Price": 49.99
+                  },
+                  {
+                    "ProductId": "product-3",
+                    "Price": 79.99
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "specScenarioCount": 1,
+    "stateOccurrences": [
+      {
+        "tick": 11,
+        "state": {
+          "type": "state",
+          "name": "OrdersSV",
+          "tick": 11,
+          "sourcedFrom": [
+            "CartSubmitted"
+          ],
+          "example": [
+            {
+              "CartId": "550e8400-e29b-41d4-a716-446655440010",
+              "OrderedProducts": [
+                {
+                  "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+                  "Price": 29.99
+                }
+              ],
+              "TotalPrice": 29.99,
+              "SubmittedAt": "2026-02-27T12:00:00Z"
+            }
+          ]
+        }
+      }
+    ],
+    "commandOccurrences": [],
+    "example": [
+      {
+        "CartId": "550e8400-e29b-41d4-a716-446655440010",
+        "OrderedProducts": [
+          {
+            "ProductId": "550e8400-e29b-41d4-a716-446655440001",
+            "Price": 29.99
+          }
+        ],
+        "TotalPrice": 29.99,
+        "SubmittedAt": "2026-02-27T12:00:00Z"
+      }
+    ]
+  },
+  {
+    "name": "SubmittedCartDataSV",
+    "type": "state",
+    "ticks": [
+      13
     ],
     "sourcedFrom": [
       {
@@ -963,7 +1133,7 @@
       {
         "name": "CartPublished",
         "ticks": [
-          14
+          16
         ]
       }
     ],
@@ -1055,11 +1225,11 @@
     "specScenarioCount": 2,
     "stateOccurrences": [
       {
-        "tick": 11,
+        "tick": 13,
         "state": {
           "type": "state",
           "name": "SubmittedCartDataSV",
-          "tick": 11,
+          "tick": 13,
           "sourcedFrom": [
             "CartSubmitted",
             "CartPublished"
@@ -1097,20 +1267,20 @@
     "name": "PublishCartCommand",
     "type": "command",
     "ticks": [
-      13
+      15
     ],
     "sourcedFrom": [],
     "produces": [
       {
         "name": "CartPublished",
         "ticks": [
-          14
+          16
         ]
       },
       {
         "name": "CartPublicationFailed",
         "ticks": [
-          25
+          27
         ]
       }
     ],
@@ -1298,11 +1468,11 @@
     "stateOccurrences": [],
     "commandOccurrences": [
       {
-        "tick": 13,
+        "tick": 15,
         "command": {
           "type": "command",
           "name": "PublishCartCommand",
-          "tick": 13,
+          "tick": 15,
           "example": {
             "CartId": "550e8400-e29b-41d4-a716-446655440010",
             "OrderedProducts": [
@@ -1318,8 +1488,8 @@
           {
             "type": "event",
             "name": "CartPublished",
-            "tick": 14,
-            "producedBy": "PublishCartCommand-13",
+            "tick": 16,
+            "producedBy": "PublishCartCommand-15",
             "example": {
               "CartId": "550e8400-e29b-41d4-a716-446655440010"
             }
@@ -1327,8 +1497,8 @@
           {
             "type": "event",
             "name": "CartPublicationFailed",
-            "tick": 25,
-            "producedBy": "PublishCartCommand-13",
+            "tick": 27,
+            "producedBy": "PublishCartCommand-15",
             "example": {
               "CommandCartId": "550e8400-e29b-41d4-a716-446655440010"
             }
@@ -1351,13 +1521,13 @@
     "name": "ChangedPricesSV",
     "type": "state",
     "ticks": [
-      16
+      18
     ],
     "sourcedFrom": [
       {
         "name": "PriceChanged",
         "ticks": [
-          15
+          17
         ],
         "system": "Pricing System"
       }
@@ -1427,11 +1597,11 @@
     "specScenarioCount": 1,
     "stateOccurrences": [
       {
-        "tick": 16,
+        "tick": 18,
         "state": {
           "type": "state",
           "name": "ChangedPricesSV",
-          "tick": 16,
+          "tick": 18,
           "sourcedFrom": [
             "PriceChanged"
           ],
@@ -1456,7 +1626,7 @@
     "name": "CartsWithProductsSV",
     "type": "state",
     "ticks": [
-      17
+      19
     ],
     "sourcedFrom": [
       {
@@ -1468,19 +1638,19 @@
       {
         "name": "ItemRemoved",
         "ticks": [
-          22
+          24
         ]
       },
       {
         "name": "ItemArchived",
         "ticks": [
-          20
+          22
         ]
       },
       {
         "name": "CartCleared",
         "ticks": [
-          24
+          26
         ]
       }
     ],
@@ -1611,11 +1781,11 @@
     "specScenarioCount": 2,
     "stateOccurrences": [
       {
-        "tick": 17,
+        "tick": 19,
         "state": {
           "type": "state",
           "name": "CartsWithProductsSV",
-          "tick": 17,
+          "tick": 19,
           "sourcedFrom": [
             "ItemAdded",
             "ItemRemoved",
@@ -1643,14 +1813,14 @@
     "name": "ArchiveItemCommand",
     "type": "command",
     "ticks": [
-      19
+      21
     ],
     "sourcedFrom": [],
     "produces": [
       {
         "name": "ItemArchived",
         "ticks": [
-          20
+          22
         ]
       }
     ],
@@ -1807,11 +1977,11 @@
     "stateOccurrences": [],
     "commandOccurrences": [
       {
-        "tick": 19,
+        "tick": 21,
         "command": {
           "type": "command",
           "name": "ArchiveItemCommand",
-          "tick": 19,
+          "tick": 21,
           "example": {
             "CartId": "550e8400-e29b-41d4-a716-446655440010",
             "ProductId": "550e8400-e29b-41d4-a716-446655440001"
@@ -1821,8 +1991,8 @@
           {
             "type": "event",
             "name": "ItemArchived",
-            "tick": 20,
-            "producedBy": "ArchiveItemCommand-19",
+            "tick": 22,
+            "producedBy": "ArchiveItemCommand-21",
             "example": {
               "CartId": "550e8400-e29b-41d4-a716-446655440010",
               "ItemId": "550e8400-e29b-41d4-a716-446655440001"
@@ -1840,14 +2010,14 @@
     "name": "RemoveItemCommand",
     "type": "command",
     "ticks": [
-      21
+      23
     ],
     "sourcedFrom": [],
     "produces": [
       {
         "name": "ItemRemoved",
         "ticks": [
-          22
+          24
         ]
       }
     ],
@@ -2040,11 +2210,11 @@
     "stateOccurrences": [],
     "commandOccurrences": [
       {
-        "tick": 21,
+        "tick": 23,
         "command": {
           "type": "command",
           "name": "RemoveItemCommand",
-          "tick": 21,
+          "tick": 23,
           "example": {
             "ItemId": "550e8400-e29b-41d4-a716-446655440020",
             "CartId": "550e8400-e29b-41d4-a716-446655440010"
@@ -2054,8 +2224,8 @@
           {
             "type": "event",
             "name": "ItemRemoved",
-            "tick": 22,
-            "producedBy": "RemoveItemCommand-21",
+            "tick": 24,
+            "producedBy": "RemoveItemCommand-23",
             "example": {
               "ItemId": "550e8400-e29b-41d4-a716-446655440020",
               "CartId": "550e8400-e29b-41d4-a716-446655440010"
@@ -2073,14 +2243,14 @@
     "name": "CartClearedCommand",
     "type": "command",
     "ticks": [
-      23
+      25
     ],
     "sourcedFrom": [],
     "produces": [
       {
         "name": "CartCleared",
         "ticks": [
-          24
+          26
         ]
       }
     ],
@@ -2266,11 +2436,11 @@
     "stateOccurrences": [],
     "commandOccurrences": [
       {
-        "tick": 23,
+        "tick": 25,
         "command": {
           "type": "command",
           "name": "CartClearedCommand",
-          "tick": 23,
+          "tick": 25,
           "example": {
             "CartId": "550e8400-e29b-41d4-a716-446655440010"
           }
@@ -2279,8 +2449,8 @@
           {
             "type": "event",
             "name": "CartCleared",
-            "tick": 24,
-            "producedBy": "CartClearedCommand-23",
+            "tick": 26,
+            "producedBy": "CartClearedCommand-25",
             "example": {
               "CartId": "550e8400-e29b-41d4-a716-446655440010"
             }
