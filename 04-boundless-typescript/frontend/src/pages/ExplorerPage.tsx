@@ -95,7 +95,7 @@ export default function ExplorerPage() {
         >
           📊 State Views
         </button>
-        <button className="explorer-refresh" onClick={refresh} disabled={loading}>
+        <button className="explorer-refresh" onClick={() => refresh()} disabled={loading}>
           {loading ? '⏳' : '🔄'} Refresh
         </button>
       </div>
