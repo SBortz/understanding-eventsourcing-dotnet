@@ -26,6 +26,9 @@ export default function Navbar() {
         </NavLink>
         <div className="navbar-links">
           <NavLink to="/" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'} end>
+            Info
+          </NavLink>
+          <NavLink to="/catalog" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
             Catalog
           </NavLink>
           <NavLink to="/cart" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
@@ -42,9 +45,6 @@ export default function Navbar() {
           </NavLink>
           <NavLink to="/state" className={({ isActive }) => isActive ? 'nav-item demo active' : 'nav-item demo'}>
             State Views
-          </NavLink>
-          <NavLink to="/info" className={({ isActive }) => isActive ? 'nav-item demo active' : 'nav-item demo'}>
-            Info
           </NavLink>
         </div>
       </div>

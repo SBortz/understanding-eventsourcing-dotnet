@@ -164,7 +164,7 @@ app.get('/api/debug-state', async (_req, res) => {
 app.use(express.static(join(__dirname, '..', 'frontend', 'dist')));
 
 // SPA fallback: serve index.html for known frontend routes
-for (const route of ['/cart', '/admin', '/orders', '/info', '/events', '/state']) {
+for (const route of ['/catalog', '/cart', '/admin', '/orders', '/events', '/state']) {
   app.get(route, (_req, res) => {
     res.sendFile(join(__dirname, '..', 'frontend', 'dist', 'index.html'));
   });
