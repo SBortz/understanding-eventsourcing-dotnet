@@ -28,7 +28,7 @@ interface StateView {
 export default function StateViewsPage() {
   const [state, setState] = useState<StateView | null>(null);
   const [loading, setLoading] = useState(true);
-  const [cartFilter, setCartFilter] = useState<'all' | 'active'>('all');
+  const [cartFilter, setCartFilter] = useState<'all' | 'active'>('active');
 
   const refresh = useCallback(async (initial = false) => {
     if (initial) setLoading(true);
