@@ -28,6 +28,7 @@ interface StateView {
 export default function StateViewsPage() {
   const [state, setState] = useState<StateView | null>(null);
   const [loading, setLoading] = useState(true);
+  const [cartFilter, setCartFilter] = useState<'all' | 'active'>('all');
 
   const refresh = useCallback(async (initial = false) => {
     if (initial) setLoading(true);
@@ -121,12 +122,25 @@ export default function StateViewsPage() {
 
         {/* CartItemsStateView per cart */}
         <div className="state-card wide">
-          <h3>🛒 CartItemsStateView ({Object.keys(state.carts).length} carts)</h3>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <h3 style={{ margin: 0 }}>🛒 CartItemsStateView ({Object.keys(state.carts).length} carts)</h3>
+            <div className="cart-filter-toggle">
+              <button
+                className={`cart-filter-btn ${cartFilter === 'all' ? 'active' : ''}`}
+                onClick={() => setCartFilter('all')}
+              >All</button>
+              <button
+                className={`cart-filter-btn ${cartFilter === 'active' ? 'active' : ''}`}
+                onClick={() => setCartFilter('active')}
+              >Active</button>
+            </div>
+          </div>
           {Object.keys(state.carts).length === 0 ? (
             <p className="state-empty">No carts yet</p>
           ) : (
             <div className="cart-views">
               {Object.entries(state.carts)
+                .filter(([, cart]) => cartFilter === 'all' || !cart.isSubmitted)
                 .sort(([, a], [, b]) => b.lastPosition - a.lastPosition)
                 .map(([cartId, cart]) => (
                 <div className={`cart-view-card ${cart.isSubmitted ? 'submitted' : ''}`} key={cartId}>

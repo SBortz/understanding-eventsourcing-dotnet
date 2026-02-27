@@ -806,6 +806,33 @@ h1 {
   color: #27ae60;
 }
 
+.cart-filter-toggle {
+  display: flex;
+  gap: 0;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.cart-filter-btn {
+  padding: 4px 14px;
+  font-size: 12px;
+  font-weight: 600;
+  border: none;
+  background: #fff;
+  color: #999;
+  cursor: pointer;
+}
+
+.cart-filter-btn:not(:last-child) {
+  border-right: 1px solid #ddd;
+}
+
+.cart-filter-btn.active {
+  background: #27ae60;
+  color: #fff;
+}
+
 /* ===== Info Page ===== */
 .info-content {
   max-width: 720px;
