@@ -1,4 +1,4 @@
-const BASE = '/api';
+const BASE = import.meta.env.DEV ? '/api' : '';
 
 export async function fetchInventories(): Promise<Record<string, number>> {
   const res = await fetch(`${BASE}/inventories`);

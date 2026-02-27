@@ -15,6 +15,12 @@ import { cartsWithProductsRoutes } from './slices/carts-with-products.js';
 import { changeInventoryRoutes } from './slices/change-inventory.js';
 import { changePriceRoutes } from './slices/change-price.js';
 
+import { fileURLToPath } from 'node:url';
+import { dirname, join } from 'node:path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -29,6 +35,16 @@ inventoriesRoutes(app);
 cartsWithProductsRoutes(app);
 changeInventoryRoutes(app);
 changePriceRoutes(app);
+
+// Serve frontend static files
+app.use(express.static(join(__dirname, '..', 'frontend', 'dist')));
+
+// SPA fallback: serve index.html for known frontend routes
+for (const route of ['/cart', '/admin']) {
+  app.get(route, (_req, res) => {
+    res.sendFile(join(__dirname, '..', 'frontend', 'dist', 'index.html'));
+  });
+}
 
 // Graceful shutdown
 process.on('SIGINT', () => {
