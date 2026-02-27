@@ -1,6 +1,7 @@
 // Shopping Cart API Server - BoundlessDB + Decider Pattern
 
 import express from 'express';
+import cors from 'cors';
 import { closeStore } from './store/setup.js';
 
 // Import slice routes
@@ -15,6 +16,7 @@ import { changeInventoryRoutes } from './slices/change-inventory.js';
 import { changePriceRoutes } from './slices/change-price.js';
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
 // Register all slice routes
