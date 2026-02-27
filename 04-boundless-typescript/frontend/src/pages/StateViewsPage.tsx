@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
-const BASE = import.meta.env.DEV ? '/api' : '';
+const BASE = '/api';
 
 interface CartView {
   cartId: string;
