@@ -1,4 +1,3 @@
-import type { Express } from 'express';
 import type { ShoppingEvent } from '../domain/events.js';
 import { buildState } from '../domain/cart.js';
 import { getStore } from '../store/setup.js';
@@ -6,7 +5,6 @@ import {
   readAllEvents,
   readCartEvents,
   readEventsByType,
-  appendCartEvents,
 } from '../store/helpers.js';
 
 // ---------------------------------------------------------------------------
@@ -141,7 +139,7 @@ async function runArchiveProcessor(): Promise<void> {
 }
 
 // ---------------------------------------------------------------------------
-// Route
+// Projection: current prices
 // ---------------------------------------------------------------------------
 
 /**
@@ -159,35 +157,29 @@ export function projectCurrentPrices(
   return prices;
 }
 
-export function changePriceRoutes(app: Express): void {
-  // Current prices (from PriceChanged events)
-  app.get('/prices', async (_req, res) => {
-    try {
-      const events = await readEventsByType('PriceChanged');
-      const prices = projectCurrentPrices(events);
-      res.status(200).json(prices);
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json({ error: message });
-    }
-  });
+// ---------------------------------------------------------------------------
+// Usecases
+// ---------------------------------------------------------------------------
 
-  app.post('/debug/simulate-price-changed', async (req, res) => {
-    try {
-      const { productId, oldPrice, newPrice } = req.body;
+export interface ChangePriceCommand {
+  productId: string;
+  oldPrice: number;
+  newPrice: number;
+}
 
-      // 1. Translate & blind-append PriceChanged event
-      const event = translatePriceChanged({ productId, oldPrice, newPrice });
-      const store = getStore();
-      await store.append([{ type: event.type, data: event.data as Record<string, unknown> }], null);
+export async function executeChangePrice(command: ChangePriceCommand): Promise<{ success: boolean; event: ShoppingEvent }> {
+  // 1. Translate & blind-append PriceChanged event
+  const event = translatePriceChanged(command);
+  const store = getStore();
+  await store.append([{ type: event.type, data: event.data as Record<string, unknown> }], null);
 
-      // 2. Run archive processor
-      await runArchiveProcessor();
+  // 2. Run archive processor
+  await runArchiveProcessor();
 
-      res.status(200).json({ success: true, event });
-    } catch (error: unknown) {
-      const message = error instanceof Error ? error.message : 'Unknown error';
-      res.status(500).json({ success: false, error: message });
-    }
-  });
+  return { success: true, event };
+}
+
+export async function getPrices(): Promise<Record<string, number>> {
+  const events = await readEventsByType('PriceChanged');
+  return projectCurrentPrices(events);
 }

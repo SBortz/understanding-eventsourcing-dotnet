@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 
-const BASE = import.meta.env.DEV ? '/api' : '';
+const BASE = '/api';
 
 interface StoredEvent {
   position: number;

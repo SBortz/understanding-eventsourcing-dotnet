@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 
-const BASE = import.meta.env.DEV ? '/api' : '';
+const BASE = '/api';
 
 interface CartView {
   cartId: string;
@@ -19,7 +19,7 @@ interface CartView {
 
 interface StateView {
   inventories: Record<string, number>;
-  orders: Array<{ cartId: string; totalPrice: number }>;
+  orders: Array<{ cartId: string; totalPrice: number; orderedProducts: Array<{ productId: string; totalPrice: number }> }>;
   prices: Record<string, number>;
   carts: Record<string, CartView>;
   totalEvents: number;
@@ -67,59 +67,6 @@ export default function StateViewsPage() {
       </div>
 
       <div className="state-grid">
-        {/* Inventories */}
-        <div className="state-card">
-          <h3>📦 InventoriesSV</h3>
-          {Object.keys(state.inventories).length === 0 ? (
-            <p className="state-empty">No inventory data</p>
-          ) : (
-            <div className="state-table">
-              {Object.entries(state.inventories).map(([productId, count]) => (
-                <div className="state-row" key={productId}>
-                  <span className="state-key">{productId}</span>
-                  <span className={`state-value ${count <= 0 ? 'danger' : count <= 5 ? 'warn' : ''}`}>
-                    {count}
-                  </span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Prices */}
-        <div className="state-card">
-          <h3>💰 ChangedPricesSV</h3>
-          {Object.keys(state.prices).length === 0 ? (
-            <p className="state-empty">No price changes</p>
-          ) : (
-            <div className="state-table">
-              {Object.entries(state.prices).map(([productId, price]) => (
-                <div className="state-row" key={productId}>
-                  <span className="state-key">{productId}</span>
-                  <span className="state-value">${price.toFixed(2)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Orders */}
-        <div className="state-card">
-          <h3>📋 OrdersSV ({state.orders.length})</h3>
-          {state.orders.length === 0 ? (
-            <p className="state-empty">No orders yet</p>
-          ) : (
-            <div className="state-table">
-              {state.orders.map((order, i) => (
-                <div className="state-row" key={i}>
-                  <span className="state-key">{order.cartId.substring(0, 8)}…</span>
-                  <span className="state-value">${order.totalPrice.toFixed(2)}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
-
         {/* CartItemsStateView per cart */}
         <div className="state-card wide">
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
@@ -158,6 +105,73 @@ export default function StateViewsPage() {
                           <span className="cart-view-emoji">{item.image || '📦'}</span>
                           <span className="cart-view-product">{item.description || item.productId}</span>
                           <span className="cart-view-price">${item.price.toFixed(2)}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Inventories */}
+        <div className="state-card">
+          <h3>📦 InventoriesSV</h3>
+          {Object.keys(state.inventories).length === 0 ? (
+            <p className="state-empty">No inventory data</p>
+          ) : (
+            <div className="state-table">
+              {Object.entries(state.inventories).map(([productId, count]) => (
+                <div className="state-row" key={productId}>
+                  <span className="state-key">{productId}</span>
+                  <span className={`state-value ${count <= 0 ? 'danger' : count <= 5 ? 'warn' : ''}`}>
+                    {count}
+                  </span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Prices */}
+        <div className="state-card">
+          <h3>💰 ChangedPricesSV</h3>
+          {Object.keys(state.prices).length === 0 ? (
+            <p className="state-empty">No price changes</p>
+          ) : (
+            <div className="state-table">
+              {Object.entries(state.prices).map(([productId, price]) => (
+                <div className="state-row" key={productId}>
+                  <span className="state-key">{productId}</span>
+                  <span className="state-value">${price.toFixed(2)}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Orders */}
+        <div className="state-card wide">
+          <h3>📋 OrdersSV ({state.orders.length})</h3>
+          {state.orders.length === 0 ? (
+            <p className="state-empty">No orders yet</p>
+          ) : (
+            <div className="cart-views">
+              {state.orders.map((order, i) => (
+                <div className="cart-view-card submitted" key={i}>
+                  <div className="cart-view-header">
+                    <Link to={`/cart/${order.cartId}`} className="cart-view-id cart-view-link">{order.cartId.substring(0, 12)}…</Link>
+                    <span className="cart-status submitted">✅ Submitted</span>
+                    <span className="cart-view-total">${order.totalPrice.toFixed(2)}</span>
+                  </div>
+                  {order.orderedProducts && order.orderedProducts.length > 0 && (
+                    <div className="cart-view-items">
+                      {order.orderedProducts.map((p, j) => (
+                        <div className="cart-view-item" key={j}>
+                          <span className="cart-view-emoji">📦</span>
+                          <span className="cart-view-product">{p.productId}</span>
+                          <span className="cart-view-price">${p.totalPrice.toFixed(2)}</span>
                         </div>
                       ))}
                     </div>

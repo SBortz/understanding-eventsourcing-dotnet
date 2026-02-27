@@ -1,4 +1,4 @@
-const BASE = import.meta.env.DEV ? '/api' : '';
+const BASE = import.meta.env.DEV ? '/api' : '/api';
 
 export async function fetchInventories(): Promise<Record<string, number>> {
   const res = await fetch(`${BASE}/inventories`);
@@ -101,7 +101,7 @@ export async function simulateInventoryChange(body: {
   productId: string;
   inventory: number;
 }) {
-  const res = await fetch(`${BASE}/debug/simulate-inventory-changed`, {
+  const res = await fetch(`${BASE}/simulate/inventory`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -114,7 +114,7 @@ export async function simulatePriceChange(body: {
   oldPrice: number;
   newPrice: number;
 }) {
-  const res = await fetch(`${BASE}/debug/simulate-price-changed`, {
+  const res = await fetch(`${BASE}/simulate/price`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
