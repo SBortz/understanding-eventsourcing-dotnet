@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
 import { PRODUCTS } from '../products';
 import { simulateInventoryChange, simulatePriceChange } from '../api';
 
@@ -67,14 +66,7 @@ export default function AdminPage() {
 
   return (
     <div className="page">
-      <div className="header">
-        <h1 style={{ textAlign: 'left', marginBottom: 0 }}>
-          🛠️ Admin Panel
-        </h1>
-        <Link to="/" className="nav-link">
-          ← Back to Catalog
-        </Link>
-      </div>
+      <h1>🛠️ Admin Panel</h1>
 
       <p className="subtitle">
         Simulate external events for testing

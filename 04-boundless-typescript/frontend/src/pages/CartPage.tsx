@@ -118,14 +118,7 @@ export default function CartPage() {
 
   return (
     <div className="page">
-      <div className="header">
-        <h1 style={{ textAlign: 'left', marginBottom: 0 }}>
-          Your Shopping Cart
-        </h1>
-        <Link to="/" className="nav-link">
-          ← Continue Shopping
-        </Link>
-      </div>
+      <h1>Your Shopping Cart</h1>
 
       <p className="subtitle">Review your items and proceed to checkout</p>
 

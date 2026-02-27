@@ -1,5 +1,4 @@
 import { useEffect, useState, useCallback } from 'react';
-import { Link } from 'react-router-dom';
 import { PRODUCTS } from '../products';
 import { fetchInventories, fetchCartItems, addItem } from '../api';
 import { getCartId, generateItemId } from '../cartId';
@@ -88,21 +87,7 @@ export default function CatalogPage() {
 
   return (
     <div className="page">
-      <div className="header">
-        <div className="header-left">
-          <h1 style={{ textAlign: 'left', marginBottom: 0 }}>
-            Product Catalog
-          </h1>
-        </div>
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center' }}>
-          <Link to="/admin" className="nav-link">
-            Admin
-          </Link>
-          <Link to="/cart" className="cart-badge">
-            🛒 Cart <span className="count">{cartCount}</span>
-          </Link>
-        </div>
-      </div>
+      <h1>Product Catalog</h1>
 
       <p className="subtitle">
         Browse our products and add them to your cart
