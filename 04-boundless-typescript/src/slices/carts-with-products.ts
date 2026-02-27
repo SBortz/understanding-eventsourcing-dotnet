@@ -27,6 +27,16 @@ export function projectCartsWithProducts(events: ShoppingEvent[]): ProductInCart
       case 'ItemArchived':
         itemMap.delete(event.data.itemId);
         break;
+
+      case 'CartCleared': {
+        const cartId = event.data.cartId;
+        for (const [itemId, entry] of itemMap) {
+          if (entry.cartId === cartId) {
+            itemMap.delete(itemId);
+          }
+        }
+        break;
+      }
     }
   }
 

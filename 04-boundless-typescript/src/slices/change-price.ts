@@ -13,7 +13,7 @@ import {
 // Translation: external PriceChanged → internal PriceChanged (blind append)
 // ---------------------------------------------------------------------------
 
-function translatePriceChanged(body: {
+export function translatePriceChanged(body: {
   productId: string;
   oldPrice: number;
   newPrice: number;
