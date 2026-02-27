@@ -56,7 +56,9 @@ async function createStorage(): Promise<StorageInterface> {
   if (pgUrl) {
     // Dynamic import: avoids loading better-sqlite3 on Vercel
     const { PostgresStorage } = await import('boundlessdb');
-    return new PostgresStorage(pgUrl);
+    const storage = new PostgresStorage(pgUrl);
+    await storage.init(); // Creates tables if needed
+    return storage;
   } else {
     const { SqliteStorage } = await import('boundlessdb');
     return new SqliteStorage('./shopping-cart.db');
