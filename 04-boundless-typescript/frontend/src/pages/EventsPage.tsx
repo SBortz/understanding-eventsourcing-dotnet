@@ -33,7 +33,7 @@ export default function EventsPage() {
   const refresh = useCallback(async (initial = false) => {
     if (initial) setLoading(true);
     try {
-      const res = await fetch(`${BASE}/debug/events`);
+      const res = await fetch(`${BASE}/debug-events`);
       const data = await res.json();
       setEvents(data);
       setTotalEvents(data.length);

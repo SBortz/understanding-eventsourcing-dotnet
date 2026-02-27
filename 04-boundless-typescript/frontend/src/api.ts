@@ -101,7 +101,7 @@ export async function simulateInventoryChange(body: {
   productId: string;
   inventory: number;
 }) {
-  const res = await fetch(`${BASE}/simulate/inventory`, {
+  const res = await fetch(`${BASE}/simulate-inventory`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -114,7 +114,7 @@ export async function simulatePriceChange(body: {
   oldPrice: number;
   newPrice: number;
 }) {
-  const res = await fetch(`${BASE}/simulate/price`, {
+  const res = await fetch(`${BASE}/simulate-price`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),

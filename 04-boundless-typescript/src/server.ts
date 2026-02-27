@@ -71,7 +71,7 @@ app.post('/api/submit-cart', async (req, res) => {
 
 // --- Simulation (admin) ---
 
-app.post('/api/simulate/inventory', async (req, res) => {
+app.post('/api/simulate-inventory', async (req, res) => {
   try {
     await executeChangeInventory(req.body);
     res.sendStatus(200);
@@ -81,7 +81,7 @@ app.post('/api/simulate/inventory', async (req, res) => {
   }
 });
 
-app.post('/api/simulate/price', async (req, res) => {
+app.post('/api/simulate-price', async (req, res) => {
   try {
     const result = await executeChangePrice(req.body);
     res.status(200).json(result);
@@ -132,7 +132,7 @@ app.get('/api/:cartId/cartitems', async (req, res) => {
 
 // --- Debug ---
 
-app.get('/api/debug/carts-with-products', async (_req, res) => {
+app.get('/api/debug-carts-with-products', async (_req, res) => {
   try {
     res.status(200).json(await getCartsWithProducts());
   } catch (error: unknown) {
@@ -141,7 +141,7 @@ app.get('/api/debug/carts-with-products', async (_req, res) => {
   }
 });
 
-app.get('/api/debug/events', async (_req, res) => {
+app.get('/api/debug-events', async (_req, res) => {
   try {
     res.status(200).json(await getDebugEvents());
   } catch (error: unknown) {
@@ -150,7 +150,7 @@ app.get('/api/debug/events', async (_req, res) => {
   }
 });
 
-app.get('/api/debug/state', async (_req, res) => {
+app.get('/api/debug-state', async (_req, res) => {
   try {
     res.status(200).json(await getDebugState());
   } catch (error: unknown) {

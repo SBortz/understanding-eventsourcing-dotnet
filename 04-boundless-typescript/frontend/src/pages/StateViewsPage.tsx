@@ -33,7 +33,7 @@ export default function StateViewsPage() {
   const refresh = useCallback(async (initial = false) => {
     if (initial) setLoading(true);
     try {
-      const res = await fetch(`${BASE}/debug/state`);
+      const res = await fetch(`${BASE}/debug-state`);
       setState(await res.json());
     } catch {
       // ignore
