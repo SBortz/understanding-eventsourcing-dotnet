@@ -6,7 +6,7 @@ export interface ChangeInventoryCommand {
 }
 
 export async function executeChangeInventory(command: ChangeInventoryCommand): Promise<void> {
-  await getStore().append([
+  await (await getStore()).append([
     { type: 'InventoryChanged', data: { productId: command.productId, inventory: command.inventory } },
   ], null);
 }
