@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { PRODUCTS } from '../products';
-import { simulateInventoryChange, simulatePriceChange } from '../api';
+import { simulateInventoryChange, simulatePriceChange, fetchOrders } from '../api';
+import type { Order } from '../types';
 
 export default function AdminPage() {
   // Inventory form
@@ -11,6 +12,26 @@ export default function AdminPage() {
   const [priceProductId, setPriceProductId] = useState(PRODUCTS[0].productId);
   const [oldPrice, setOldPrice] = useState(PRODUCTS[0].price);
   const [newPrice, setNewPrice] = useState(PRODUCTS[0].price);
+
+  // Orders
+  const [orders, setOrders] = useState<Order[]>([]);
+  const [ordersLoading, setOrdersLoading] = useState(true);
+
+  const loadOrders = useCallback(async () => {
+    setOrdersLoading(true);
+    try {
+      const data = await fetchOrders();
+      setOrders(data);
+    } catch {
+      setOrders([]);
+    } finally {
+      setOrdersLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    loadOrders();
+  }, [loadOrders]);
 
   const [toast, setToast] = useState<{
     message: string;
@@ -64,12 +85,17 @@ export default function AdminPage() {
     }
   };
 
+  const findProductName = (productId: string) => {
+    const p = PRODUCTS.find((prod) => prod.productId === productId);
+    return p ? `${p.emoji} ${p.name}` : productId;
+  };
+
   return (
     <div className="page">
       <h1>🛠️ Admin Panel</h1>
 
       <p className="subtitle">
-        Simulate external events for testing
+        Simulate external events and view orders
       </p>
 
       <div className="admin-grid">
@@ -145,6 +171,49 @@ export default function AdminPage() {
             Change Price
           </button>
         </form>
+
+        {/* Orders */}
+        <div className="admin-card orders-section">
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h2>📋 Orders</h2>
+            <button
+              className="admin-button"
+              style={{ width: 'auto', marginTop: 0, padding: '6px 16px' }}
+              onClick={loadOrders}
+            >
+              Refresh
+            </button>
+          </div>
+
+          {ordersLoading ? (
+            <p style={{ color: '#666', textAlign: 'center', padding: 20 }}>Loading...</p>
+          ) : orders.length === 0 ? (
+            <p style={{ color: '#666', textAlign: 'center', padding: 20 }}>No orders yet</p>
+          ) : (
+            <div className="order-list">
+              {orders.map((order, i) => (
+                <div className="order-card" key={i}>
+                  <div>
+                    <div className="order-id">
+                      Cart {order.cartId.substring(0, 8)}...
+                    </div>
+                    <div className="order-products">
+                      {order.orderedProducts.map((op, j) => (
+                        <span key={j}>
+                          {j > 0 && ', '}
+                          {findProductName(op.productId)} (${op.totalPrice.toFixed(2)})
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="order-total">
+                    ${order.totalPrice.toFixed(2)}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
 
       {toast && (

@@ -11,7 +11,7 @@ import { getStore } from './setup.js';
 export async function readCartEvents(cartId: string): Promise<ShoppingEvent[]> {
   const store = getStore();
   const cartEventTypes = [
-    'CartCreated', 'ItemAdded', 'ItemRemoved', 'ItemArchived', 'ItemQuantityChanged',
+    'CartCreated', 'ItemAdded', 'ItemRemoved', 'ItemArchived',
     'CartSubmitted', 'CartCleared', 'CartPublished', 'CartPublicationFailed',
   ];
 
@@ -31,7 +31,7 @@ export async function readCartEvents(cartId: string): Promise<ShoppingEvent[]> {
 export async function readCartEventsWithCondition(cartId: string) {
   const store = getStore();
   const cartEventTypes = [
-    'CartCreated', 'ItemAdded', 'ItemRemoved', 'ItemArchived', 'ItemQuantityChanged',
+    'CartCreated', 'ItemAdded', 'ItemRemoved', 'ItemArchived',
     'CartSubmitted', 'CartCleared', 'CartPublished', 'CartPublicationFailed',
   ];
 

@@ -36,11 +36,6 @@ export type CartSubmitted = {
   };
 };
 
-export type ItemQuantityChanged = {
-  type: 'ItemQuantityChanged';
-  data: { cartId: string; itemId: string; newQuantity: number };
-};
-
 export type CartCleared = {
   type: 'CartCleared';
   data: { cartId: string };
@@ -73,7 +68,6 @@ export type ShoppingEvent =
   | ItemAdded
   | ItemRemoved
   | ItemArchived
-  | ItemQuantityChanged
   | CartSubmitted
   | CartCleared
   | CartPublished
@@ -87,7 +81,6 @@ export const ALL_EVENT_TYPES = [
   'ItemAdded',
   'ItemRemoved',
   'ItemArchived',
-  'ItemQuantityChanged',
   'CartSubmitted',
   'CartCleared',
   'CartPublished',

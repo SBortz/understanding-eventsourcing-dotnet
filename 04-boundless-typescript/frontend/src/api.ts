@@ -66,6 +66,16 @@ export async function submitCart(body: {
   return data;
 }
 
+export async function fetchOrders(): Promise<Array<{
+  cartId: string;
+  orderedProducts: Array<{ productId: string; totalPrice: number }>;
+  totalPrice: number;
+}>> {
+  const res = await fetch(`${BASE}/orders`);
+  if (!res.ok) throw new Error('Failed to fetch orders');
+  return res.json();
+}
+
 export async function simulateInventoryChange(body: {
   productId: string;
   inventory: number;

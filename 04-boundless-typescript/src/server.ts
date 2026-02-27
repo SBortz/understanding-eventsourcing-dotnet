@@ -14,6 +14,8 @@ import { inventoriesRoutes } from './slices/inventories.js';
 import { cartsWithProductsRoutes } from './slices/carts-with-products.js';
 import { changeInventoryRoutes } from './slices/change-inventory.js';
 import { changePriceRoutes } from './slices/change-price.js';
+import { ordersRoutes } from './slices/orders.js';
+import { ordersRoutes } from './slices/orders.js';
 
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
@@ -35,12 +37,14 @@ inventoriesRoutes(app);
 cartsWithProductsRoutes(app);
 changeInventoryRoutes(app);
 changePriceRoutes(app);
+ordersRoutes(app);
+ordersRoutes(app);
 
 // Serve frontend static files
 app.use(express.static(join(__dirname, '..', 'frontend', 'dist')));
 
 // SPA fallback: serve index.html for known frontend routes
-for (const route of ['/cart', '/admin']) {
+for (const route of ['/cart', '/admin', '/orders']) {
   app.get(route, (_req, res) => {
     res.sendFile(join(__dirname, '..', 'frontend', 'dist', 'index.html'));
   });
