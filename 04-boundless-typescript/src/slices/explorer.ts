@@ -1,4 +1,3 @@
-import { ALL_EVENT_TYPES } from '../domain/events.js';
 import { getStore, consistency } from '../store/setup.js';
 import { projectOrders } from './orders.js';
 import { projectCurrentPrices } from './change-price.js';
@@ -19,9 +18,7 @@ function getNestedValue(obj: unknown, path: string): unknown {
 
 export async function getDebugEvents(limit = 100) {
   const store = await getStore();
-  const result = await store.read({
-    conditions: ALL_EVENT_TYPES.map(type => ({ type })),
-  });
+  const result = await store.all().read();
 
   // Take only the last N events (newest first for display)
   const latest = result.events.slice(-limit);
@@ -51,9 +48,7 @@ export async function getDebugEvents(limit = 100) {
 
 export async function getDebugState(cartLimit = 50, orderLimit = 50) {
   const store = await getStore();
-  const result = await store.read({
-    conditions: ALL_EVENT_TYPES.map(type => ({ type })),
-  });
+  const result = await store.all().read();
 
   const allTyped = result.events.map(e => ({ type: e.type, data: e.data }) as any);
 
