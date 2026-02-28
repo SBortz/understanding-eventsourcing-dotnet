@@ -119,28 +119,6 @@ export default function InfoPage() {
         </section>
 
         <section className="info-section">
-          <h2>📖 The Book</h2>
-          <p>
-            The Shopping Cart model is from{' '}
-            <strong>Martin Dilger's</strong> book{' '}
-            <a href="https://leanpub.com/eventmodeling-and-eventsourcing" target="_blank" rel="noopener noreferrer">
-              Understanding Event Sourcing
-            </a>
-            {' '}— a practical guide to Event Sourcing and Event Modeling.
-            This TypeScript port re-implements the .NET version using BoundlessDB and the Decider Pattern.
-          </p>
-          <p>
-            Available on{' '}
-            <a href="https://leanpub.com/eventmodeling-and-eventsourcing" target="_blank" rel="noopener noreferrer">
-              Leanpub
-            </a>{' '}and{' '}
-            <a href="https://www.amazon.com/Understanding-Eventsourcing-Planning-Implementing-Eventmodeling/dp/B0DNXQJM9Z" target="_blank" rel="noopener noreferrer">
-              Amazon
-            </a>.
-          </p>
-        </section>
-
-        <section className="info-section">
           <h2>📂 Source Code</h2>
           <p>
             <a href="https://github.com/SBortz/understanding-eventsourcing-dotnet/tree/main/04-boundless-typescript" target="_blank" rel="noopener noreferrer">
@@ -148,9 +126,8 @@ export default function InfoPage() {
             </a>
           </p>
           <p>
-            The original .NET implementations (03-decider-model) are in the same repo.
-            This TypeScript port demonstrates how the same Event Model can be implemented
-            with a completely different tech stack.
+            The Shopping Cart model is based on Martin Dilger's book "Understanding Event Sourcing".
+            This TypeScript port re-implements the .NET version using BoundlessDB and the Decider Pattern.
           </p>
         </section>
       </div>
