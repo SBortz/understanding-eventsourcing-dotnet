@@ -1,7 +1,6 @@
 // Helper functions for reading/writing events with BoundlessDB
 
 import type { ShoppingEvent } from '../domain/events.js';
-import { ALL_EVENT_TYPES } from '../domain/events.js';
 import { getStore } from './setup.js';
 
 /**
@@ -64,9 +63,7 @@ export async function readEventsByType(type: string): Promise<ShoppingEvent[]> {
  */
 export async function readAllEvents(): Promise<ShoppingEvent[]> {
   const store = await getStore();
-  const result = await store.read({
-    conditions: ALL_EVENT_TYPES.map(type => ({ type })),
-  });
+  const result = await store.all().read();
   return result.events.map(toShoppingEvent);
 }
 
