@@ -5,22 +5,13 @@ import { getStore } from './setup.js';
 
 /**
  * Read all events for a specific cart (by cart key).
- * Queries each event type that uses the 'cart' key.
+ * Uses matchKey — no need to list every event type manually.
  */
 export async function readCartEvents(cartId: string): Promise<ShoppingEvent[]> {
   const store = await getStore();
-  const cartEventTypes = [
-    'CartCreated', 'ItemAdded', 'ItemRemoved', 'ItemArchived',
-    'CartSubmitted', 'CartCleared', 'CartPublished', 'CartPublicationFailed',
-  ];
-
-  const result = await store.read({
-    conditions: cartEventTypes.map(type => ({
-      type,
-      key: 'cart',
-      value: cartId,
-    })),
-  });
+  const result = await store.query<ShoppingEvent>()
+    .matchKey('cart', cartId)
+    .read();
   return result.events.map(toShoppingEvent);
 }
 
@@ -29,18 +20,9 @@ export async function readCartEvents(cartId: string): Promise<ShoppingEvent[]> {
  */
 export async function readCartEventsWithCondition(cartId: string) {
   const store = await getStore();
-  const cartEventTypes = [
-    'CartCreated', 'ItemAdded', 'ItemRemoved', 'ItemArchived',
-    'CartSubmitted', 'CartCleared', 'CartPublished', 'CartPublicationFailed',
-  ];
-
-  const result = await store.read({
-    conditions: cartEventTypes.map(type => ({
-      type,
-      key: 'cart',
-      value: cartId,
-    })),
-  });
+  const result = await store.query<ShoppingEvent>()
+    .matchKey('cart', cartId)
+    .read();
   return {
     events: result.events.map(toShoppingEvent),
     appendCondition: result.appendCondition,
@@ -52,9 +34,9 @@ export async function readCartEventsWithCondition(cartId: string) {
  */
 export async function readEventsByType(type: string): Promise<ShoppingEvent[]> {
   const store = await getStore();
-  const result = await store.read({
-    conditions: [{ type }],
-  });
+  const result = await store.query<ShoppingEvent>()
+    .matchType(type)
+    .read();
   return result.events.map(toShoppingEvent);
 }
 
@@ -63,13 +45,12 @@ export async function readEventsByType(type: string): Promise<ShoppingEvent[]> {
  */
 export async function readAllEvents(): Promise<ShoppingEvent[]> {
   const store = await getStore();
-  const result = await store.all().read();
+  const result = await store.all<ShoppingEvent>().read();
   return result.events.map(toShoppingEvent);
 }
 
 /**
  * Append events for a cart with optimistic concurrency.
- * Reads current state first to get appendCondition, then appends.
  */
 export async function appendCartEvents(cartId: string, events: ShoppingEvent[]): Promise<void> {
   const store = await getStore();
@@ -78,7 +59,6 @@ export async function appendCartEvents(cartId: string, events: ShoppingEvent[]):
     data: e.data as Record<string, unknown>,
   }));
 
-  // Read current cart events to get appendCondition
   const { appendCondition } = await readCartEventsWithCondition(cartId);
   await store.append(toStore, appendCondition);
 }
