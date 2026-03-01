@@ -52,15 +52,13 @@ export async function getDebugEvents(limit = 100) {
 export async function getDebugState(cartLimit = 50, orderLimit = 50) {
   const store = await getStore();
 
-  // Load limited recent events for state views (cap at 1000 to avoid full scan)
-  const latestPos = await store.getStorage().getLatestPosition();
-  const maxEvents = 1000;
-  const fromPos = latestPos > BigInt(maxEvents) ? latestPos - BigInt(maxEvents) : 0n;
-  const result = await store.all().fromPosition(fromPos).read();
+  // Full scan required — state views need all events to be correct.
+  // TODO: Replace with persistent projections for production use.
+  const result = await store.all().read();
 
   const allTyped = result.events.map(e => ({ type: e.type, data: e.data }) as any);
 
-  // InventoriesSV — last-writer-wins, so recent events are sufficient
+  // InventoriesSV
   const inventories: Record<string, number> = {};
   for (const e of result.events) {
     if (e.type === 'InventoryChanged') {
