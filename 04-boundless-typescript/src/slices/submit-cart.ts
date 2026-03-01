@@ -1,6 +1,7 @@
 import type { ShoppingEvent, InventoryChanged } from '../domain/events.js';
 import { buildState, type CartState } from '../domain/cart.js';
-import { readCartEvents, readEventsByType, appendCartEvents, appendEvents } from '../store/helpers.js';
+import { readCartEvents, readEventsByTypeWithCondition, appendCartEvents } from '../store/helpers.js';
+import { getStore } from '../store/setup.js';
 
 export interface SubmitCartCommand {
   cartId: string;
@@ -76,8 +77,9 @@ export async function executeSubmitCart(command: SubmitCartCommand): Promise<{ s
   const cartEvents = await readCartEvents(command.cartId);
   const state = buildState(cartEvents);
 
-  const inventoryEvents = await readEventsByType('InventoryChanged') as InventoryChanged[];
-  const inventories = buildInventories(inventoryEvents);
+  const { events: inventoryEvents, appendCondition: inventoryCondition } =
+    await readEventsByTypeWithCondition('InventoryChanged');
+  const inventories = buildInventories(inventoryEvents as InventoryChanged[]);
 
   const newEvents = submitCartDecider(state, inventories, command);
 
@@ -87,7 +89,11 @@ export async function executeSubmitCart(command: SubmitCartCommand): Promise<{ s
 
   await appendCartEvents(command.cartId, cartOnly);
   if (inventoryUpdates.length > 0) {
-    await appendEvents(inventoryUpdates);
+    const store = await getStore();
+    await store.append(
+      inventoryUpdates.map((e) => ({ type: e.type, data: e.data as Record<string, unknown> })),
+      inventoryCondition,
+    );
   }
 
   return { success: true, events: newEvents };

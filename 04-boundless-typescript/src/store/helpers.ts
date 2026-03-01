@@ -41,6 +41,20 @@ export async function readEventsByType(type: string): Promise<ShoppingEvent[]> {
 }
 
 /**
+ * Read events by type and return the appendCondition for concurrency.
+ */
+export async function readEventsByTypeWithCondition(type: string) {
+  const store = await getStore();
+  const result = await store.query<ShoppingEvent>()
+    .matchType(type)
+    .read();
+  return {
+    events: result.events.map(toShoppingEvent),
+    appendCondition: result.appendCondition,
+  };
+}
+
+/**
  * Read all events (global stream)
  */
 export async function readAllEvents(): Promise<ShoppingEvent[]> {
