@@ -1,7 +1,7 @@
 // BoundlessDB Event Store setup
 
 import { EventStore } from 'boundlessdb';
-import type { ConsistencyConfig, StorageInterface } from 'boundlessdb';
+import type { ConsistencyConfig, EventStorage } from 'boundlessdb';
 
 /**
  * Consistency config: defines which keys are extracted from each event type.
@@ -49,9 +49,9 @@ export const consistency: ConsistencyConfig = {
 };
 
 let storeInstance: EventStore | null = null;
-let storagePromise: Promise<StorageInterface> | null = null;
+let storagePromise: Promise<EventStorage> | null = null;
 
-async function createStorage(): Promise<StorageInterface> {
+async function createStorage(): Promise<EventStorage> {
   const pgUrl = process.env.POSTGRES_URL;
   if (pgUrl) {
     // Dynamic import: avoids loading better-sqlite3 on Vercel
