@@ -18,12 +18,15 @@ function getNestedValue(obj: unknown, path: string): unknown {
 
 export async function getDebugEvents(limit = 100) {
   const store = await getStore();
-  const result = await store.all().read();
 
-  // Take only the last N events (newest first for display)
+  // Only load the last N events, not the entire stream
+  const latestPos = await store.getStorage().getLatestPosition();
+  const fromPos = latestPos > BigInt(limit) ? latestPos - BigInt(limit) : 0n;
+  const result = await store.all().fromPosition(fromPos).read();
+
   const latest = result.events.slice(-limit);
 
-  return { total: result.events.length, events: latest.map(e => {
+  return { total: Number(latestPos), events: latest.map(e => {
     // Extract keys from consistency config
     const config = consistency.eventTypes[e.type];
     const keys: Array<{ name: string; value: string }> = [];
@@ -48,11 +51,16 @@ export async function getDebugEvents(limit = 100) {
 
 export async function getDebugState(cartLimit = 50, orderLimit = 50) {
   const store = await getStore();
-  const result = await store.all().read();
+
+  // Load limited recent events for state views (cap at 1000 to avoid full scan)
+  const latestPos = await store.getStorage().getLatestPosition();
+  const maxEvents = 1000;
+  const fromPos = latestPos > BigInt(maxEvents) ? latestPos - BigInt(maxEvents) : 0n;
+  const result = await store.all().fromPosition(fromPos).read();
 
   const allTyped = result.events.map(e => ({ type: e.type, data: e.data }) as any);
 
-  // InventoriesSV
+  // InventoriesSV — last-writer-wins, so recent events are sufficient
   const inventories: Record<string, number> = {};
   for (const e of result.events) {
     if (e.type === 'InventoryChanged') {
