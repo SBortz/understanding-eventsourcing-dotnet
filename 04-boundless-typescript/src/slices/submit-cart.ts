@@ -1,6 +1,8 @@
 import type { ShoppingEvent, InventoryChanged } from '../domain/events.js';
 import { buildState, type CartState } from '../domain/cart.js';
-import { readCartEvents, readEventsByType, appendCartEvents, appendEvents } from '../store/helpers.js';
+import { readCartEventsWithCondition, readEventsByTypeWithCondition } from '../store/helpers.js';
+import { getStore } from '../store/setup.js';
+import { mergeConditions } from 'boundlessdb';
 
 export interface SubmitCartCommand {
   cartId: string;
@@ -73,22 +75,24 @@ export function submitCartDecider(
 }
 
 export async function executeSubmitCart(command: SubmitCartCommand): Promise<{ success: boolean; events: ShoppingEvent[] }> {
-  const cartEvents = await readCartEvents(command.cartId);
+  // Read from both boundaries
+  const { events: cartEvents, appendCondition: cartCondition } =
+    await readCartEventsWithCondition(command.cartId);
   const state = buildState(cartEvents);
 
-  const inventoryEvents = await readEventsByType('InventoryChanged') as InventoryChanged[];
-  const inventories = buildInventories(inventoryEvents);
+  const { events: inventoryEvents, appendCondition: inventoryCondition } =
+    await readEventsByTypeWithCondition('InventoryChanged');
+  const inventories = buildInventories(inventoryEvents as InventoryChanged[]);
 
   const newEvents = submitCartDecider(state, inventories, command);
 
-  // Separate cart events from inventory events (different keys)
-  const cartOnly = newEvents.filter(e => e.type !== 'InventoryChanged');
-  const inventoryUpdates = newEvents.filter(e => e.type === 'InventoryChanged');
-
-  await appendCartEvents(command.cartId, cartOnly);
-  if (inventoryUpdates.length > 0) {
-    await appendEvents(inventoryUpdates);
-  }
+  // Single append — protects both cart and inventory boundaries
+  const store = await getStore();
+  const merged = mergeConditions(cartCondition, inventoryCondition);
+  await store.append(
+    newEvents.map((e) => ({ type: e.type, data: e.data as Record<string, unknown> })),
+    merged,
+  );
 
   return { success: true, events: newEvents };
 }

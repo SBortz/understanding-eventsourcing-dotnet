@@ -3,7 +3,7 @@ import { buildState } from '../domain/cart.js';
 import { getStore } from '../store/setup.js';
 import {
   readAllEvents,
-  readCartEvents,
+  readCartEventsWithCondition,
   readEventsByType,
 } from '../store/helpers.js';
 
@@ -113,7 +113,7 @@ async function runArchiveProcessor(): Promise<void> {
 
   // 3. For each affected cart: load state, emit ItemArchived for matching items
   for (const [cartId, affectedProductIds] of affectedCarts) {
-    const cartEvents = await readCartEvents(cartId);
+    const { events: cartEvents, appendCondition } = await readCartEventsWithCondition(cartId);
     const state = buildState(cartEvents);
 
     const archiveEvents: ShoppingEvent[] = [];
@@ -128,11 +128,10 @@ async function runArchiveProcessor(): Promise<void> {
     }
 
     if (archiveEvents.length > 0) {
-      // Blind append (no concurrency guard)
       const store = await getStore();
       await store.append(
         archiveEvents.map((e) => ({ type: e.type, data: e.data as Record<string, unknown> })),
-        null,
+        appendCondition,
       );
     }
   }
