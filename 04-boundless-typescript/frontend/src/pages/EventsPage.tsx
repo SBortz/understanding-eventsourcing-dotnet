@@ -68,7 +68,7 @@ export default function EventsPage() {
     <div className="page" style={{ maxWidth: 1100 }}>
       <h1>📜 Events</h1>
       <p className="subtitle">
-        Showing last <strong>{shownEvents}</strong> of <strong>{totalEvents}</strong> events
+        Showing last <strong>{shownEvents}</strong> events
       </p>
 
       <div className="explorer-tabs">
