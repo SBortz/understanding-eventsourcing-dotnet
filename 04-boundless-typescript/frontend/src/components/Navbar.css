@@ -16,6 +16,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  overflow-x: auto;
+  gap: 8px;
 }
 
 .navbar-brand {
@@ -32,6 +34,21 @@
 .navbar-links {
   display: flex;
   gap: 4px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .navbar-brand {
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  .nav-item {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  .nav-separator {
+    margin: 0 2px;
+  }
 }
 
 .nav-item {

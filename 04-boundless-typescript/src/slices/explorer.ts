@@ -19,12 +19,11 @@ function getNestedValue(obj: unknown, path: string): unknown {
 export async function getDebugEvents(limit = 100) {
   const store = await getStore();
 
-  // Only load the last N events, not the entire stream
+  // Load last N events using backwards query
   const latestPos = await store.getStorage().getLatestPosition();
-  const fromPos = latestPos > BigInt(limit) ? latestPos - BigInt(limit) : 0n;
-  const result = await store.all().fromPosition(fromPos).read();
+  const result = await store.all().backwards().limit(limit).read();
 
-  const latest = result.events.slice(-limit);
+  const latest = result.events.reverse();
 
   return { total: Number(latestPos), events: latest.map(e => {
     // Extract keys from consistency config

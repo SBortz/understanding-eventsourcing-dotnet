@@ -25,7 +25,6 @@ const EVENT_COLORS: Record<string, string> = {
 
 export default function EventsPage() {
   const [events, setEvents] = useState<StoredEvent[]>([]);
-  const [totalEvents, setTotalEvents] = useState(0);
   const [shownEvents, setShownEvents] = useState(0);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<string>('');
@@ -37,7 +36,7 @@ export default function EventsPage() {
       const res = await fetch(`${BASE}/debug-events`);
       const data = await res.json();
       setEvents(data.events ?? data);
-      setTotalEvents(data.total ?? (data.events ?? data).length);
+      // total no longer displayed
       setShownEvents((data.events ?? data).length);
     } catch {
       // ignore
@@ -68,7 +67,7 @@ export default function EventsPage() {
     <div className="page" style={{ maxWidth: 1100 }}>
       <h1>📜 Events</h1>
       <p className="subtitle">
-        Showing last <strong>{shownEvents}</strong> of <strong>{totalEvents}</strong> events
+        Showing last <strong>{shownEvents}</strong> events
       </p>
 
       <div className="explorer-tabs">
@@ -110,7 +109,7 @@ export default function EventsPage() {
                   onClick={() => setFilterKey(`${k.name}:${k.value}`)}
                   title={`Filter by ${k.name}:${k.value}`}
                 >
-                  {k.name}={k.value.length > 12 ? k.value.substring(0, 12) + '…' : k.value}
+                  {k.name}={k.value.length > 8 ? k.value.substring(0, 8) + '…' : k.value}
                 </span>
               ))}
             </div>
