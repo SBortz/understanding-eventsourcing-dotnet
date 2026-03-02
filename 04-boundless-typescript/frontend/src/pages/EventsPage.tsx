@@ -25,7 +25,6 @@ const EVENT_COLORS: Record<string, string> = {
 
 export default function EventsPage() {
   const [events, setEvents] = useState<StoredEvent[]>([]);
-  const [totalEvents, setTotalEvents] = useState(0);
   const [shownEvents, setShownEvents] = useState(0);
   const [loading, setLoading] = useState(true);
   const [filterType, setFilterType] = useState<string>('');
@@ -37,7 +36,7 @@ export default function EventsPage() {
       const res = await fetch(`${BASE}/debug-events`);
       const data = await res.json();
       setEvents(data.events ?? data);
-      setTotalEvents(data.total ?? (data.events ?? data).length);
+      // total no longer displayed
       setShownEvents((data.events ?? data).length);
     } catch {
       // ignore
