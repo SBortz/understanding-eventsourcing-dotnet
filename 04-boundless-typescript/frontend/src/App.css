@@ -3,6 +3,13 @@
   max-width: 960px;
   margin: 0 auto;
   padding: 20px;
+  overflow-x: hidden;
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding: 12px;
+  }
 }
 
 h1 {
@@ -77,6 +84,13 @@ h1 {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 20px;
+}
+
+@media (max-width: 600px) {
+  .product-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
 }
 
 .product-card {
@@ -226,6 +240,13 @@ h1 {
   display: flex;
   gap: 16px;
   align-items: center;
+}
+
+@media (max-width: 600px) {
+  .cart-item {
+    gap: 10px;
+    padding: 12px;
+  }
 }
 
 .item-image {
@@ -521,6 +542,7 @@ h1 {
   gap: 8px;
   margin-bottom: 16px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .explorer-tab {
@@ -560,6 +582,7 @@ h1 {
   gap: 10px;
   margin-bottom: 12px;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .explorer-filters select {
@@ -590,6 +613,14 @@ h1 {
   border-radius: 8px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
   font-size: 13px;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 600px) {
+  .event-row {
+    gap: 6px;
+    padding: 8px;
+  }
 }
 
 .event-pos {
@@ -610,10 +641,19 @@ h1 {
   text-align: center;
 }
 
+@media (max-width: 600px) {
+  .event-type-badge {
+    min-width: auto;
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+}
+
 .event-keys {
   display: flex;
   gap: 4px;
   flex-shrink: 0;
+  flex-wrap: wrap;
 }
 
 .key-badge {
@@ -900,6 +940,7 @@ h1 {
   position: fixed;
   bottom: 24px;
   right: 24px;
+  left: 24px;
   padding: 12px 20px;
   border-radius: 8px;
   color: #fff;
