@@ -110,7 +110,7 @@ export default function EventsPage() {
                   onClick={() => setFilterKey(`${k.name}:${k.value}`)}
                   title={`Filter by ${k.name}:${k.value}`}
                 >
-                  {k.name}={k.value.length > 12 ? k.value.substring(0, 12) + '…' : k.value}
+                  {k.name}={k.value.length > 8 ? k.value.substring(0, 8) + '…' : k.value}
                 </span>
               ))}
             </div>

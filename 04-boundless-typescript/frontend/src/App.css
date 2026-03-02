@@ -590,6 +590,22 @@ h1 {
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 13px;
+  max-width: 200px;
+}
+
+@media (max-width: 600px) {
+  .explorer-filters select {
+    flex: 1;
+    min-width: 0;
+    max-width: none;
+  }
+  .explorer-tabs {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .explorer-refresh {
+    align-self: flex-end;
+  }
 }
 
 .explorer-count {
@@ -618,8 +634,20 @@ h1 {
 
 @media (max-width: 600px) {
   .event-row {
-    gap: 6px;
-    padding: 8px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 4px 8px;
+    padding: 8px 10px;
+  }
+  .event-type-badge {
+    min-width: auto;
+    justify-self: start;
+  }
+  .event-keys {
+    grid-column: 1 / -1;
+  }
+  .event-data {
+    grid-column: 1 / -1;
   }
 }
 
