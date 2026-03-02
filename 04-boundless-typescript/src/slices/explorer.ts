@@ -19,10 +19,9 @@ function getNestedValue(obj: unknown, path: string): unknown {
 export async function getDebugEvents(limit = 100) {
   const store = await getStore();
 
-  // Only load the last N events, not the entire stream
+  // Load all events, take the last N
   const latestPos = await store.getStorage().getLatestPosition();
-  const fromPos = latestPos > BigInt(limit) ? latestPos - BigInt(limit) : 0n;
-  const result = await store.all().fromPosition(fromPos).read();
+  const result = await store.all().read();
 
   const latest = result.events.slice(-limit);
 
