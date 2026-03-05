@@ -5,12 +5,12 @@ import { getStore } from './setup.js';
 
 /**
  * Read all events for a specific cart (by cart key).
- * Uses matchKey — no need to list every event type manually.
+ * Uses matchKeys — no need to list every event type manually.
  */
 export async function readCartEvents(cartId: string): Promise<ShoppingEvent[]> {
   const store = await getStore();
   const result = await store.query<ShoppingEvent>()
-    .matchKey('cart', cartId)
+    .matchKeys({ cart: cartId })
     .read();
   return result.events.map(toShoppingEvent);
 }
@@ -21,7 +21,7 @@ export async function readCartEvents(cartId: string): Promise<ShoppingEvent[]> {
 export async function readCartEventsWithCondition(cartId: string) {
   const store = await getStore();
   const result = await store.query<ShoppingEvent>()
-    .matchKey('cart', cartId)
+    .matchKeys({ cart: cartId })
     .read();
   return {
     events: result.events.map(toShoppingEvent),
