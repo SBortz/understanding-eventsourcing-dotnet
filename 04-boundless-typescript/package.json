@@ -13,7 +13,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "boundlessdb": "^0.11.0",
+    "boundlessdb": "^0.12.1",
     "cors": "^2.8.6",
     "express": "^5.2.1",
     "pg": "^8.13.1"
